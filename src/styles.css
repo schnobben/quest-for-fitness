@@ -101,6 +101,7 @@ small {
 .exercise-card,
 .history-item,
 .goal-card,
+.export-card,
 .table-list,
 .empty {
   border: 1px solid #2b322f;
@@ -268,6 +269,34 @@ input:disabled {
   padding: 4px 14px 12px;
 }
 
+.export-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 14px;
+}
+
+.export-card p {
+  margin-top: 4px;
+  color: #aeb6af;
+  line-height: 1.4;
+}
+
+.export-card small {
+  display: block;
+  margin-top: 8px;
+}
+
+.secondary-action {
+  min-height: 44px;
+  border-radius: 8px;
+  padding: 0 14px;
+  background: #243d39;
+  color: #d8ffe9;
+  font-weight: 850;
+}
+
 .history-item summary {
   display: flex;
   align-items: center;
@@ -425,12 +454,14 @@ input:disabled {
   }
 
   .run-entry,
-  .entry-row {
+  .entry-row,
+  .export-card {
     grid-template-columns: 1fr 1fr;
   }
 
   .run-entry button,
-  .entry-row button {
+  .entry-row button,
+  .export-card button {
     grid-column: 1 / -1;
   }
 }

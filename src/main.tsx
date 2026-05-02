@@ -4,7 +4,7 @@ import './styles.css';
 import { formatDate, getSessionPlan, isoDate, parseDurationToSeconds, secondsToPace } from './dateUtils';
 import { programPhases } from './program';
 import { registerServiceWorker } from './registerServiceWorker';
-import { createId, loadAppData, saveAppData, type AppData } from './storage';
+import { createId, exportAppData, loadAppData, saveAppData, type AppData } from './storage';
 import type { ExerciseLog, Goal, ProgramExercise, SetLog, WeightLog, WorkingWeight } from './types';
 
 type View = 'today' | 'history' | 'weights' | 'goals' | 'body' | 'runs';
@@ -155,9 +155,29 @@ function TodayView({ data, updateData }: { data: AppData; updateData: (next: Par
 }
 
 function HistoryView({ data }: { data: AppData }) {
+  const [exportStatus, setExportStatus] = useState('');
+
+  async function handleExport() {
+    try {
+      await exportAppData(data);
+      setExportStatus('Export ready.');
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') return;
+      setExportStatus('Export failed. Try again from Chrome.');
+    }
+  }
+
   return (
     <section className="stack">
       <SectionTitle title="Session History" detail={`${data.sessions.length} logged`} />
+      <div className="export-card">
+        <div>
+          <h3>Coach Export</h3>
+          <p>JSON file with workouts, runs, body weight, goals, working weights, and program context.</p>
+          {exportStatus && <small>{exportStatus}</small>}
+        </div>
+        <button className="secondary-action" onClick={handleExport}>Export JSON</button>
+      </div>
       {data.sessions.length === 0 ? <Empty text="No sessions logged yet." /> : data.sessions.map((session) => (
         <details className="history-item" key={session.id}>
           <summary>

@@ -25,3 +25,7 @@ GitHub Pages gives the app the HTTPS URL Android Chrome needs for a proper insta
 8. In Chrome, open the menu and choose `Install app` or `Add to Home screen`.
 
 After the first successful load, the app shell is cached for offline use. Your workout data stays on the phone in that browser's localStorage.
+
+## Export Data
+
+Open `History` and tap `Export JSON`. On Android, Chrome will use the share sheet when available; otherwise it downloads a timestamped `.json` file. The export includes workouts, runs, body weight, goals, working weights, and the program config.

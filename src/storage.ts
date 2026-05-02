@@ -1,4 +1,4 @@
-import { seedGoals, seedWeightLogs, seedWorkingWeights } from './program';
+import { programPhases, seedGoals, seedWeightLogs, seedWorkingWeights } from './program';
 import type { Goal, RunLog, SessionLog, WeightLog, WorkingWeight } from './types';
 
 const keys = {
@@ -53,4 +53,36 @@ export function saveAppData(data: AppData) {
 export function createId(prefix: string) {
   if ('randomUUID' in crypto) return `${prefix}-${crypto.randomUUID()}`;
   return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+export async function exportAppData(data: AppData) {
+  const exportedAt = new Date().toISOString();
+  const filename = `quest-for-fitness-export-${exportedAt.slice(0, 10)}.json`;
+  const payload = {
+    schemaVersion: 1,
+    app: 'quest-for-fitness',
+    exportedAt,
+    programPhases,
+    data,
+  };
+  const json = JSON.stringify(payload, null, 2);
+  const file = new File([json], filename, { type: 'application/json' });
+
+  if (navigator.canShare?.({ files: [file] })) {
+    await navigator.share({
+      title: 'Quest for Fitness export',
+      text: 'Workout log export from Quest for Fitness.',
+      files: [file],
+    });
+    return;
+  }
+
+  const url = URL.createObjectURL(file);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
 }
