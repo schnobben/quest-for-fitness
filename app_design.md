@@ -46,9 +46,26 @@ The app should never become “a game that happens to track workouts.” It shou
 
 ---
 
-## 3. Core design principle
+## 3. Core terminology
 
-## Fitness first, fantasy second
+These terms are product-level concepts and should stay consistent across UI, data models, seed content, and roadmap planning.
+
+- **Adventurer:** The user's RPG avatar. The Adventurer gains XP, levels, titles, gear cosmetics, and attributes from real fitness activity.
+- **Quest:** A short-term actionable task, such as today's planned workout, a recovery action, a run, or a weekly consistency target.
+- **Campaign:** A longer goal-driven journey that can contain phases, programs, goals, milestones, rewards, and a date range. The May–September 2026 training block is the first seed campaign, not the full product scope.
+- **Workout:** A single planned or completed training session made up of exercises, target sets, logging data, and completion status.
+- **Program:** A reusable training structure that schedules workouts over time, often through phases, weeks, or rotating workout days.
+- **Goal:** A measurable target with current value, target value, unit, direction, optional target date, and optional link to tracked metrics.
+- **Achievement:** A persistent milestone unlocked from fitness or quest behavior, such as first workout, weekly consistency, PRs, program completion, or pet bond.
+- **Pet:** The user's companion. The pet gains bond, mood, energy, growth, and evolution progress from activity and recovery without guilt-based penalties.
+- **Expedition:** A future idle/AFK adventure that the Adventurer and pet can undertake, with outcome power influenced by consistent real-world fitness behavior.
+- **Reward Event:** A stored RPG outcome caused by a fitness or quest event, such as XP granted, level up, achievement unlocked, title unlocked, equipment unlocked, pet bond increase, pet evolution, or expedition completion.
+
+---
+
+## 4. Core design principle
+
+### Fitness first, fantasy second
 
 The RPG layer must never slow down logging.
 
@@ -74,9 +91,9 @@ Logging is sacred. Rewards are the celebration.
 
 ---
 
-## 4. Target users
+## 5. Target users
 
-### 4.1 Primary user: the fitness RPG nerd
+### 5.1 Primary user: the fitness RPG nerd
 
 A user who enjoys strength training, running, climbing, bodybuilding, or general fitness and also likes RPG progression, gear, achievements, classes, titles, companions, and visual growth.
 
@@ -89,7 +106,7 @@ They want:
 - emotional reward for consistency
 - a fun identity around fitness
 
-### 4.2 Secondary user: the structured beginner
+### 5.2 Secondary user: the structured beginner
 
 A user who wants to start training and benefits from being told what to do next.
 
@@ -102,7 +119,7 @@ They want:
 - visible improvement
 - a friendly companion that makes the process less lonely
 
-### 4.3 Tertiary user: the data-focused lifter/runner
+### 5.3 Tertiary user: the data-focused lifter/runner
 
 A user who values dashboards and historical training data.
 
@@ -121,9 +138,9 @@ They may ignore some game systems, so the app must remain valuable even if the f
 
 ---
 
-## 5. Platform and technical direction
+## 6. Platform and technical direction
 
-### 5.1 Recommended stack
+### 6.1 Recommended stack
 
 Use **Flutter + Dart** as the primary app stack.
 
@@ -136,7 +153,7 @@ Rationale:
 - easier to build polished animations, character screens, pet screens, and dashboard interactions than a web-first PWA
 - compatible with in-app purchases/subscriptions through platform billing integrations
 
-### 5.2 Suggested architecture
+### 6.2 Suggested architecture
 
 Use a modular architecture with clear domain separation:
 
@@ -188,7 +205,7 @@ lib/
     migrations/
 ```
 
-### 5.3 Recommended libraries and services
+### 6.3 Recommended libraries and services
 
 Initial recommendation:
 
@@ -206,11 +223,11 @@ Important: do not build the subscription system into the core app too early. Des
 
 ---
 
-## 6. Product layers
+## 7. Product layers
 
 Quest for Fitness has two major product systems.
 
-## 6.1 The Fitness Engine
+## 7.1 The Fitness Engine
 
 The Fitness Engine is responsible for all serious training functionality.
 
@@ -236,7 +253,7 @@ It includes:
 
 This layer must work even if the RPG layer is disabled.
 
-## 6.2 The Quest Engine
+## 7.2 The Quest Engine
 
 The Quest Engine translates fitness behaviour into RPG progression.
 
@@ -268,7 +285,7 @@ This separation keeps the app maintainable.
 
 ---
 
-## 7. Core app loop
+## 8. Core app loop
 
 The everyday loop:
 
@@ -289,7 +306,7 @@ Plan → Train → Log → Progress → Reward → Return
 
 ---
 
-## 8. Main navigation
+## 9. Main navigation
 
 Recommended bottom navigation:
 
@@ -299,7 +316,7 @@ Recommended bottom navigation:
 4. **Quest**
 5. **Library**
 
-### 8.1 Today
+### 9.1 Today
 
 The home screen and daily command center.
 
@@ -317,7 +334,7 @@ Primary action:
 
 - “Start Today’s Quest”
 
-### 8.2 Log
+### 9.2 Log
 
 Fast manual logging hub.
 
@@ -331,7 +348,7 @@ Includes:
 - log recovery/rest day
 - view recent logs
 
-### 8.3 Progress
+### 9.3 Progress
 
 The serious analytics area.
 
@@ -347,7 +364,7 @@ Includes:
 - personal records
 - program performance
 
-### 8.4 Quest
+### 9.4 Quest
 
 The RPG home.
 
@@ -364,7 +381,7 @@ Includes:
 - pet screen
 - expeditions/AFK combat
 
-### 8.5 Library
+### 9.5 Library
 
 Creation and management area.
 
@@ -382,11 +399,11 @@ Includes:
 
 ---
 
-## 9. Visual design direction
+## 10. Visual design direction
 
 Quest for Fitness should be a hybrid between a modern fitness dashboard and fantasy RPG UI.
 
-### 9.1 Fitness UI
+### 10.1 Fitness UI
 
 Should feel:
 
@@ -410,7 +427,7 @@ Use:
 - bottom sheets for set logging
 - sticky session controls
 
-### 9.2 RPG UI
+### 10.2 RPG UI
 
 Should feel:
 
@@ -434,7 +451,7 @@ Use:
 - subtle fantasy ornaments
 - animated reward moments
 
-### 9.3 Tone of voice
+### 10.3 Tone of voice
 
 The app should speak like a supportive RPG coach.
 
@@ -463,9 +480,9 @@ Better:
 
 ---
 
-## 10. Fitness Engine feature design
+## 11. Fitness Engine feature design
 
-## 10.1 Exercise library
+## 11.1 Exercise library
 
 Each exercise should support:
 
@@ -505,7 +522,7 @@ Example movement patterns:
 - isolation
 - locomotion/cardio
 
-## 10.2 Workout builder
+## 11.2 Workout builder
 
 A workout is a reusable template.
 
@@ -529,7 +546,7 @@ Examples:
 - Grip & Pull-up Session
 - Recovery Mobility
 
-## 10.3 Program builder
+## 11.3 Program builder
 
 A program is a scheduled training structure.
 
@@ -557,7 +574,7 @@ The app should eventually support:
 - program duplication
 - program templates
 
-## 10.4 Workout execution
+## 11.4 Workout execution
 
 During a workout, the user sees:
 
@@ -585,7 +602,7 @@ Optional fields:
 - pain/discomfort
 - form quality
 
-## 10.5 Session history
+## 11.5 Session history
 
 Session history should support:
 
@@ -598,7 +615,7 @@ Session history should support:
 - volume summaries
 - quest rewards earned
 
-## 10.6 Goals and targets
+## 11.6 Goals and targets
 
 Goals should support:
 
@@ -633,7 +650,7 @@ Examples:
 - Complete 16 workouts in a month
 - Average 7,000 steps/day
 
-## 10.7 Analytics
+## 11.7 Analytics
 
 Initial analytics:
 
@@ -657,7 +674,7 @@ Later analytics:
 - plateau detection
 - injury/discomfort trend
 
-## 10.8 Injury and discomfort logging
+## 11.8 Injury and discomfort logging
 
 The app should support lightweight discomfort tracking without becoming a medical app.
 
@@ -676,9 +693,9 @@ Example:
 
 ---
 
-## 11. Quest Engine feature design
+## 12. Quest Engine feature design
 
-## 11.1 Adventurer
+## 12.1 Adventurer
 
 The Adventurer is the user’s RPG avatar.
 
@@ -697,7 +714,7 @@ The Adventurer has:
 
 The Adventurer should grow from real training behaviour.
 
-## 11.2 Classes
+## 12.2 Classes
 
 Classes can work in two possible ways. The app should support both conceptually.
 
@@ -741,7 +758,7 @@ Current Title: Iron Ranger
 Reason: 3 strength sessions + 2 runs this week
 ```
 
-## 11.3 Attributes
+## 12.3 Attributes
 
 Attributes should be flavourful but tied to real behaviours.
 
@@ -756,7 +773,7 @@ Suggested attributes:
 
 These should not be used for medical or prescriptive claims. They are motivational abstractions.
 
-## 11.4 XP
+## 12.4 XP
 
 XP is earned through behaviours.
 
@@ -784,7 +801,7 @@ Suggested XP principles:
 
 Avoid rewarding unhealthy overtraining. Do not make “more is always better.”
 
-## 11.5 Levels
+## 12.5 Levels
 
 Levels are long-term progression.
 
@@ -800,7 +817,7 @@ Every level can unlock one or more of:
 - achievement badge
 - expedition slot later
 
-## 11.6 Equipment
+## 12.6 Equipment
 
 Equipment is primarily cosmetic and status-based.
 
@@ -827,7 +844,7 @@ Equipment can be unlocked by:
 
 Important: equipment should not create pressure to overtrain. It can provide cosmetic “power” for idle expeditions, but not unlock unsafe training advice.
 
-## 11.7 Achievements
+## 12.7 Achievements
 
 Achievements should be structured into categories.
 
@@ -854,7 +871,7 @@ Achievement examples:
 - Return to the Road — complete a workout after 7+ days away
 - Bonded Companion — reach pet bond level 5
 
-## 11.8 Quests
+## 12.8 Quests
 
 Quests are short-term tasks.
 
@@ -877,7 +894,7 @@ Quest types:
 - pet
 - expedition
 
-## 11.9 Campaigns
+## 12.9 Campaigns
 
 A campaign is a long-term structured journey.
 
@@ -908,9 +925,9 @@ Examples:
 
 ---
 
-## 12. Pet system
+## 13. Pet system
 
-## 12.1 Pet fantasy
+## 13.1 Pet fantasy
 
 The pet is the user’s companion. It evolves alongside the user and reacts to consistent care, activity, and recovery.
 
@@ -924,7 +941,7 @@ The pet should feel like:
 
 It should not be framed as a fragile creature that suffers when the user misses workouts.
 
-## 12.2 Pet stats
+## 13.2 Pet stats
 
 Suggested pet stats:
 
@@ -935,7 +952,7 @@ Suggested pet stats:
 - Curiosity
 - Expedition Power
 
-## 12.3 Pet care
+## 13.3 Pet care
 
 Pet care should be driven mostly by real-world actions.
 
@@ -957,7 +974,7 @@ Examples:
 - change habitat
 - equip pet accessory
 
-## 12.4 Pet evolution
+## 13.4 Pet evolution
 
 Pet evolution can be tied to:
 
@@ -977,7 +994,7 @@ Possible evolution stages:
 4. Guardian
 5. Mythic Companion
 
-## 12.5 Idle/AFK combat and expeditions
+## 13.5 Idle/AFK combat and expeditions
 
 This is a strong future differentiator.
 
@@ -1013,11 +1030,11 @@ Expedition rewards:
 
 ---
 
-## 13. Monetization design
+## 14. Monetization design
 
 The app should be designed as a free app with optional premium subscription.
 
-## 13.1 Free tier
+## 14.1 Free tier
 
 The free tier must be genuinely useful.
 
@@ -1032,7 +1049,7 @@ Suggested free features:
 - core achievements
 - local data export
 
-## 13.2 Premium tier
+## 14.2 Premium tier
 
 Premium should unlock depth and convenience, not basic dignity.
 
@@ -1051,7 +1068,7 @@ Potential premium features:
 - data import/export tools
 - wearable integrations later
 
-## 13.3 Entitlement architecture
+## 14.3 Entitlement architecture
 
 The codebase should include an entitlement layer from early development.
 
@@ -1072,7 +1089,7 @@ Real subscription implementation should come after the app is useful enough to r
 
 ---
 
-## 14. Data model overview
+## 15. Data model overview
 
 The app should use persistent local storage from the beginning. Prefer SQLite through Drift rather than raw JSON/localStorage because this is intended to become a real shipped app.
 
@@ -1108,7 +1125,7 @@ RewardEvent
 Entitlement
 ```
 
-## 14.1 Fitness events
+## 15.1 Fitness events
 
 The app should emit internal events after important actions.
 
@@ -1129,7 +1146,7 @@ RecoveryLogged
 
 The Quest Engine listens to these events and grants rewards.
 
-## 14.2 Reward events
+## 15.2 Reward events
 
 Reward events should be stored as history.
 
@@ -1150,7 +1167,7 @@ This allows the app to show a timeline of progress.
 
 ---
 
-## 15. Seed content: May–September 2026 campaign
+## 16. Seed content: May–September 2026 campaign
 
 The original handover should be preserved as seed data for the first real campaign.
 
@@ -1172,7 +1189,7 @@ Important note:
 
 ---
 
-## 16. Safety and health boundaries
+## 17. Safety and health boundaries
 
 Quest for Fitness is not a medical app and should avoid diagnosis or medical claims.
 
@@ -1195,7 +1212,7 @@ The app should not:
 
 ---
 
-## 17. MVP scope
+## 18. MVP scope
 
 The first shippable internal MVP should include:
 
@@ -1219,7 +1236,7 @@ Do not build subscriptions, cloud sync, or full idle combat in the first MVP.
 
 ---
 
-## 18. V1 commercial scope
+## 19. V1 commercial scope
 
 The first public App Store / Google Play version should include:
 
@@ -1242,7 +1259,7 @@ The first public App Store / Google Play version should include:
 
 ---
 
-## 19. Future vision
+## 20. Future vision
 
 Long-term, Quest for Fitness can become:
 

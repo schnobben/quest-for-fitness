@@ -4,7 +4,7 @@
 **Target platforms:** iOS and Android  
 **Recommended stack:** Flutter + Dart  
 **Product direction:** Commercial mobile app with free core features and optional premium subscription  
-**Seed campaign:** May–September 2026 personal training block
+**Seed campaign:** May–September 2026 personal training block, used as editable sample content rather than the app's full scope
 
 ---
 
@@ -51,7 +51,6 @@ Tasks:
 
 - Create `app_design.md`.
 - Create `development_roadmap.md`.
-- Preserve the original handover as seed campaign reference.
 - Correct all date references to May–September 2026.
 - Define the product as a commercial RPG fitness app, not a single-user tracker.
 - Define core terminology:
@@ -69,6 +68,7 @@ Tasks:
 Exit criteria:
 
 - Project has clear product docs.
+- `app_design.md` defines the shared product terminology for UI, data model, seed content, and roadmap planning.
 - The May–September 2026 personal training block is clearly documented as seed data, not the whole app.
 
 ### Sprint 0.2 — Flutter project setup
