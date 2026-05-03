@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -72,8 +74,11 @@ class _WorkoutExecutionScreenState
                       // Current exercise focus card
                       if (_exerciseStates!.isNotEmpty)
                         _ExerciseFocusCard(
-                          exerciseState: _exerciseStates![_currentExerciseIndex
-                              .clamp(0, _exerciseStates!.length - 1)],
+                          exerciseState:
+                              _exerciseStates![_currentExerciseIndex.clamp(
+                                0,
+                                _exerciseStates!.length - 1,
+                              )],
                           current: _currentExerciseIndex + 1,
                           total: _exerciseStates!.length,
                         ),
@@ -123,6 +128,7 @@ class _WorkoutExecutionScreenState
           child: Padding(
             padding: const EdgeInsets.fromLTRB(18, 8, 18, 16),
             child: GestureDetector(
+              key: const Key('complete-session-button'),
               onTap: _isSaving ? null : () => _completeSession(plan),
               child: Container(
                 height: 52,
@@ -150,7 +156,11 @@ class _WorkoutExecutionScreenState
                         ),
                       )
                     else ...[
-                      const Icon(Icons.check, color: AppColors.bgDeep, size: 18),
+                      const Icon(
+                        Icons.check,
+                        color: AppColors.bgDeep,
+                        size: 18,
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         'Complete Session',
@@ -235,8 +245,23 @@ class _SessionBar extends StatefulWidget {
 }
 
 class _SessionBarState extends State<_SessionBar> {
-  late final _ticker = Stream<int>.periodic(const Duration(seconds: 1), (i) => i)
-      .asBroadcastStream();
+  Timer? _ticker;
+
+  @override
+  void initState() {
+    super.initState();
+    _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _ticker?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -285,26 +310,21 @@ class _SessionBarState extends State<_SessionBar> {
               ],
             ),
           ),
-          StreamBuilder<int>(
-            stream: _ticker,
-            builder: (context, snapshot) {
-              final elapsed =
-                  DateTime.now().difference(widget.startedAt);
-              final m = elapsed.inMinutes.toString().padLeft(2, '0');
-              final s = (elapsed.inSeconds % 60).toString().padLeft(2, '0');
-              return QfPill(
-                tone: QfPillTone.ember,
-                icon: const Icon(Icons.timer_outlined, size: 11),
-                child: Text(
-                  '$m:$s',
-                  style: AppTheme.monoStyle(fontSize: 11),
-                ),
-              );
-            },
+          QfPill(
+            tone: QfPillTone.ember,
+            icon: const Icon(Icons.timer_outlined, size: 11),
+            child: Text(_elapsedLabel, style: AppTheme.monoStyle(fontSize: 11)),
           ),
         ],
       ),
     );
+  }
+
+  String get _elapsedLabel {
+    final elapsed = DateTime.now().difference(widget.startedAt);
+    final m = elapsed.inMinutes.toString().padLeft(2, '0');
+    final s = (elapsed.inSeconds % 60).toString().padLeft(2, '0');
+    return '$m:$s';
   }
 }
 
@@ -413,33 +433,49 @@ class _ExerciseLogCardState extends State<_ExerciseLogCard> {
             child: Row(
               children: const [
                 SizedBox(
-                    width: 32,
-                    child: Text('SET',
-                        style: TextStyle(
-                            fontSize: 10,
-                            color: AppColors.inkDim,
-                            letterSpacing: 0.1))),
+                  width: 32,
+                  child: Text(
+                    'SET',
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: AppColors.inkDim,
+                      letterSpacing: 0.1,
+                    ),
+                  ),
+                ),
                 SizedBox(width: 8),
                 Expanded(
-                    child: Text('WEIGHT',
-                        style: TextStyle(
-                            fontSize: 10,
-                            color: AppColors.inkDim,
-                            letterSpacing: 0.1))),
+                  child: Text(
+                    'WEIGHT',
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: AppColors.inkDim,
+                      letterSpacing: 0.1,
+                    ),
+                  ),
+                ),
                 SizedBox(width: 8),
                 Expanded(
-                    child: Text('REPS',
-                        style: TextStyle(
-                            fontSize: 10,
-                            color: AppColors.inkDim,
-                            letterSpacing: 0.1))),
+                  child: Text(
+                    'REPS',
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: AppColors.inkDim,
+                      letterSpacing: 0.1,
+                    ),
+                  ),
+                ),
                 SizedBox(width: 8),
                 Expanded(
-                    child: Text('RPE',
-                        style: TextStyle(
-                            fontSize: 10,
-                            color: AppColors.inkDim,
-                            letterSpacing: 0.1))),
+                  child: Text(
+                    'RPE',
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: AppColors.inkDim,
+                      letterSpacing: 0.1,
+                    ),
+                  ),
+                ),
                 SizedBox(width: 8),
                 SizedBox(width: 36),
               ],
@@ -518,8 +554,7 @@ class _SetRow extends StatelessWidget {
               hintText: '—',
               suffixText: 'kg',
               suffixStyle: TextStyle(fontSize: 10, color: AppColors.inkDim),
-              contentPadding:
-                  EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
             ),
           ),
         ),
@@ -536,8 +571,7 @@ class _SetRow extends StatelessWidget {
             ),
             decoration: const InputDecoration(
               hintText: '—',
-              contentPadding:
-                  EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
             ),
           ),
         ),
@@ -546,14 +580,10 @@ class _SetRow extends StatelessWidget {
           child: TextField(
             controller: setState.rpeController,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            style: AppTheme.monoStyle(
-              fontSize: 15,
-              color: AppColors.inkMute,
-            ),
+            style: AppTheme.monoStyle(fontSize: 15, color: AppColors.inkMute),
             decoration: const InputDecoration(
               hintText: '—',
-              contentPadding:
-                  EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
             ),
           ),
         ),

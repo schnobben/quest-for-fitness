@@ -14,6 +14,13 @@ GoRouter createAppRouter() {
   return GoRouter(
     initialLocation: TodayScreen.routePath,
     routes: [
+      GoRoute(
+        path: '/${WorkoutExecutionScreen.routePath}',
+        name: WorkoutExecutionScreen.routeName,
+        builder: (context, state) => WorkoutExecutionScreen(
+          scheduledWorkoutId: state.pathParameters['scheduledWorkoutId']!,
+        ),
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return AppShell(navigationShell: navigationShell);
@@ -23,16 +30,6 @@ GoRouter createAppRouter() {
             path: TodayScreen.routePath,
             name: TodayScreen.routeName,
             child: const TodayScreen(),
-            routes: [
-              GoRoute(
-                path: WorkoutExecutionScreen.routePath,
-                name: WorkoutExecutionScreen.routeName,
-                builder: (context, state) => WorkoutExecutionScreen(
-                  scheduledWorkoutId:
-                      state.pathParameters['scheduledWorkoutId']!,
-                ),
-              ),
-            ],
           ),
           _shellBranch(
             path: LogScreen.routePath,

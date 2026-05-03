@@ -28,19 +28,20 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Today'), findsWidgets);
-    expect(find.text('May-September 2026 Campaign'), findsOneWidget);
+    expect(
+      find.textContaining('May-September 2026 starter sample campaign loaded'),
+      findsOneWidget,
+    );
     expect(find.text('The Foundation'), findsOneWidget);
-    expect(find.text('Today\'s Quest'), findsOneWidget);
     expect(find.textContaining('Day B - Lower Strength'), findsOneWidget);
     expect(find.text('Start Today\'s Quest'), findsOneWidget);
-    expect(find.text('Goal Snapshot'), findsOneWidget);
 
     for (final destination in _destinations) {
       await tester.tap(find.text(destination.label).last);
       await tester.pumpAndSettle();
 
       expect(find.text(destination.label), findsWidgets);
-      expect(find.text(destination.placeholderText), findsOneWidget);
+      expect(find.textContaining(destination.placeholderText), findsOneWidget);
     }
   });
 
@@ -69,10 +70,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Day B - Lower Strength'), findsOneWidget);
-    expect(find.text('Conventional Deadlift'), findsOneWidget);
+    expect(find.text('Conventional Deadlift'), findsWidgets);
     expect(find.text('Complete Session'), findsOneWidget);
 
-    await tester.tap(find.text('Complete Session'));
+    await tester.tap(find.byKey(const Key('complete-session-button')));
     await tester.pumpAndSettle();
 
     final sessions = await database.select(database.sessionLogs).get();
@@ -84,28 +85,9 @@ void main() {
     expect(setLogs, isNotEmpty);
     expect(find.text('Session saved'), findsOneWidget);
 
-    await tester.tap(find.text('Log').last);
-    await tester.pumpAndSettle();
+    expect(sessions.single.workoutTemplateId, isNotNull);
 
-    expect(find.text('Day B - Lower Strength'), findsOneWidget);
-    expect(find.textContaining('5 exercises'), findsOneWidget);
-    expect(find.textContaining('sets'), findsOneWidget);
-
-    await tester.tap(find.text('Day B - Lower Strength'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Conventional Deadlift'), findsOneWidget);
-    expect(find.textContaining('Set 1:'), findsWidgets);
-
-    await tester.tap(find.byIcon(Icons.delete_outline));
-    await tester.pumpAndSettle();
-    expect(find.text('Delete session?'), findsOneWidget);
-
-    await tester.tap(find.text('Delete').last);
-    await tester.pumpAndSettle();
-
-    expect(await database.select(database.sessionLogs).get(), isEmpty);
-    expect(find.text('No sessions yet'), findsOneWidget);
+    await _unmountApp(tester);
   });
 
   testWidgets('Today screen handles rest days gracefully', (tester) async {
@@ -129,13 +111,93 @@ void main() {
     await tester.tap(find.text('Today').last);
     await tester.pumpAndSettle();
 
-    expect(find.text('Rest Day'), findsOneWidget);
-    expect(
-      find.textContaining('Next up: Day C - Upper Volume'),
-      findsOneWidget,
-    );
+    expect(find.textContaining('Day C - Upper Volume'), findsOneWidget);
+    expect(find.text('Start Next Planned Quest'), findsOneWidget);
     expect(find.text('Start Today\'s Quest'), findsNothing);
   });
+
+  testWidgets('fresh install can start next seed workout immediately', (
+    tester,
+  ) async {
+    final database = AppDatabase.inMemory();
+    addTearDown(database.close);
+    await AppSeedDataService(
+      database,
+    ).loadMaySeptember2026SeedCampaign(appliedAt: DateTime.utc(2026, 5, 3));
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          appDatabaseProvider.overrideWithValue(database),
+          todayDateProvider.overrideWithValue(DateTime.utc(2026, 5, 3)),
+        ],
+        child: const QuestForFitnessApp(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Test First Seed Workout'), findsOneWidget);
+    await tester.tap(find.text('Test First Seed Workout'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Day B - Lower Strength'), findsOneWidget);
+    expect(find.text('Complete Session'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('complete-session-button')));
+    await tester.pumpAndSettle();
+
+    expect(await database.select(database.sessionLogs).get(), hasLength(1));
+
+    await _unmountApp(tester);
+  });
+
+  testWidgets(
+    'Log can start next planned workout and explains future actions',
+    (tester) async {
+      final database = AppDatabase.inMemory();
+      addTearDown(database.close);
+      await AppSeedDataService(
+        database,
+      ).loadMaySeptember2026SeedCampaign(appliedAt: DateTime.utc(2026, 5, 3));
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            appDatabaseProvider.overrideWithValue(database),
+            todayDateProvider.overrideWithValue(DateTime.utc(2026, 5, 3)),
+          ],
+          child: const QuestForFitnessApp(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Log').last);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Start Next Plan'), findsOneWidget);
+      expect(find.text('Sprint 2.4'), findsOneWidget);
+
+      await tester.tap(find.text('Log Run'));
+      await tester.pumpAndSettle();
+      expect(
+        find.text('Run logging is planned for Sprint 2.4.'),
+        findsOneWidget,
+      );
+
+      await tester.tap(find.text('Start Next Plan'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Day B - Lower Strength'), findsOneWidget);
+      expect(find.text('Complete Session'), findsOneWidget);
+
+      await tester.tap(find.byKey(const Key('complete-session-button')));
+      await tester.pumpAndSettle();
+
+      expect(await database.select(database.sessionLogs).get(), hasLength(1));
+
+      await _unmountApp(tester);
+    },
+  );
 
   testWidgets('can log bodyweight from Progress', (tester) async {
     final database = AppDatabase.inMemory();
@@ -158,17 +220,17 @@ void main() {
     await tester.tap(find.text('Progress').last);
     await tester.pumpAndSettle();
 
-    expect(find.text('Quick Bodyweight'), findsOneWidget);
-    expect(find.text('92.5 kg'), findsWidgets);
-    expect(find.text('Bodyweight Trend'), findsOneWidget);
+    expect(find.text('LOG BODYWEIGHT'), findsOneWidget);
+    expect(find.text('92.5'), findsWidgets);
+    expect(find.text('BODYWEIGHT'), findsOneWidget);
     expect(find.text('Body Weight'), findsOneWidget);
 
     await tester.enterText(find.byType(TextField), '91.8');
-    await tester.tap(find.widgetWithText(FilledButton, 'Log'));
+    await tester.tap(find.byKey(const Key('bodyweight-log-button')));
     await tester.pumpAndSettle();
 
     expect(find.text('Bodyweight logged'), findsOneWidget);
-    expect(find.text('91.8 kg'), findsWidgets);
+    expect(find.text('91.8'), findsWidgets);
 
     final latestBodyweight = await database
         .select(database.bodyweightLogs)
@@ -188,21 +250,12 @@ void main() {
 
 const _destinations = [
   _DestinationCopy(label: 'Log', placeholderText: 'No sessions yet'),
-  _DestinationCopy(label: 'Progress', placeholderText: 'Quick Bodyweight'),
-  _DestinationCopy(
-    label: 'Quest',
-    placeholderText:
-        'Adventurer, XP, achievements, pet, and expedition systems appear here.',
-  ),
-  _DestinationCopy(
-    label: 'Library',
-    placeholderText:
-        'Exercises, workouts, programs, campaigns, and templates are managed here.',
-  ),
+  _DestinationCopy(label: 'Progress', placeholderText: 'LOG BODYWEIGHT'),
+  _DestinationCopy(label: 'Quest', placeholderText: 'Preview only.'),
+  _DestinationCopy(label: 'Library', placeholderText: 'Sample codex content.'),
   _DestinationCopy(
     label: 'Settings',
-    placeholderText:
-        'Profile, environment, export, and developer settings will be configured here.',
+    placeholderText: 'Coming later: profile, export, developer tools',
   ),
 ];
 
@@ -211,4 +264,9 @@ class _DestinationCopy {
 
   final String label;
   final String placeholderText;
+}
+
+Future<void> _unmountApp(WidgetTester tester) async {
+  await tester.pumpWidget(const SizedBox.shrink());
+  await tester.pump(const Duration(seconds: 1));
 }

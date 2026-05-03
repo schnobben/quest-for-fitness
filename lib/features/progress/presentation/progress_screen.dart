@@ -51,8 +51,10 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
           error: (e, _) => Center(
             child: Padding(
               padding: const EdgeInsets.all(AppSpacing.lg),
-              child: Text('Progress could not be loaded: $e',
-                  style: const TextStyle(color: AppColors.inkMute)),
+              child: Text(
+                'Progress could not be loaded: $e',
+                style: const TextStyle(color: AppColors.inkMute),
+              ),
             ),
           ),
         ),
@@ -63,9 +65,9 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
   Future<void> _saveBodyweight() async {
     final weight = double.tryParse(_weightController.text.trim());
     if (weight == null || weight <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Enter a valid bodyweight')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Enter a valid bodyweight')));
       return;
     }
 
@@ -80,9 +82,9 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
     _weightController.clear();
     ref.invalidate(progressDashboardProvider);
     setState(() => _isSaving = false);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Bodyweight logged')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Bodyweight logged')));
   }
 }
 
@@ -265,10 +267,7 @@ class _BodyweightHeroCard extends StatelessWidget {
                     ),
                     const Text(
                       'Sep 30',
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: AppColors.ember,
-                      ),
+                      style: TextStyle(fontSize: 10, color: AppColors.ember),
                     ),
                   ],
                 ),
@@ -416,6 +415,7 @@ class _QuickLogCard extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               GestureDetector(
+                key: const Key('bodyweight-log-button'),
                 onTap: isSaving ? null : onSave,
                 child: Container(
                   width: 80,
@@ -471,8 +471,8 @@ class _GoalCampaignCard extends StatelessWidget {
     final progress = current == null
         ? 0.0
         : goal.direction == 'lower'
-            ? (goal.targetValue / current).clamp(0.0, 1.0)
-            : (current / goal.targetValue).clamp(0.0, 1.0);
+        ? (goal.targetValue / current).clamp(0.0, 1.0)
+        : (current / goal.targetValue).clamp(0.0, 1.0);
 
     return QfCard(
       variant: QfCardVariant.raised,
@@ -549,12 +549,16 @@ class _WeeklyVolumeCard extends StatelessWidget {
                   Text(
                     '21,840 kg',
                     style: AppTheme.monoStyle(
-                        fontSize: 11, color: AppColors.forest),
+                      fontSize: 11,
+                      color: AppColors.forest,
+                    ),
                   ),
                   Text(
                     ' (+8%)',
                     style: AppTheme.monoStyle(
-                        fontSize: 11, color: AppColors.inkDim),
+                      fontSize: 11,
+                      color: AppColors.inkDim,
+                    ),
                   ),
                 ],
               ),
@@ -628,14 +632,17 @@ class _BwHistoryCard extends StatelessWidget {
                   Text(
                     _formatDate(entries[i].loggedAt),
                     style: const TextStyle(
-                        fontSize: 13, color: AppColors.inkMute),
+                      fontSize: 13,
+                      color: AppColors.inkMute,
+                    ),
                   ),
                   Text(
                     '${entries[i].weightKg.toStringAsFixed(1)} kg',
                     style: AppTheme.monoStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.ink),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.ink,
+                    ),
                   ),
                 ],
               ),
@@ -651,8 +658,18 @@ class _BwHistoryCard extends StatelessWidget {
   String _formatDate(DateTime dt) {
     final local = dt.toLocal();
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return '${months[local.month - 1]} ${local.day}, ${local.year}';
   }

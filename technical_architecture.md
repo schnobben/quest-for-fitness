@@ -26,9 +26,11 @@ Quest, pet, achievement, and reward systems react to fitness events.
 
 ## 2. Current architectural status
 
-The project is currently in product and architecture planning. The intended implementation is a Flutter mobile application with a modular feature structure, local-first storage, and later optional cloud sync, accounts, and subscriptions.
+Milestone 1 is implemented as a local-first Flutter workout tracker MVP. The app currently has Drift/SQLite persistence, seeded campaign loading, Today guidance, planned workout execution, session history, and bodyweight logging.
 
-The May–September 2026 personal training campaign is seed content. It must not be hardcoded as the only supported program structure.
+The next planned bridge sprint is Sprint 2.0, which focuses on fresh-install usability polish before the deeper Milestone 2 goals, analytics, exercise-history, cardio, and progression work begins.
+
+The May–September 2026 personal training campaign is seed content. It must not be hardcoded as the only supported program structure, and user-facing surfaces should label it as starter/sample content until campaign editing and duplication are built.
 
 ---
 

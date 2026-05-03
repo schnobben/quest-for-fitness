@@ -398,6 +398,41 @@ Completion notes:
 
 Make the app useful for understanding progress.
 
+Milestone 2 starts with a small polish bridge sprint before the deeper goals and analytics work. Sprint 2.0 exists because Milestone 1 is technically usable, but a fresh install can still feel confusing when the seed campaign has future-dated workouts or when future feature areas still look like dummy placeholders.
+
+---
+
+### Sprint 2.0 — Fresh-install usability polish
+
+**Status:** Completed May 3, 2026.
+
+Tasks:
+
+- Clearly label May–September 2026 content as sample/seed campaign content in user-facing surfaces.
+- Improve Today screen behavior before the first seed workout or on rest days so the user can still test the app immediately.
+- Add a start-next-planned-workout action when there is no workout scheduled for today.
+- Add a basic manual workout start path from Log or another appropriate fitness surface.
+- Make placeholder/future-feature screens feel intentional rather than like dummy data.
+- Add development/testing affordance for trying the seeded campaign without waiting for the exact calendar date.
+- Review fresh-install copy so the app explains what is real, what is sample content, and what is coming later.
+
+Exit criteria:
+
+- A fresh install no longer feels broken or filled with unexplained dummy data.
+- The user can start testing workout logging immediately, even before May 5, 2026 or on a rest day.
+- Seed/sample content is clearly presented as editable starter content, not as fake user history.
+- Future areas communicate their status without blocking the Milestone 1 testing loop.
+
+Completion notes:
+
+- Today now labels the May-September 2026 campaign as sample seed content and can start the next planned workout before the first seed date or on rest days.
+- Log now includes a start-next-plan path into workout execution, a real session history surface, bodyweight navigation, and clear coming-later messaging for manual sessions, runs, and recovery days.
+- Workout execution is reachable through a top-level route, so starts from Today and Log both land on the visible active session screen.
+- Quest, Library, and Settings now make preview/future content explicit instead of presenting it as unexplained dummy data.
+- Library phase labels were constrained to avoid overflow in the current UI.
+- Widget coverage now verifies fresh-install workout start, Log quick start/future-action copy, bodyweight logging, and the updated placeholder copy.
+- Verification passed: `flutter analyze`, `flutter test --reporter expanded`, and `flutter build apk --debug`.
+
 ---
 
 ### Sprint 2.1 — Goals dashboard v1

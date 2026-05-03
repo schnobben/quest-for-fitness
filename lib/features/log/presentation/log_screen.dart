@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_spacing.dart';
-import '../../../app/theme/app_theme.dart';
 import '../../../data/data_providers.dart';
+import '../../../data/local_database/local_database.dart';
 import '../../../data/repositories/repositories.dart';
 import '../../../shared/presentation/design_system/design_system.dart';
+import '../../workout_execution/presentation/workout_execution_screen.dart';
 import '../application/session_history_controller.dart';
 
 class LogScreen extends ConsumerWidget {
@@ -18,6 +20,7 @@ class LogScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final historyAsync = ref.watch(sessionHistoryProvider);
+    final nextWorkoutAsync = ref.watch(nextPlannedWorkoutProvider);
 
     return Scaffold(
       backgroundColor: AppColors.bg,
@@ -25,6 +28,9 @@ class LogScreen extends ConsumerWidget {
         child: historyAsync.when(
           data: (history) => _LogBody(
             history: history,
+            nextWorkout: nextWorkoutAsync.hasValue
+                ? nextWorkoutAsync.requireValue
+                : null,
             onDelete: (entry) => _deleteSession(context, ref, entry),
           ),
           loading: () => const Center(
@@ -33,8 +39,10 @@ class LogScreen extends ConsumerWidget {
           error: (e, _) => Center(
             child: Padding(
               padding: const EdgeInsets.all(AppSpacing.lg),
-              child: Text('Log could not be loaded: $e',
-                  style: const TextStyle(color: AppColors.inkMute)),
+              child: Text(
+                'Log could not be loaded: $e',
+                style: const TextStyle(color: AppColors.inkMute),
+              ),
             ),
           ),
         ),
@@ -74,18 +82,24 @@ class LogScreen extends ConsumerWidget {
     final repositories = AppRepositories(ref.read(appDatabaseProvider));
     await repositories.sessions.deleteSession(entry.session.id);
     ref.invalidate(sessionHistoryProvider);
+    ref.invalidate(nextPlannedWorkoutProvider);
 
     if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Session deleted')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Session deleted')));
   }
 }
 
 class _LogBody extends StatelessWidget {
-  const _LogBody({required this.history, required this.onDelete});
+  const _LogBody({
+    required this.history,
+    required this.nextWorkout,
+    required this.onDelete,
+  });
 
   final List<SessionHistoryEntry> history;
+  final ScheduledWorkout? nextWorkout;
   final void Function(SessionHistoryEntry) onDelete;
 
   @override
@@ -97,21 +111,18 @@ class _LogBody extends StatelessWidget {
           salutation: 'Log Entry',
           title: 'Record the journey.',
         ),
-
-        // Quick action grid
+        const Padding(
+          padding: EdgeInsets.fromLTRB(18, 0, 18, 12),
+          child: _SampleNotice(),
+        ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18),
-          child: _QuickActionGrid(),
+          child: _QuickActionGrid(nextWorkout: nextWorkout),
         ),
-
-        QfSectionHeader(
-          title: 'Recent Entries',
-          moreLabel: 'Filter',
-        ),
-
+        const QfSectionHeader(title: 'Recent Entries'),
         if (history.isEmpty)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(18, 0, 18, 24),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(18, 0, 18, 24),
             child: _EmptyHistory(),
           )
         else
@@ -135,48 +146,97 @@ class _LogBody extends StatelessWidget {
   }
 }
 
+class _SampleNotice extends StatelessWidget {
+  const _SampleNotice();
+
+  @override
+  Widget build(BuildContext context) {
+    return QfCard(
+      variant: QfCardVariant.raised,
+      padding: const EdgeInsets.all(12),
+      child: Row(
+        children: const [
+          Icon(Icons.science_outlined, size: 18, color: AppColors.rune),
+          SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              'Milestone 1 logging is live. Some quick actions are marked with their future sprint until those logs exist.',
+              style: TextStyle(fontSize: 12, color: AppColors.inkMute),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _QuickActionGrid extends StatelessWidget {
+  const _QuickActionGrid({required this.nextWorkout});
+
+  final ScheduledWorkout? nextWorkout;
+
   @override
   Widget build(BuildContext context) {
     final actions = [
       _QuickAction(
         icon: Icons.fitness_center,
-        title: 'Start Workout',
-        subtitle: 'From a plan',
+        title: nextWorkout == null ? 'No Plan Ready' : 'Start Next Plan',
+        subtitle: nextWorkout == null
+            ? 'Seed schedule empty'
+            : 'Test logging now',
         tone: _ActionTone.forest,
         wide: true,
+        onTap: nextWorkout == null
+            ? () => _showMessage(
+                context,
+                'No planned workout is available to start.',
+              )
+            : () => context.goNamed(
+                WorkoutExecutionScreen.routeName,
+                pathParameters: {'scheduledWorkoutId': nextWorkout!.id},
+              ),
       ),
       _QuickAction(
         icon: Icons.add,
         title: 'Empty Session',
-        subtitle: 'Build as you go',
+        subtitle: 'Builder later',
         tone: _ActionTone.ink,
         wide: false,
+        onTap: () => _showMessage(
+          context,
+          'Empty sessions arrive with the custom workout builder.',
+        ),
       ),
       _QuickAction(
         icon: Icons.directions_run,
         title: 'Log Run',
-        subtitle: 'Distance · pace',
+        subtitle: 'Sprint 2.4',
         tone: _ActionTone.sky,
         wide: false,
+        onTap: () =>
+            _showMessage(context, 'Run logging is planned for Sprint 2.4.'),
       ),
       _QuickAction(
         icon: Icons.monitor_weight_outlined,
         title: 'Bodyweight',
-        subtitle: 'Quick check-in',
+        subtitle: 'Live now',
         tone: _ActionTone.ember,
         wide: false,
+        onTap: () => context.go('/progress'),
       ),
       _QuickAction(
         icon: Icons.spa_outlined,
         title: 'Recovery Day',
-        subtitle: 'Rest at camp',
+        subtitle: 'Coming later',
         tone: _ActionTone.rune,
         wide: false,
+        onTap: () => _showMessage(
+          context,
+          'Recovery logging is planned for a later fitness logging sprint.',
+        ),
       ),
     ];
 
-    // Lay out: first item spans full width, rest in 2-column grid
     return Column(
       children: [
         _ActionCard(action: actions[0]),
@@ -210,6 +270,7 @@ class _QuickAction {
     required this.subtitle,
     required this.tone,
     required this.wide,
+    required this.onTap,
   });
 
   final IconData icon;
@@ -217,6 +278,7 @@ class _QuickAction {
   final String subtitle;
   final _ActionTone tone;
   final bool wide;
+  final VoidCallback onTap;
 }
 
 class _ActionCard extends StatelessWidget {
@@ -229,51 +291,36 @@ class _ActionCard extends StatelessWidget {
     final iconColor = _toneColor(action.tone);
     final iconBoxSize = action.wide ? 48.0 : 38.0;
 
-    return QfCard(
-      variant: QfCardVariant.raised,
-      padding: const EdgeInsets.all(14),
-      child: action.wide
-          ? Row(
-              children: [
-                _IconBox(size: iconBoxSize, icon: action.icon, color: iconColor),
-                const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      action.title,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                          color: AppColors.ink),
-                    ),
-                    Text(
-                      action.subtitle,
-                      style: const TextStyle(
-                          fontSize: 11, color: AppColors.inkDim),
-                    ),
-                  ],
-                ),
-              ],
-            )
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _IconBox(size: iconBoxSize, icon: action.icon, color: iconColor),
-                const SizedBox(height: 10),
-                Text(
-                  action.title,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                      color: AppColors.ink),
-                ),
-                Text(
-                  action.subtitle,
-                  style: const TextStyle(fontSize: 11, color: AppColors.inkDim),
-                ),
-              ],
-            ),
+    return GestureDetector(
+      onTap: action.onTap,
+      child: QfCard(
+        variant: QfCardVariant.raised,
+        padding: const EdgeInsets.all(14),
+        child: action.wide
+            ? Row(
+                children: [
+                  _IconBox(
+                    size: iconBoxSize,
+                    icon: action.icon,
+                    color: iconColor,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(child: _ActionCopy(action: action, large: true)),
+                ],
+              )
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _IconBox(
+                    size: iconBoxSize,
+                    icon: action.icon,
+                    color: iconColor,
+                  ),
+                  const SizedBox(height: 10),
+                  _ActionCopy(action: action),
+                ],
+              ),
+      ),
     );
   }
 
@@ -288,12 +335,40 @@ class _ActionCard extends StatelessWidget {
   }
 }
 
+class _ActionCopy extends StatelessWidget {
+  const _ActionCopy({required this.action, this.large = false});
+
+  final _QuickAction action;
+  final bool large;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          action.title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: large ? 16 : 14,
+            color: AppColors.ink,
+          ),
+        ),
+        Text(
+          action.subtitle,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(fontSize: 11, color: AppColors.inkDim),
+        ),
+      ],
+    );
+  }
+}
+
 class _IconBox extends StatelessWidget {
-  const _IconBox({
-    required this.size,
-    required this.icon,
-    required this.color,
-  });
+  const _IconBox({required this.size, required this.icon, required this.color});
 
   final double size;
   final IconData icon;
@@ -323,140 +398,83 @@ class _SessionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final date = entry.session.startedAt.toLocal();
-    final day = _shortWeekday(date.weekday).toUpperCase();
-    final dayNum = date.day;
-    final icon = _iconForWorkout(entry.workoutName);
-    final tone = _toneForWorkout(entry.workoutName);
-    final xp = '+${_calcXp(entry.setCount)} XP';
 
     return QfCard(
-      padding: const EdgeInsets.all(12),
-      child: Row(
+      padding: EdgeInsets.zero,
+      child: ExpansionTile(
+        tilePadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        title: Text(
+          entry.workoutName,
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 13,
+            color: AppColors.ink,
+          ),
+        ),
+        subtitle: Text(
+          '${_formatDate(date)} - ${entry.exercises.length} exercises - ${entry.setCount} sets',
+          style: const TextStyle(fontSize: 11, color: AppColors.inkDim),
+        ),
+        trailing: IconButton(
+          tooltip: 'Delete session',
+          icon: const Icon(Icons.delete_outline, color: AppColors.inkFaint),
+          onPressed: onDelete,
+        ),
         children: [
-          SizedBox(
-            width: 42,
-            child: Column(
-              children: [
-                Text(
-                  day,
-                  style: AppTheme.monoStyle(
-                      fontSize: 9, color: AppColors.inkDim),
+          for (final exercise in entry.exercises) ...[
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                exercise.exerciseName,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.ink,
                 ),
-                Text(
-                  '$dayNum',
-                  style: AppTheme.fantasyStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.inkMute),
-                ),
-              ],
+              ),
             ),
-          ),
-          Container(
-            width: 32,
-            height: 32,
-            decoration: BoxDecoration(
-              color: AppColors.surface2,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: AppColors.outlineSoft),
-            ),
-            child: Icon(icon, size: 16, color: tone),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  entry.workoutName,
+            const SizedBox(height: 4),
+            for (final set in exercise.sets)
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Set ${set.setNumber}: ${_formatSet(set)}',
                   style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13,
-                    color: AppColors.ink,
+                    fontSize: 12,
+                    color: AppColors.inkMute,
                   ),
                 ),
-                Text(
-                  '${entry.exercises.length} ex · ${entry.setCount} sets',
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: AppColors.inkDim,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Text(
-            xp,
-            style: AppTheme.monoStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: AppColors.ember,
-            ),
-          ),
-          const SizedBox(width: 4),
-          GestureDetector(
-            onTap: onDelete,
-            child: const Icon(
-              Icons.chevron_right,
-              size: 16,
-              color: AppColors.inkFaint,
-            ),
-          ),
+              ),
+            const SizedBox(height: 10),
+          ],
         ],
       ),
     );
   }
-
-  IconData _iconForWorkout(String name) {
-    final lower = name.toLowerCase();
-    if (lower.contains('run') || lower.contains('cardio')) {
-      return Icons.directions_run;
-    }
-    if (lower.contains('recovery') || lower.contains('mobility')) {
-      return Icons.spa_outlined;
-    }
-    if (lower.contains('weight') || lower.contains('body')) {
-      return Icons.monitor_weight_outlined;
-    }
-    return Icons.fitness_center;
-  }
-
-  Color _toneForWorkout(String name) {
-    final lower = name.toLowerCase();
-    if (lower.contains('run') || lower.contains('cardio')) return AppColors.sky;
-    if (lower.contains('recovery')) return AppColors.rune;
-    if (lower.contains('weight')) return AppColors.ember;
-    return AppColors.forest;
-  }
-
-  int _calcXp(int sets) => (sets * 6).clamp(10, 200);
-
-  String _shortWeekday(int weekday) {
-    return const ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'][weekday - 1];
-  }
 }
 
 class _EmptyHistory extends StatelessWidget {
+  const _EmptyHistory();
+
   @override
   Widget build(BuildContext context) {
     return QfCard(
       padding: const EdgeInsets.all(32),
       child: Column(
-        children: [
-          const Icon(Icons.history_toggle_off,
-              size: 48, color: AppColors.inkDim),
-          const SizedBox(height: 16),
+        children: const [
+          Icon(Icons.history_toggle_off, size: 48, color: AppColors.inkDim),
+          SizedBox(height: 16),
           Text(
             'No sessions yet',
-            style: AppTheme.fantasyStyle(
+            style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w600,
               color: AppColors.ink,
             ),
           ),
-          const SizedBox(height: 8),
-          const Text(
-            'Completed workouts will appear here.',
+          SizedBox(height: 8),
+          Text(
+            'Start the next planned seed workout above to test the full logging flow.',
             textAlign: TextAlign.center,
             style: TextStyle(color: AppColors.inkMute),
           ),
@@ -464,4 +482,26 @@ class _EmptyHistory extends StatelessWidget {
       ),
     );
   }
+}
+
+String _formatDate(DateTime date) {
+  return '${date.month}/${date.day}/${date.year}';
+}
+
+String _formatSet(SetLog set) {
+  final parts = <String>[];
+  if (set.reps != null) parts.add('${set.reps} reps');
+  if (set.weight != null) parts.add('${_formatNumber(set.weight!)} kg');
+  if (set.rpe != null) parts.add('RPE ${_formatNumber(set.rpe!)}');
+  parts.add(set.isComplete ? 'complete' : 'incomplete');
+
+  return parts.join(' - ');
+}
+
+String _formatNumber(double value) {
+  return value.toStringAsFixed(value.truncateToDouble() == value ? 0 : 1);
+}
+
+void _showMessage(BuildContext context, String message) {
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
 }

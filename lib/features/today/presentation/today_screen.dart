@@ -32,8 +32,10 @@ class TodayScreen extends ConsumerWidget {
           error: (e, _) => Center(
             child: Padding(
               padding: const EdgeInsets.all(AppSpacing.lg),
-              child: Text('Could not load today: $e',
-                  style: const TextStyle(color: AppColors.inkMute)),
+              child: Text(
+                'Could not load today: $e',
+                style: const TextStyle(color: AppColors.inkMute),
+              ),
             ),
           ),
         ),
@@ -51,9 +53,10 @@ class _TodayBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final today = dashboard.today;
     final dayName = _weekdayName(today.weekday).toUpperCase();
-    final monthDay =
-        '${_monthName(today.month).toUpperCase()} ${today.day}';
-    final phaseName = dashboard.currentPhase?.name ?? 'No Phase';
+    final monthDay = '${_monthName(today.month).toUpperCase()} ${today.day}';
+    final phaseName =
+        dashboard.currentPhase?.name ??
+        (dashboard.isBeforeCampaignStart ? 'Starts May 5' : 'No Phase');
 
     return ListView(
       padding: EdgeInsets.zero,
@@ -61,11 +64,13 @@ class _TodayBody extends StatelessWidget {
         QfScreenHeader(
           salutation: '$dayName · $monthDay',
           title: 'Good morning, Adventurer.',
-          trailing: QfPill(
-            tone: QfPillTone.rune,
-            child: Text(phaseName),
-          ),
+          trailing: QfPill(tone: QfPillTone.rune, child: Text(phaseName)),
         ),
+        if (dashboard.isSeedCampaign)
+          const Padding(
+            padding: EdgeInsets.fromLTRB(18, 0, 18, 12),
+            child: _SeedCampaignNotice(),
+          ),
 
         // Hero quest card
         Padding(
@@ -115,7 +120,7 @@ class _HeroQuestCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final template = dashboard.nextWorkoutTemplate;
-    final isTraining = dashboard.isTrainingDay;
+    final scheduledWorkout = dashboard.nextWorkout;
 
     return QfCard(
       variant: QfCardVariant.embossed,
@@ -190,10 +195,7 @@ class _HeroQuestCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                Text(
-                  '·',
-                  style: const TextStyle(color: AppColors.inkFaint),
-                ),
+                Text('·', style: const TextStyle(color: AppColors.inkFaint)),
                 const SizedBox(width: 8),
                 Text(
                   '+120 XP',
@@ -207,15 +209,13 @@ class _HeroQuestCard extends StatelessWidget {
             ),
           ],
           const SizedBox(height: 14),
-          if (isTraining && dashboard.todayWorkout != null)
+          if (dashboard.canStartWorkout && scheduledWorkout != null)
             _QfPrimaryButton(
-              label: "Start Today's Quest",
+              label: dashboard.startActionLabel,
               icon: Icons.play_arrow,
               onPressed: () => context.goNamed(
                 WorkoutExecutionScreen.routeName,
-                pathParameters: {
-                  'scheduledWorkoutId': dashboard.todayWorkout!.id,
-                },
+                pathParameters: {'scheduledWorkoutId': scheduledWorkout.id},
               ),
             )
           else
@@ -236,23 +236,56 @@ class _HeroQuestCard extends StatelessWidget {
                 ),
               ),
             ),
-          if (isTraining) ...[
+          if (dashboard.canStartWorkout) ...[
             const SizedBox(height: 8),
             Row(
               children: [
                 Expanded(
-                  child: _QfSecondaryButton(label: 'Preview', onPressed: () {}),
+                  child: _QfSecondaryButton(
+                    label: 'Sample campaign',
+                    onPressed: () => _showInfo(
+                      context,
+                      'This is starter content from the May-September 2026 seed campaign. Custom campaign editing comes later.',
+                    ),
+                  ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: _QfSecondaryButton(
-                    label: 'Swap session',
-                    onPressed: () {},
+                    label: 'Swap later',
+                    onPressed: () => _showInfo(
+                      context,
+                      'Session swapping is planned for the custom program builder work.',
+                    ),
                   ),
                 ),
               ],
             ),
           ],
+        ],
+      ),
+    );
+  }
+}
+
+class _SeedCampaignNotice extends StatelessWidget {
+  const _SeedCampaignNotice();
+
+  @override
+  Widget build(BuildContext context) {
+    return QfCard(
+      variant: QfCardVariant.raised,
+      padding: const EdgeInsets.all(12),
+      child: Row(
+        children: const [
+          Icon(Icons.science_outlined, size: 18, color: AppColors.rune),
+          SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              'May-September 2026 starter sample campaign loaded. Use the next planned quest to test workout logging immediately.',
+              style: TextStyle(fontSize: 12, color: AppColors.inkMute),
+            ),
+          ),
         ],
       ),
     );
@@ -302,12 +335,20 @@ class _AdventurerMiniCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('1,840 XP',
-                  style: AppTheme.monoStyle(
-                      fontSize: 11, color: AppColors.inkDim)),
-              Text('3,000',
-                  style:
-                      AppTheme.monoStyle(fontSize: 11, color: AppColors.inkDim)),
+              Text(
+                '1,840 XP',
+                style: AppTheme.monoStyle(
+                  fontSize: 11,
+                  color: AppColors.inkDim,
+                ),
+              ),
+              Text(
+                '3,000',
+                style: AppTheme.monoStyle(
+                  fontSize: 11,
+                  color: AppColors.inkDim,
+                ),
+              ),
             ],
           ),
         ],
@@ -420,9 +461,7 @@ class _WeekRingCard extends StatelessWidget {
                   dayNumber: weekStart.add(Duration(days: i)).day,
                   isToday: i == today.weekday - 1,
                   isScheduled: scheduledDays.contains(i + 1),
-                  isPast: weekStart
-                      .add(Duration(days: i))
-                      .isBefore(today),
+                  isPast: weekStart.add(Duration(days: i)).isBefore(today),
                   isRest: !scheduledDays.contains(i + 1),
                 ),
             ],
@@ -521,16 +560,16 @@ class _WeekDay extends StatelessWidget {
             child: isDone
                 ? Icon(Icons.check, size: 14, color: iconColor)
                 : isRest
-                    ? Icon(Icons.dark_mode_outlined, size: 13, color: iconColor)
-                    : Text(
-                        '$dayNumber',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: iconColor,
-                          fontFamily: 'monospace',
-                        ),
-                      ),
+                ? Icon(Icons.dark_mode_outlined, size: 13, color: iconColor)
+                : Text(
+                    '$dayNumber',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: iconColor,
+                      fontFamily: 'monospace',
+                    ),
+                  ),
           ),
         ),
       ],
@@ -576,8 +615,8 @@ class _GoalCard extends StatelessWidget {
     final progress = current == null
         ? 0.0
         : goal.direction == 'lower'
-            ? (goal.targetValue / current).clamp(0.0, 1.0)
-            : (current / goal.targetValue).clamp(0.0, 1.0);
+        ? (goal.targetValue / current).clamp(0.0, 1.0)
+        : (current / goal.targetValue).clamp(0.0, 1.0);
 
     final tone = _toneForGoal(goal);
     final icon = _iconForGoal(goal);
@@ -655,9 +694,7 @@ class _GoalCard extends StatelessWidget {
 
   String _fmt(double? v) {
     if (v == null) return '—';
-    return v == v.roundToDouble()
-        ? v.toInt().toString()
-        : v.toStringAsFixed(1);
+    return v == v.roundToDouble() ? v.toInt().toString() : v.toStringAsFixed(1);
   }
 }
 
@@ -771,11 +808,7 @@ class _AvatarRing extends StatelessWidget {
               shape: BoxShape.circle,
               border: Border.all(color: AppColors.bg, width: 2),
             ),
-            child: const Icon(
-              Icons.shield,
-              color: AppColors.forest,
-              size: 18,
-            ),
+            child: const Icon(Icons.shield, color: AppColors.forest, size: 18),
           ),
         ),
       ),
@@ -812,10 +845,7 @@ class _AvatarRingPainter extends CustomPainter {
 enum _ProgressTone { forest, ember, sky, gold }
 
 class _QfProgressBar extends StatelessWidget {
-  const _QfProgressBar({
-    required this.value,
-    this.tone = _ProgressTone.forest,
-  });
+  const _QfProgressBar({required this.value, this.tone = _ProgressTone.forest});
 
   final double value;
   final _ProgressTone tone;
@@ -848,25 +878,25 @@ class _QfProgressBar extends StatelessWidget {
   (Color, Color, Color) _colors() {
     return switch (tone) {
       _ProgressTone.forest => (
-          AppColors.surface3,
-          AppColors.forestDeep,
-          AppColors.forest,
-        ),
+        AppColors.surface3,
+        AppColors.forestDeep,
+        AppColors.forest,
+      ),
       _ProgressTone.ember => (
-          AppColors.surface3,
-          AppColors.emberDeep,
-          AppColors.ember,
-        ),
+        AppColors.surface3,
+        AppColors.emberDeep,
+        AppColors.ember,
+      ),
       _ProgressTone.sky => (
-          AppColors.surface3,
-          const Color(0xFF2C5282),
-          AppColors.sky,
-        ),
+        AppColors.surface3,
+        const Color(0xFF2C5282),
+        AppColors.sky,
+      ),
       _ProgressTone.gold => (
-          AppColors.surface3,
-          const Color(0xFFB7791F),
-          AppColors.gold,
-        ),
+        AppColors.surface3,
+        const Color(0xFFB7791F),
+        AppColors.gold,
+      ),
     };
   }
 }
@@ -900,4 +930,8 @@ String _monthName(int month) {
     'November',
     'December',
   ][month - 1];
+}
+
+void _showInfo(BuildContext context, String message) {
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
 }

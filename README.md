@@ -10,14 +10,14 @@ The product direction is documented in:
 
 The May–September 2026 personal training block is treated as seed/sample campaign content, not as the full app scope.
 
-## Current Foundation
+## Current Status
 
-- Flutter app scaffold with Android and iOS targets.
-- Riverpod app root.
-- go_router bottom navigation shell.
-- Dark visual theme and shared design-system components.
-- Placeholder screens for Today, Log, Progress, Quest, Library, and Settings.
-- Package structure prepared for feature modules, local data, repositories, seed data, and migrations.
+- Milestone 1 Fitness Core MVP is implemented.
+- Fresh installs load the May–September 2026 sample campaign.
+- Today shows campaign guidance and can launch planned workout execution when a workout is scheduled.
+- Planned workouts can be completed and reviewed in session history.
+- Bodyweight can be logged from Progress and updates the linked bodyweight goal.
+- Sprint 2.0 is planned as a polish bridge to make fresh installs clearer and easier to test immediately.
 
 ## Verification
 

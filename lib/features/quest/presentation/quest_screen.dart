@@ -27,14 +27,14 @@ class _QuestScreenState extends State<QuestScreen> {
                 onTabChanged: (i) => setState(() => _selectedTab = i),
               )
             : _selectedTab == 1
-                ? _PetView(
-                    selectedTab: _selectedTab,
-                    onTabChanged: (i) => setState(() => _selectedTab = i),
-                  )
-                : _ExpeditionsView(
-                    selectedTab: _selectedTab,
-                    onTabChanged: (i) => setState(() => _selectedTab = i),
-                  ),
+            ? _PetView(
+                selectedTab: _selectedTab,
+                onTabChanged: (i) => setState(() => _selectedTab = i),
+              )
+            : _ExpeditionsView(
+                selectedTab: _selectedTab,
+                onTabChanged: (i) => setState(() => _selectedTab = i),
+              ),
       ),
     );
   }
@@ -93,6 +93,36 @@ class _QuestTabBar extends StatelessWidget {
 
 // ─── Adventurer (Hero tab) ────────────────────────────────────────────────────
 
+class _PreviewNotice extends StatelessWidget {
+  const _PreviewNotice({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return QfCard(
+      variant: QfCardVariant.raised,
+      padding: const EdgeInsets.all(12),
+      child: Row(
+        children: [
+          const Icon(
+            Icons.visibility_outlined,
+            size: 18,
+            color: AppColors.rune,
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(fontSize: 12, color: AppColors.inkMute),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _AdventurerView extends StatelessWidget {
   const _AdventurerView({
     required this.selectedTab,
@@ -123,6 +153,13 @@ class _AdventurerView extends StatelessWidget {
             Icons.settings_outlined,
             size: 18,
             color: AppColors.inkMute,
+          ),
+        ),
+        const Padding(
+          padding: EdgeInsets.fromLTRB(18, 0, 18, 12),
+          child: _PreviewNotice(
+            text:
+                'Preview only. Adventurer, pet, achievements, and expeditions are visual mockups until Milestone 3+.',
           ),
         ),
         _QuestTabBar(
@@ -218,9 +255,7 @@ class _AdventurerView extends StatelessWidget {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             childAspectRatio: 2.5,
-            children: [
-              for (final a in _attrs) _AttrCard(attr: a),
-            ],
+            children: [for (final a in _attrs) _AttrCard(attr: a)],
           ),
         ),
 
@@ -234,19 +269,47 @@ class _AdventurerView extends StatelessWidget {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             children: [
-              _EquipSlot(icon: Icons.fitness_center, tone: AppColors.ember, tag: 'wpn', unlocked: true),
-              _EquipSlot(icon: Icons.shield, tone: AppColors.forest, tag: 'off', unlocked: true),
-              _EquipSlot(icon: Icons.workspace_premium, tone: AppColors.rune, tag: 'hlm', unlocked: true),
+              _EquipSlot(
+                icon: Icons.fitness_center,
+                tone: AppColors.ember,
+                tag: 'wpn',
+                unlocked: true,
+              ),
+              _EquipSlot(
+                icon: Icons.shield,
+                tone: AppColors.forest,
+                tag: 'off',
+                unlocked: true,
+              ),
+              _EquipSlot(
+                icon: Icons.workspace_premium,
+                tone: AppColors.rune,
+                tag: 'hlm',
+                unlocked: true,
+              ),
               _EquipSlot(icon: null, tag: 'cht', unlocked: false),
               _EquipSlot(icon: null, tag: 'glv', unlocked: false),
-              _EquipSlot(icon: Icons.terrain, tone: AppColors.forest, tag: 'bts', unlocked: true),
-              _EquipSlot(icon: Icons.local_fire_department, tone: AppColors.ember, tag: 'trk', unlocked: true),
+              _EquipSlot(
+                icon: Icons.terrain,
+                tone: AppColors.forest,
+                tag: 'bts',
+                unlocked: true,
+              ),
+              _EquipSlot(
+                icon: Icons.local_fire_department,
+                tone: AppColors.ember,
+                tag: 'trk',
+                unlocked: true,
+              ),
               _EquipSlot(icon: null, tag: 'clk', unlocked: false, locked: true),
             ],
           ),
         ),
 
-        QfSectionHeader(title: 'Recent Achievements', moreLabel: 'See all · 12'),
+        QfSectionHeader(
+          title: 'Recent Achievements',
+          moreLabel: 'See all · 12',
+        ),
         SizedBox(
           height: 130,
           child: ListView(
@@ -293,10 +356,7 @@ class _AdventurerView extends StatelessWidget {
 // ─── Pet view ─────────────────────────────────────────────────────────────────
 
 class _PetView extends StatelessWidget {
-  const _PetView({
-    required this.selectedTab,
-    required this.onTabChanged,
-  });
+  const _PetView({required this.selectedTab, required this.onTabChanged});
 
   final int selectedTab;
   final ValueChanged<int> onTabChanged;
@@ -344,9 +404,24 @@ class _PetView extends StatelessWidget {
             children: const [
               _PetStatCard(label: 'BOND', stars: 4),
               _PetStatMoodCard(label: 'MOOD', mood: 'Proud'),
-              _PetStatBarCard(label: 'ENERGY', value: 0.78, display: '78%', tone: AppColors.sky),
-              _PetStatBarCard(label: 'GROWTH', value: 0.4, display: 'Stage 3/5', tone: AppColors.gold),
-              _PetStatBarCard(label: 'CURIOSITY', value: 0.62, display: '62%', tone: AppColors.rune),
+              _PetStatBarCard(
+                label: 'ENERGY',
+                value: 0.78,
+                display: '78%',
+                tone: AppColors.sky,
+              ),
+              _PetStatBarCard(
+                label: 'GROWTH',
+                value: 0.4,
+                display: 'Stage 3/5',
+                tone: AppColors.gold,
+              ),
+              _PetStatBarCard(
+                label: 'CURIOSITY',
+                value: 0.62,
+                display: '62%',
+                tone: AppColors.rune,
+              ),
               _PetStatCard(label: 'EXPED PWR', text: '184'),
             ],
           ),
@@ -376,14 +451,21 @@ class _PetView extends StatelessWidget {
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(color: AppColors.outline),
                           ),
-                          child: Icon(action.$1, size: 16, color: AppColors.inkMute),
+                          child: Icon(
+                            action.$1,
+                            size: 16,
+                            color: AppColors.inkMute,
+                          ),
                         ),
                         const SizedBox(height: 6),
-                        Text(action.$2,
-                            style: const TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.ink)),
+                        Text(
+                          action.$2,
+                          style: const TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.ink,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -492,8 +574,11 @@ class _HabitatScene extends StatelessWidget {
                       colors: [Color(0xFF1A2A0A), Color(0xFF2A3A1A)],
                     ),
                   ),
-                  child: const Icon(Icons.pets,
-                      color: AppColors.ember, size: 32),
+                  child: const Icon(
+                    Icons.pets,
+                    color: AppColors.ember,
+                    size: 32,
+                  ),
                 ),
               ),
             ),
@@ -501,8 +586,11 @@ class _HabitatScene extends StatelessWidget {
             const Positioned(
               bottom: 65,
               left: 80,
-              child: Icon(Icons.local_fire_department,
-                  color: AppColors.ember, size: 28),
+              child: Icon(
+                Icons.local_fire_department,
+                color: AppColors.ember,
+                size: 28,
+              ),
             ),
             // Flavor text
             Positioned(
@@ -525,7 +613,13 @@ class _HabitatScene extends StatelessWidget {
 }
 
 class _EvolutionPath extends StatelessWidget {
-  static const _stages = ['Hatchling', 'Companion', 'Trailmate', 'Guardian', 'Mythic'];
+  static const _stages = [
+    'Hatchling',
+    'Companion',
+    'Trailmate',
+    'Guardian',
+    'Mythic',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -542,14 +636,14 @@ class _EvolutionPath extends StatelessWidget {
                   color: i == 2
                       ? AppColors.ember
                       : i < 2
-                          ? AppColors.surface3
-                          : AppColors.bgDeep,
+                      ? AppColors.surface3
+                      : AppColors.bgDeep,
                   border: Border.all(
                     color: i == 2
                         ? AppColors.ember
                         : i < 2
-                            ? AppColors.outline
-                            : AppColors.outlineSoft,
+                        ? AppColors.outline
+                        : AppColors.outlineSoft,
                   ),
                 ),
                 child: Center(
@@ -561,8 +655,8 @@ class _EvolutionPath extends StatelessWidget {
                       color: i == 2
                           ? AppColors.bgDeep
                           : i < 2
-                              ? AppColors.inkMute
-                              : AppColors.inkFaint,
+                          ? AppColors.inkMute
+                          : AppColors.inkFaint,
                       fontFamily: 'monospace',
                     ),
                   ),
@@ -576,8 +670,8 @@ class _EvolutionPath extends StatelessWidget {
                   color: i == 2
                       ? AppColors.ember
                       : i < 2
-                          ? AppColors.inkMute
-                          : AppColors.inkFaint,
+                      ? AppColors.inkMute
+                      : AppColors.inkFaint,
                   fontWeight: i == 2 ? FontWeight.w700 : FontWeight.w500,
                 ),
               ),
@@ -619,10 +713,7 @@ class _ExpeditionsView extends StatelessWidget {
           trailing: QfPill(
             tone: QfPillTone.gold,
             icon: const Icon(Icons.auto_awesome, size: 11),
-            child: Text(
-              '1,240',
-              style: AppTheme.monoStyle(fontSize: 11),
-            ),
+            child: Text('1,240', style: AppTheme.monoStyle(fontSize: 11)),
           ),
         ),
         _QuestTabBar(
@@ -848,7 +939,9 @@ class _ExpeditionCard extends StatelessWidget {
                   Text(
                     exped.desc,
                     style: const TextStyle(
-                        fontSize: 11, color: AppColors.inkDim),
+                      fontSize: 11,
+                      color: AppColors.inkDim,
+                    ),
                   ),
                   const SizedBox(height: 6),
                   Wrap(
@@ -857,8 +950,7 @@ class _ExpeditionCard extends StatelessWidget {
                       for (final r in exped.rewards)
                         QfPill(
                           tone: QfPillTone.muted,
-                          child: Text(r,
-                              style: const TextStyle(fontSize: 9)),
+                          child: Text(r, style: const TextStyle(fontSize: 9)),
                         ),
                     ],
                   ),
@@ -979,16 +1071,19 @@ class _EquipSlot extends StatelessWidget {
               child: unlocked && icon != null
                   ? Icon(icon, size: 20, color: tone)
                   : locked
-                      ? const Icon(Icons.lock_outline,
-                          size: 14, color: AppColors.inkFaint)
-                      : Text(
-                          tag.toUpperCase(),
-                          style: const TextStyle(
-                            fontSize: 9,
-                            color: AppColors.inkFaint,
-                            letterSpacing: 0.1 * 9,
-                          ),
-                        ),
+                  ? const Icon(
+                      Icons.lock_outline,
+                      size: 14,
+                      color: AppColors.inkFaint,
+                    )
+                  : Text(
+                      tag.toUpperCase(),
+                      style: const TextStyle(
+                        fontSize: 9,
+                        color: AppColors.inkFaint,
+                        letterSpacing: 0.1 * 9,
+                      ),
+                    ),
             ),
             if (unlocked)
               Positioned(
@@ -1050,13 +1145,15 @@ class _AchievementBadge extends StatelessWidget {
             name,
             textAlign: TextAlign.center,
             style: AppTheme.fantasyStyle(
-                fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.ink),
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: AppColors.ink,
+            ),
           ),
           Text(
             desc,
             textAlign: TextAlign.center,
-            style:
-                const TextStyle(fontSize: 10, color: AppColors.inkDim),
+            style: const TextStyle(fontSize: 10, color: AppColors.inkDim),
           ),
         ],
       ),
@@ -1086,10 +1183,7 @@ class _PortraitPlaceholder extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             'portrait',
-            style: AppTheme.monoStyle(
-              fontSize: 9,
-              color: AppColors.inkFaint,
-            ),
+            style: AppTheme.monoStyle(fontSize: 9, color: AppColors.inkFaint),
           ),
         ],
       ),
@@ -1229,11 +1323,7 @@ class _PetStatBarCard extends StatelessWidget {
 enum _BarTone { forest, ember, sky, gold }
 
 class _QfBar extends StatelessWidget {
-  const _QfBar({
-    required this.value,
-    this.tone = _BarTone.forest,
-    this.color,
-  });
+  const _QfBar({required this.value, this.tone = _BarTone.forest, this.color});
 
   final double value;
   final _BarTone tone;

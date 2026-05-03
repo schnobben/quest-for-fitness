@@ -47,6 +47,10 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 child: const Icon(Icons.add, color: AppColors.ink, size: 18),
               ),
             ),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(18, 0, 18, 12),
+              child: _LibraryNotice(),
+            ),
 
             // Segmented control
             SizedBox(
@@ -62,14 +66,14 @@ class _LibraryScreenState extends State<LibraryScreen> {
                     onTap: () => setState(() => _tab = i),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 6),
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: sel ? AppColors.surface3 : Colors.transparent,
                         borderRadius: BorderRadius.circular(999),
                         border: Border.all(
-                          color: sel
-                              ? AppColors.outline
-                              : Colors.transparent,
+                          color: sel ? AppColors.outline : Colors.transparent,
                         ),
                       ),
                       child: Text(
@@ -105,29 +109,33 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 childAspectRatio: 1.8,
                 children: const [
                   _SessionCard(
-                      day: 'A',
-                      name: 'Upper Strength',
-                      sched: 'MON',
-                      exercises: 6,
-                      tone: AppColors.ember),
+                    day: 'A',
+                    name: 'Upper Strength',
+                    sched: 'MON',
+                    exercises: 6,
+                    tone: AppColors.ember,
+                  ),
                   _SessionCard(
-                      day: 'B',
-                      name: 'Lower Strength',
-                      sched: 'TUE',
-                      exercises: 5,
-                      tone: AppColors.forest),
+                    day: 'B',
+                    name: 'Lower Strength',
+                    sched: 'TUE',
+                    exercises: 5,
+                    tone: AppColors.forest,
+                  ),
                   _SessionCard(
-                      day: 'C',
-                      name: 'Upper Volume',
-                      sched: 'THU',
-                      exercises: 7,
-                      tone: AppColors.sky),
+                    day: 'C',
+                    name: 'Upper Volume',
+                    sched: 'THU',
+                    exercises: 7,
+                    tone: AppColors.sky,
+                  ),
                   _SessionCard(
-                      day: 'D',
-                      name: 'Lower Volume',
-                      sched: 'SAT',
-                      exercises: 6,
-                      tone: AppColors.rune),
+                    day: 'D',
+                    name: 'Lower Volume',
+                    sched: 'SAT',
+                    exercises: 6,
+                    tone: AppColors.rune,
+                  ),
                 ],
               ),
             ),
@@ -154,30 +162,35 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
   static const _goals = [
     _GoalData(
-        icon: Icons.fitness_center,
-        name: 'Bench Press 1RM',
-        target: '140 kg',
-        tone: AppColors.ember),
+      icon: Icons.fitness_center,
+      name: 'Bench Press 1RM',
+      target: '140 kg',
+      tone: AppColors.ember,
+    ),
     _GoalData(
-        icon: Icons.directions_run,
-        name: '5 km Run Time',
-        target: '25:00',
-        tone: AppColors.sky),
+      icon: Icons.directions_run,
+      name: '5 km Run Time',
+      target: '25:00',
+      tone: AppColors.sky,
+    ),
     _GoalData(
-        icon: Icons.terrain,
-        name: 'Weighted Pull-up',
-        target: '+60 kg',
-        tone: AppColors.rune),
+      icon: Icons.terrain,
+      name: 'Weighted Pull-up',
+      target: '+60 kg',
+      tone: AppColors.rune,
+    ),
     _GoalData(
-        icon: Icons.air,
-        name: 'Bodyweight Pull-ups',
-        target: '25 reps',
-        tone: AppColors.forest),
+      icon: Icons.air,
+      name: 'Bodyweight Pull-ups',
+      target: '25 reps',
+      tone: AppColors.forest,
+    ),
     _GoalData(
-        icon: Icons.monitor_weight_outlined,
-        name: 'Bodyweight',
-        target: '83.0 kg',
-        tone: AppColors.gold),
+      icon: Icons.monitor_weight_outlined,
+      name: 'Bodyweight',
+      target: '83.0 kg',
+      tone: AppColors.gold,
+    ),
   ];
 }
 
@@ -217,10 +230,7 @@ class _ActiveCampaignCard extends StatelessWidget {
                     ),
                     const Text(
                       'May 5 – Sep 30, 2026 · 5 goals',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: AppColors.inkDim,
-                      ),
+                      style: TextStyle(fontSize: 11, color: AppColors.inkDim),
                     ),
                   ],
                 ),
@@ -254,21 +264,48 @@ class _ActiveCampaignCard extends StatelessWidget {
           Row(
             children: [
               _PhaseLabel(
-                  width: 0.36,
-                  name: '1 · The Foundation',
-                  sub: 'May 5 – Jun 29',
-                  active: true),
+                width: 0.36,
+                name: '1 · The Foundation',
+                sub: 'May 5 – Jun 29',
+                active: true,
+              ),
               _PhaseLabel(
-                  width: 0.36,
-                  name: '2 · The Quest',
-                  sub: 'Jul 1 – Aug 31',
-                  active: false),
+                width: 0.36,
+                name: '2 · The Quest',
+                sub: 'Jul 1 – Aug 31',
+                active: false,
+              ),
               _PhaseLabel(
-                  width: 0.28,
-                  name: '3 · The Peak',
-                  sub: 'Sep 1 – Sep 30',
-                  active: false),
+                width: 0.28,
+                name: '3 · The Peak',
+                sub: 'Sep 1 – Sep 30',
+                active: false,
+              ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _LibraryNotice extends StatelessWidget {
+  const _LibraryNotice();
+
+  @override
+  Widget build(BuildContext context) {
+    return QfCard(
+      variant: QfCardVariant.raised,
+      padding: const EdgeInsets.all(12),
+      child: Row(
+        children: const [
+          Icon(Icons.science_outlined, size: 18, color: AppColors.rune),
+          SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              'Sample codex content. Editing, duplicating, and custom builders start in Milestone 5.',
+              style: TextStyle(fontSize: 12, color: AppColors.inkMute),
+            ),
           ),
         ],
       ),
@@ -292,12 +329,14 @@ class _PhaseLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: MediaQuery.of(context).size.width * width - 12,
+      width: (MediaQuery.of(context).size.width - 84) * width,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             name,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: TextStyle(
               fontSize: 10,
               color: active ? AppColors.forest : AppColors.inkMute,
@@ -306,6 +345,8 @@ class _PhaseLabel extends StatelessWidget {
           ),
           Text(
             sub,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: const TextStyle(fontSize: 10, color: AppColors.inkDim),
           ),
         ],
@@ -379,10 +420,7 @@ class _SessionCard extends StatelessWidget {
           ),
           Text(
             '$exercises exercises',
-            style: AppTheme.monoStyle(
-              fontSize: 11,
-              color: AppColors.inkDim,
-            ),
+            style: AppTheme.monoStyle(fontSize: 11, color: AppColors.inkDim),
           ),
         ],
       ),
@@ -440,17 +478,12 @@ class _GoalRow extends StatelessWidget {
                 ),
                 Text(
                   'by Sep 30 · target ${goal.target}',
-                  style: const TextStyle(
-                      fontSize: 11, color: AppColors.inkDim),
+                  style: const TextStyle(fontSize: 11, color: AppColors.inkDim),
                 ),
               ],
             ),
           ),
-          const Icon(
-            Icons.chevron_right,
-            size: 14,
-            color: AppColors.inkFaint,
-          ),
+          const Icon(Icons.chevron_right, size: 14, color: AppColors.inkFaint),
         ],
       ),
     );

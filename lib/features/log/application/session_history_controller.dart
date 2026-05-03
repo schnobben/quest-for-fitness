@@ -8,3 +8,8 @@ final sessionHistoryProvider =
       final repositories = AppRepositories(ref.watch(appDatabaseProvider));
       return repositories.sessions.getSessionHistory();
     });
+
+final nextPlannedWorkoutProvider = FutureProvider.autoDispose((ref) {
+  final repositories = AppRepositories(ref.watch(appDatabaseProvider));
+  return repositories.campaigns.getNextPlannedWorkout(DateTime.now());
+});
