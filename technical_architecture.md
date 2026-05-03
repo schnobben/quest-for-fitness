@@ -28,7 +28,7 @@ Quest, pet, achievement, and reward systems react to fitness events.
 
 The project is currently in product and architecture planning. The intended implementation is a Flutter mobile application with a modular feature structure, local-first storage, and later optional cloud sync, accounts, and subscriptions.
 
-The May-September 2026 personal training campaign is seed content. It must not be hardcoded as the only supported program structure.
+The May–September 2026 personal training campaign is seed content. It must not be hardcoded as the only supported program structure.
 
 ---
 
@@ -422,7 +422,7 @@ State rules:
 
 ## 10. Seed data strategy
 
-The May-September 2026 campaign is the first seed campaign and sample program.
+The May–September 2026 campaign is the first seed campaign and sample program.
 
 Corrected campaign phases:
 
@@ -430,7 +430,7 @@ Corrected campaign phases:
 |---|---|---|---|
 | 1 | The Foundation | May 5-June 29, 2026 | Habit rebuild, easy running, baseline tracking |
 | 2 | The Quest | July 1-August 31, 2026 | Higher training frequency, structured progression |
-| 3 | The Peak | September 1-September 30, 2026 | Goal testing, peak focus, campaign completion |
+| 3 | The Peak | September 1–September 30, 2026 | Goal testing, peak focus, campaign completion |
 
 Seed data rules:
 
@@ -569,7 +569,7 @@ Track major structural decisions here as the project evolves.
 | 2026-05-03 | Use local-first persistence through Drift/SQLite. | Training logs must be reliable, structured, and available offline. |
 | 2026-05-03 | Separate Fitness Engine from Quest Engine. | Fitness logging must remain useful and maintainable without RPG coupling. |
 | 2026-05-03 | Use internal fitness and reward events between systems. | RPG, pet, and achievement systems should react to completed real-world actions. |
-| 2026-05-03 | Treat the May-September 2026 campaign as seed data. | The product must support future custom campaigns and programs. |
+| 2026-05-03 | Treat the May–September 2026 campaign as seed data. | The product must support future custom campaigns and programs. |
 | 2026-05-03 | Add entitlement architecture before real billing. | Premium features should be gated without coupling app logic to a billing provider. |
 
 When an architecture decision changes, update the relevant section and add a row to this log.

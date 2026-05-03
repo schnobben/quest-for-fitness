@@ -26,7 +26,7 @@ The roadmap is split into milestones. Each milestone contains sprints and tasks.
 
 | Milestone | Name | Purpose |
 |---|---|---|
-| 0 | Product & Project Foundation | Set up docs, Flutter app, architecture, design direction |
+| 0 | Product & Project Foundation | Completed May 3, 2026 |
 | 1 | Fitness Core MVP | Build the workout/session logging app |
 | 2 | Goals, Analytics & Progression | Add useful progress dashboards and training insights |
 | 3 | Quest Engine V1 | Add Adventurer, XP, levels, achievements, and basic rewards |
@@ -41,11 +41,24 @@ The roadmap is split into milestones. Each milestone contains sprints and tasks.
 
 ## 3. Milestone 0 — Product & Project Foundation
 
+**Status:** Completed May 3, 2026.
+
 ### Goal
 
 Create the technical and product foundation for a real Flutter mobile app.
 
+Milestone completion notes:
+
+- Product, roadmap, and technical architecture documentation are in place and frame the May–September 2026 campaign as seed content.
+- Flutter project exists with Android and iOS targets configured under project-specific identifiers.
+- App shell, routing, environment config, linting, package structure, dark theme, and design-system foundation are implemented.
+- Bottom navigation and placeholder/design-system screens are present for Today, Log, Progress, Quest, Library, and Settings.
+- Current verification passes: `flutter analyze`, `flutter test`, and `flutter build apk --debug`.
+- iOS simulator execution remains unverified from this Windows development host.
+
 ### Sprint 0.1 — Documentation foundation
+
+**Status:** Completed May 3, 2026.
 
 Tasks:
 
@@ -72,6 +85,8 @@ Exit criteria:
 - The May–September 2026 personal training block is clearly documented as seed data, not the whole app.
 
 ### Sprint 0.2 — Flutter project setup
+
+**Status:** Completed May 3, 2026.
 
 Tasks:
 
@@ -106,7 +121,17 @@ Exit criteria:
 - Placeholder screens exist.
 - Project structure is ready for feature modules.
 
+Completion notes:
+
+- Flutter app scaffold created with Android and iOS targets.
+- Riverpod, go_router, Drift/SQLite, Freezed, json_serializable, and fl_chart dependencies added.
+- App shell, routing skeleton, theme, environment config, and Today/Log/Progress/Quest/Library/Settings placeholders added.
+- `flutter analyze`, `flutter test`, and `flutter build apk --debug` pass.
+- iOS simulator launch was not verified because this development host is Windows.
+
 ### Sprint 0.3 — Design system foundation
+
+**Status:** Completed May 3, 2026.
 
 Tasks:
 
@@ -134,6 +159,14 @@ Exit criteria:
 - App has a coherent visual base.
 - Fitness UI and RPG UI can coexist without clashing.
 
+Completion notes:
+
+- Typography scale, dark theme, accent colors, card styling, and large tap target defaults are defined in the app theme.
+- Shared RPG components added: quest card, reward card, Adventurer stat card, equipment slot, pet status card, and achievement badge.
+- Shared fitness components added: metric card, progress bar, set logging row, exercise card, and chart card.
+- Today screen now previews the design system with both RPG and fitness components.
+- `flutter analyze`, `flutter test`, and `flutter build apk --debug` pass.
+
 ---
 
 ## 4. Milestone 1 — Fitness Core MVP
@@ -147,6 +180,8 @@ This milestone should make the app valuable even before the RPG features exist.
 ---
 
 ### Sprint 1.1 — Local data foundation
+
+**Status:** Completed May 3, 2026.
 
 Tasks:
 
@@ -172,9 +207,21 @@ Exit criteria:
 - Seed data can be loaded on fresh install.
 - Database can support the May–September 2026 seed campaign.
 
+Completion notes:
+
+- Drift/SQLite `AppDatabase` added with schema version 1 and foreign key enforcement.
+- Initial schema covers exercises, workout templates, workout-template exercises, program templates, campaigns, campaign phases, scheduled workouts, session logs, exercise logs, set logs, bodyweight logs, goals, and seed-run tracking.
+- Repository layer added for exercises, workouts, sessions, bodyweight logs, and goals.
+- Seed data mechanism added through idempotent seed-run tracking; actual May–September 2026 seed content is Sprint 1.2 scope.
+- Migration structure and dev reset tool added.
+- Persistence/reload, schema creation, seed idempotency, and reset behavior are covered by database tests.
+- `flutter analyze`, `flutter test --reporter expanded`, and `flutter build apk --debug` pass.
+
 ---
 
 ### Sprint 1.2 — Seed campaign import
+
+**Status:** Completed May 3, 2026.
 
 Tasks:
 
@@ -198,9 +245,23 @@ Exit criteria:
 - Fresh install includes a working sample campaign.
 - Today screen can read from seeded campaign data.
 
+Completion notes:
+
+- Added idempotent May–September 2026 seed campaign loader that runs at app startup on fresh install.
+- Added campaign phases with corrected 2026 dates: The Foundation, The Quest, and The Peak.
+- Added Phase 1 workout templates: Day A - Upper Strength, Day B - Lower Strength, Day C - Upper Volume, and Day D - Lower Volume.
+- Added Phase 1 seed exercises, workout-template exercise targets, and scheduled Phase 1 workouts.
+- Added five starter goals and one initial bodyweight seed/example entry.
+- Seed rows are marked as seed content/example data so they can be made editable or duplicable in later builder work.
+- Today screen now reads active campaign and next scheduled workout data through the local database provider.
+- Seed details were reconciled against `seeding.md`, including original Phase 1 exercises, starting weights, RPE targets, goals, and starting bodyweight.
+- `flutter analyze`, `flutter test --reporter expanded`, and `flutter build apk --debug` pass.
+
 ---
 
 ### Sprint 1.3 — Today screen v1
+
+**Status:** Completed May 3, 2026.
 
 Tasks:
 
@@ -218,9 +279,21 @@ Exit criteria:
 - User can open the app and know what to do next.
 - Today screen works whether today is a training day or rest day.
 
+Completion notes:
+
+- Today dashboard provider determines active campaign, current phase, today’s scheduled workout, next planned workout, weekly plan, and active goals from the local database.
+- Today screen now shows the current campaign/phase, recommended training action, weekly plan summary, and basic goal snapshot.
+- Added `Start Today’s Quest` action on training days only.
+- Rest days show the next planned workout without presenting a start-workout action.
+- Calendar-date matching was added for campaign phases and scheduled workouts to avoid timezone drift for date-only training data.
+- Widget tests cover both a training day and a rest day.
+- `flutter analyze`, `flutter test --reporter expanded`, and `flutter build apk --debug` pass.
+
 ---
 
 ### Sprint 1.4 — Workout execution v1
+
+**Status:** Completed May 3, 2026.
 
 Tasks:
 
@@ -244,9 +317,22 @@ Exit criteria:
 - Session persists after app restart.
 - Logging is fast enough for gym use.
 
+Completion notes:
+
+- Added a planned-workout execution route launched from `Start Today’s Quest`.
+- Workout execution shows exercises in template order with target sets, reps, weight, RPE, and notes.
+- Set rows pre-fill target reps, weights, and RPE values while allowing edits before saving.
+- Users can mark sets complete, edit reps/weight/RPE/notes, add exercise notes, and add session notes.
+- Completing a workout saves session, exercise, and set logs and marks the scheduled workout as completed.
+- The complete-session action is pinned to the bottom of the workout screen for faster gym use.
+- Repository and widget tests cover planned workout completion and persisted log data.
+- `flutter analyze`, `flutter test --reporter expanded`, and `flutter build apk --debug` pass.
+
 ---
 
 ### Sprint 1.5 — Session history v1
+
+**Status:** Completed May 3, 2026.
 
 Tasks:
 
@@ -263,9 +349,22 @@ Exit criteria:
 - User can review completed workouts.
 - User can verify all logged set data.
 
+Completion notes:
+
+- Replaced the Log placeholder with a session history screen backed by local session data.
+- Session history is shown in reverse chronological order with workout name, date/time, duration, exercise count, and set count.
+- Session rows expand inline to show exercises, logged sets, reps, weight, RPE, completion state, and notes.
+- Added repository read models for loading session logs with workout templates, exercise names, exercise logs, and set logs.
+- Added delete support for test sessions; deletion removes session, exercise, and set logs and returns linked scheduled workouts to planned status.
+- Scoped router ownership to each app instance so fresh launches and widget tests do not leak tab state.
+- Repository and widget tests cover session detail loading, review from the Log tab, and session deletion.
+- `flutter analyze`, `flutter test --reporter expanded`, and `flutter build apk --debug` pass.
+
 ---
 
 ### Sprint 1.6 — Bodyweight log v1
+
+**Status:** Completed May 3, 2026.
 
 Tasks:
 
@@ -280,6 +379,16 @@ Exit criteria:
 
 - User can log bodyweight in under 10 seconds.
 - Goal dashboard reflects latest bodyweight.
+
+Completion notes:
+
+- Replaced the Progress placeholder with a bodyweight-focused progress screen.
+- Added quick bodyweight entry with a numeric kg field and one-tap log action.
+- Progress now shows latest bodyweight, bodyweight goal progress, a trend chart, and recent bodyweight history.
+- Added repository support for logging bodyweight and updating goals linked to the `bodyweight` metric in one transaction.
+- New quick logs are treated as the latest bodyweight entry even when seed content contains future-dated starter data.
+- Repository and widget tests cover bodyweight logging, linked goal updates, and the Progress tab logging flow.
+- `flutter analyze`, `flutter test --reporter expanded`, and `flutter build apk --debug` pass.
 
 ---
 

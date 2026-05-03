@@ -1,0 +1,24 @@
+import '../../local_database/local_database.dart';
+import 'bodyweight_repository.dart';
+import 'campaign_repository.dart';
+import 'exercise_repository.dart';
+import 'goal_repository.dart';
+import 'session_repository.dart';
+import 'workout_repository.dart';
+
+class AppRepositories {
+  AppRepositories(AppDatabase database)
+    : exercises = ExerciseRepository(database),
+      campaigns = CampaignRepository(database),
+      workouts = WorkoutRepository(database),
+      sessions = SessionRepository(database),
+      bodyweight = BodyweightRepository(database),
+      goals = GoalRepository(database);
+
+  final ExerciseRepository exercises;
+  final CampaignRepository campaigns;
+  final WorkoutRepository workouts;
+  final SessionRepository sessions;
+  final BodyweightRepository bodyweight;
+  final GoalRepository goals;
+}
