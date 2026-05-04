@@ -87,6 +87,10 @@ class SessionRepository {
       )..where((table) => table.sessionLogId.equals(sessionId))).get();
 
       for (final exercise in exercises) {
+        await (_database.delete(_database.workingWeights)
+              ..where((table) => table.exerciseId.equals(exercise.exerciseId))
+              ..where((table) => table.isManualOverride.equals(false)))
+            .go();
         await (_database.delete(
           _database.setLogs,
         )..where((table) => table.exerciseLogId.equals(exercise.id))).go();
@@ -171,6 +175,13 @@ class SessionRepository {
                 ),
               );
         }
+
+        await _updateWorkingWeightFromExercise(
+          exerciseId: exercise.exerciseId,
+          exerciseLogId: exerciseLogId,
+          sets: exercise.sets,
+          completedAt: completedAt,
+        );
       }
 
       await (_database.update(
@@ -184,6 +195,66 @@ class SessionRepository {
     });
 
     return sessionId;
+  }
+
+  Future<void> _updateWorkingWeightFromExercise({
+    required String exerciseId,
+    required String exerciseLogId,
+    required List<CompletedSetInput> sets,
+    required DateTime completedAt,
+  }) async {
+    CompletedSetInput? bestSet;
+    for (final set in sets.where((set) => set.isComplete)) {
+      if (set.weight == null || set.weight! <= 0) continue;
+      if (bestSet == null || _setScore(set) > _setScore(bestSet)) {
+        bestSet = set;
+      }
+    }
+    if (bestSet == null) return;
+
+    final existing = await (_database.select(
+      _database.workingWeights,
+    )..where((table) => table.exerciseId.equals(exerciseId))).getSingleOrNull();
+    if (existing?.isManualOverride ?? false) return;
+
+    final estimatedOneRepMax = _estimatedOneRepMax(
+      bestSet.weight,
+      bestSet.reps,
+    );
+    final existingScore =
+        existing?.estimatedOneRepMax ??
+        existing?.weight ??
+        double.negativeInfinity;
+    if (existing != null && _setScore(bestSet) < existingScore) return;
+
+    final exercise = await (_database.select(
+      _database.exercises,
+    )..where((table) => table.id.equals(exerciseId))).getSingleOrNull();
+
+    await _database
+        .into(_database.workingWeights)
+        .insertOnConflictUpdate(
+          WorkingWeightsCompanion.insert(
+            exerciseId: exerciseId,
+            weight: bestSet.weight!,
+            unit: Value(exercise?.defaultUnit ?? 'kg'),
+            estimatedOneRepMax: Value(estimatedOneRepMax),
+            sourceSetLogId: Value('$exerciseLogId-set-${bestSet.setNumber}'),
+            isManualOverride: const Value(false),
+            updatedAt: completedAt,
+          ),
+        );
+  }
+
+  double _setScore(CompletedSetInput set) {
+    return _estimatedOneRepMax(set.weight, set.reps) ?? set.weight ?? 0;
+  }
+
+  double? _estimatedOneRepMax(double? weight, int? reps) {
+    if (weight == null || reps == null || weight <= 0 || reps <= 0) {
+      return null;
+    }
+    return weight * (1 + reps / 30);
   }
 }
 

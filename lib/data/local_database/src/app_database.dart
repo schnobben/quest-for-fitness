@@ -19,6 +19,7 @@ part 'app_database.g.dart';
     SessionLogs,
     ExerciseLogs,
     SetLogs,
+    WorkingWeights,
     BodyweightLogs,
     Goals,
     SeedRuns,
@@ -34,13 +35,17 @@ class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration {
     return MigrationStrategy(
       onCreate: (migrator) => migrator.createAll(),
-      onUpgrade: (migrator, from, to) async {},
+      onUpgrade: (migrator, from, to) async {
+        if (from < 2) {
+          await migrator.createTable(workingWeights);
+        }
+      },
       beforeOpen: (details) async {
         await customStatement('PRAGMA foreign_keys = ON');
       },
@@ -217,6 +222,20 @@ class SetLogs extends Table {
 
   @override
   Set<Column<Object>> get primaryKey => {id};
+}
+
+class WorkingWeights extends Table {
+  TextColumn get exerciseId => text().references(Exercises, #id)();
+  RealColumn get weight => real()();
+  TextColumn get unit => text().withDefault(const Constant('kg'))();
+  RealColumn get estimatedOneRepMax => real().nullable()();
+  TextColumn get sourceSetLogId => text().nullable().references(SetLogs, #id)();
+  BoolColumn get isManualOverride =>
+      boolean().withDefault(const Constant(false))();
+  DateTimeColumn get updatedAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {exerciseId};
 }
 
 class BodyweightLogs extends Table {

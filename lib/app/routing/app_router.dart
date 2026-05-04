@@ -40,6 +40,15 @@ GoRouter createAppRouter() {
             path: ProgressScreen.routePath,
             name: ProgressScreen.routeName,
             child: const ProgressScreen(),
+            routes: [
+              GoRoute(
+                path: ExerciseDetailScreen.routePath,
+                name: ExerciseDetailScreen.routeName,
+                builder: (context, state) => ExerciseDetailScreen(
+                  exerciseId: state.pathParameters['exerciseId']!,
+                ),
+              ),
+            ],
           ),
           _shellBranch(
             path: QuestScreen.routePath,

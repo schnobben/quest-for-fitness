@@ -39,6 +39,7 @@ void main() {
         'seed_runs',
         'session_logs',
         'set_logs',
+        'working_weights',
         'workout_template_exercises',
         'workout_templates',
       }),
@@ -208,6 +209,9 @@ void main() {
       final sessions = await repositories.sessions.getRecentSessions();
       final exerciseLogs = await database.select(database.exerciseLogs).get();
       final setLogs = await database.select(database.setLogs).get();
+      final workingWeights = await database
+          .select(database.workingWeights)
+          .get();
       final updatedScheduledWorkout = await (database.select(
         database.scheduledWorkouts,
       )..where((table) => table.id.equals(scheduledWorkout.id))).getSingle();
@@ -217,6 +221,17 @@ void main() {
       expect(exerciseLogs, hasLength(targets.length));
       expect(setLogs, isNotEmpty);
       expect(setLogs.every((set) => set.isComplete), isTrue);
+      expect(workingWeights, isNotEmpty);
+      expect(
+        workingWeights.any(
+          (row) =>
+              row.exerciseId == 'conventional-deadlift' &&
+              row.weight == 160 &&
+              row.estimatedOneRepMax != null &&
+              !row.isManualOverride,
+        ),
+        isTrue,
+      );
       expect(updatedScheduledWorkout.status, 'completed');
     },
   );
@@ -311,5 +326,48 @@ void main() {
     expect(latestBodyweight?.weightKg, 91.8);
     expect(latestBodyweight?.isSeedExample, isFalse);
     expect(bodyweightGoal.currentValue, 91.8);
+  });
+
+  test('goal current value can be updated manually', () async {
+    final database = AppDatabase.inMemory();
+    addTearDown(database.close);
+    await AppSeedDataService(
+      database,
+    ).loadMaySeptember2026SeedCampaign(appliedAt: DateTime.utc(2026, 5, 3));
+    final repositories = AppRepositories(database);
+
+    await repositories.goals.updateCurrentValue(
+      goalId: 'goal-weighted-pullup-60kg',
+      currentValue: 35,
+    );
+
+    final goals = await repositories.goals.getActiveGoals();
+    final weightedPullUp = goals.singleWhere(
+      (goal) => goal.id == 'goal-weighted-pullup-60kg',
+    );
+
+    expect(weightedPullUp.currentValue, 35);
+  });
+
+  test('working weights can be manually corrected', () async {
+    final database = AppDatabase.inMemory();
+    addTearDown(database.close);
+    await AppSeedDataService(
+      database,
+    ).loadMaySeptember2026SeedCampaign(appliedAt: DateTime.utc(2026, 5, 3));
+    final repositories = AppRepositories(database);
+
+    await repositories.exercises.setManualWorkingWeight(
+      exerciseId: 'barbell-bench-press',
+      weight: 105,
+    );
+
+    final summaries = await repositories.exercises.getWorkingWeightSummaries();
+    final bench = summaries.singleWhere(
+      (summary) => summary.exercise.id == 'barbell-bench-press',
+    );
+
+    expect(bench.workingWeight?.weight, 105);
+    expect(bench.workingWeight?.isManualOverride, isTrue);
   });
 }

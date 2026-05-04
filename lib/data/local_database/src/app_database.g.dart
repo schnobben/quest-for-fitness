@@ -5833,6 +5833,502 @@ class SetLogsCompanion extends UpdateCompanion<SetLog> {
   }
 }
 
+class $WorkingWeightsTable extends WorkingWeights
+    with TableInfo<$WorkingWeightsTable, WorkingWeight> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $WorkingWeightsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _exerciseIdMeta = const VerificationMeta(
+    'exerciseId',
+  );
+  @override
+  late final GeneratedColumn<String> exerciseId = GeneratedColumn<String>(
+    'exercise_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES exercises (id)',
+    ),
+  );
+  static const VerificationMeta _weightMeta = const VerificationMeta('weight');
+  @override
+  late final GeneratedColumn<double> weight = GeneratedColumn<double>(
+    'weight',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _unitMeta = const VerificationMeta('unit');
+  @override
+  late final GeneratedColumn<String> unit = GeneratedColumn<String>(
+    'unit',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('kg'),
+  );
+  static const VerificationMeta _estimatedOneRepMaxMeta =
+      const VerificationMeta('estimatedOneRepMax');
+  @override
+  late final GeneratedColumn<double> estimatedOneRepMax =
+      GeneratedColumn<double>(
+        'estimated_one_rep_max',
+        aliasedName,
+        true,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _sourceSetLogIdMeta = const VerificationMeta(
+    'sourceSetLogId',
+  );
+  @override
+  late final GeneratedColumn<String> sourceSetLogId = GeneratedColumn<String>(
+    'source_set_log_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES set_logs (id)',
+    ),
+  );
+  static const VerificationMeta _isManualOverrideMeta = const VerificationMeta(
+    'isManualOverride',
+  );
+  @override
+  late final GeneratedColumn<bool> isManualOverride = GeneratedColumn<bool>(
+    'is_manual_override',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_manual_override" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    exerciseId,
+    weight,
+    unit,
+    estimatedOneRepMax,
+    sourceSetLogId,
+    isManualOverride,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'working_weights';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<WorkingWeight> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('exercise_id')) {
+      context.handle(
+        _exerciseIdMeta,
+        exerciseId.isAcceptableOrUnknown(data['exercise_id']!, _exerciseIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_exerciseIdMeta);
+    }
+    if (data.containsKey('weight')) {
+      context.handle(
+        _weightMeta,
+        weight.isAcceptableOrUnknown(data['weight']!, _weightMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_weightMeta);
+    }
+    if (data.containsKey('unit')) {
+      context.handle(
+        _unitMeta,
+        unit.isAcceptableOrUnknown(data['unit']!, _unitMeta),
+      );
+    }
+    if (data.containsKey('estimated_one_rep_max')) {
+      context.handle(
+        _estimatedOneRepMaxMeta,
+        estimatedOneRepMax.isAcceptableOrUnknown(
+          data['estimated_one_rep_max']!,
+          _estimatedOneRepMaxMeta,
+        ),
+      );
+    }
+    if (data.containsKey('source_set_log_id')) {
+      context.handle(
+        _sourceSetLogIdMeta,
+        sourceSetLogId.isAcceptableOrUnknown(
+          data['source_set_log_id']!,
+          _sourceSetLogIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_manual_override')) {
+      context.handle(
+        _isManualOverrideMeta,
+        isManualOverride.isAcceptableOrUnknown(
+          data['is_manual_override']!,
+          _isManualOverrideMeta,
+        ),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {exerciseId};
+  @override
+  WorkingWeight map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return WorkingWeight(
+      exerciseId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}exercise_id'],
+      )!,
+      weight: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}weight'],
+      )!,
+      unit: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}unit'],
+      )!,
+      estimatedOneRepMax: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}estimated_one_rep_max'],
+      ),
+      sourceSetLogId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_set_log_id'],
+      ),
+      isManualOverride: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_manual_override'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $WorkingWeightsTable createAlias(String alias) {
+    return $WorkingWeightsTable(attachedDatabase, alias);
+  }
+}
+
+class WorkingWeight extends DataClass implements Insertable<WorkingWeight> {
+  final String exerciseId;
+  final double weight;
+  final String unit;
+  final double? estimatedOneRepMax;
+  final String? sourceSetLogId;
+  final bool isManualOverride;
+  final DateTime updatedAt;
+  const WorkingWeight({
+    required this.exerciseId,
+    required this.weight,
+    required this.unit,
+    this.estimatedOneRepMax,
+    this.sourceSetLogId,
+    required this.isManualOverride,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['exercise_id'] = Variable<String>(exerciseId);
+    map['weight'] = Variable<double>(weight);
+    map['unit'] = Variable<String>(unit);
+    if (!nullToAbsent || estimatedOneRepMax != null) {
+      map['estimated_one_rep_max'] = Variable<double>(estimatedOneRepMax);
+    }
+    if (!nullToAbsent || sourceSetLogId != null) {
+      map['source_set_log_id'] = Variable<String>(sourceSetLogId);
+    }
+    map['is_manual_override'] = Variable<bool>(isManualOverride);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  WorkingWeightsCompanion toCompanion(bool nullToAbsent) {
+    return WorkingWeightsCompanion(
+      exerciseId: Value(exerciseId),
+      weight: Value(weight),
+      unit: Value(unit),
+      estimatedOneRepMax: estimatedOneRepMax == null && nullToAbsent
+          ? const Value.absent()
+          : Value(estimatedOneRepMax),
+      sourceSetLogId: sourceSetLogId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sourceSetLogId),
+      isManualOverride: Value(isManualOverride),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory WorkingWeight.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return WorkingWeight(
+      exerciseId: serializer.fromJson<String>(json['exerciseId']),
+      weight: serializer.fromJson<double>(json['weight']),
+      unit: serializer.fromJson<String>(json['unit']),
+      estimatedOneRepMax: serializer.fromJson<double?>(
+        json['estimatedOneRepMax'],
+      ),
+      sourceSetLogId: serializer.fromJson<String?>(json['sourceSetLogId']),
+      isManualOverride: serializer.fromJson<bool>(json['isManualOverride']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'exerciseId': serializer.toJson<String>(exerciseId),
+      'weight': serializer.toJson<double>(weight),
+      'unit': serializer.toJson<String>(unit),
+      'estimatedOneRepMax': serializer.toJson<double?>(estimatedOneRepMax),
+      'sourceSetLogId': serializer.toJson<String?>(sourceSetLogId),
+      'isManualOverride': serializer.toJson<bool>(isManualOverride),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  WorkingWeight copyWith({
+    String? exerciseId,
+    double? weight,
+    String? unit,
+    Value<double?> estimatedOneRepMax = const Value.absent(),
+    Value<String?> sourceSetLogId = const Value.absent(),
+    bool? isManualOverride,
+    DateTime? updatedAt,
+  }) => WorkingWeight(
+    exerciseId: exerciseId ?? this.exerciseId,
+    weight: weight ?? this.weight,
+    unit: unit ?? this.unit,
+    estimatedOneRepMax: estimatedOneRepMax.present
+        ? estimatedOneRepMax.value
+        : this.estimatedOneRepMax,
+    sourceSetLogId: sourceSetLogId.present
+        ? sourceSetLogId.value
+        : this.sourceSetLogId,
+    isManualOverride: isManualOverride ?? this.isManualOverride,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  WorkingWeight copyWithCompanion(WorkingWeightsCompanion data) {
+    return WorkingWeight(
+      exerciseId: data.exerciseId.present
+          ? data.exerciseId.value
+          : this.exerciseId,
+      weight: data.weight.present ? data.weight.value : this.weight,
+      unit: data.unit.present ? data.unit.value : this.unit,
+      estimatedOneRepMax: data.estimatedOneRepMax.present
+          ? data.estimatedOneRepMax.value
+          : this.estimatedOneRepMax,
+      sourceSetLogId: data.sourceSetLogId.present
+          ? data.sourceSetLogId.value
+          : this.sourceSetLogId,
+      isManualOverride: data.isManualOverride.present
+          ? data.isManualOverride.value
+          : this.isManualOverride,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WorkingWeight(')
+          ..write('exerciseId: $exerciseId, ')
+          ..write('weight: $weight, ')
+          ..write('unit: $unit, ')
+          ..write('estimatedOneRepMax: $estimatedOneRepMax, ')
+          ..write('sourceSetLogId: $sourceSetLogId, ')
+          ..write('isManualOverride: $isManualOverride, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    exerciseId,
+    weight,
+    unit,
+    estimatedOneRepMax,
+    sourceSetLogId,
+    isManualOverride,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is WorkingWeight &&
+          other.exerciseId == this.exerciseId &&
+          other.weight == this.weight &&
+          other.unit == this.unit &&
+          other.estimatedOneRepMax == this.estimatedOneRepMax &&
+          other.sourceSetLogId == this.sourceSetLogId &&
+          other.isManualOverride == this.isManualOverride &&
+          other.updatedAt == this.updatedAt);
+}
+
+class WorkingWeightsCompanion extends UpdateCompanion<WorkingWeight> {
+  final Value<String> exerciseId;
+  final Value<double> weight;
+  final Value<String> unit;
+  final Value<double?> estimatedOneRepMax;
+  final Value<String?> sourceSetLogId;
+  final Value<bool> isManualOverride;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const WorkingWeightsCompanion({
+    this.exerciseId = const Value.absent(),
+    this.weight = const Value.absent(),
+    this.unit = const Value.absent(),
+    this.estimatedOneRepMax = const Value.absent(),
+    this.sourceSetLogId = const Value.absent(),
+    this.isManualOverride = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  WorkingWeightsCompanion.insert({
+    required String exerciseId,
+    required double weight,
+    this.unit = const Value.absent(),
+    this.estimatedOneRepMax = const Value.absent(),
+    this.sourceSetLogId = const Value.absent(),
+    this.isManualOverride = const Value.absent(),
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  }) : exerciseId = Value(exerciseId),
+       weight = Value(weight),
+       updatedAt = Value(updatedAt);
+  static Insertable<WorkingWeight> custom({
+    Expression<String>? exerciseId,
+    Expression<double>? weight,
+    Expression<String>? unit,
+    Expression<double>? estimatedOneRepMax,
+    Expression<String>? sourceSetLogId,
+    Expression<bool>? isManualOverride,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (exerciseId != null) 'exercise_id': exerciseId,
+      if (weight != null) 'weight': weight,
+      if (unit != null) 'unit': unit,
+      if (estimatedOneRepMax != null)
+        'estimated_one_rep_max': estimatedOneRepMax,
+      if (sourceSetLogId != null) 'source_set_log_id': sourceSetLogId,
+      if (isManualOverride != null) 'is_manual_override': isManualOverride,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  WorkingWeightsCompanion copyWith({
+    Value<String>? exerciseId,
+    Value<double>? weight,
+    Value<String>? unit,
+    Value<double?>? estimatedOneRepMax,
+    Value<String?>? sourceSetLogId,
+    Value<bool>? isManualOverride,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return WorkingWeightsCompanion(
+      exerciseId: exerciseId ?? this.exerciseId,
+      weight: weight ?? this.weight,
+      unit: unit ?? this.unit,
+      estimatedOneRepMax: estimatedOneRepMax ?? this.estimatedOneRepMax,
+      sourceSetLogId: sourceSetLogId ?? this.sourceSetLogId,
+      isManualOverride: isManualOverride ?? this.isManualOverride,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (exerciseId.present) {
+      map['exercise_id'] = Variable<String>(exerciseId.value);
+    }
+    if (weight.present) {
+      map['weight'] = Variable<double>(weight.value);
+    }
+    if (unit.present) {
+      map['unit'] = Variable<String>(unit.value);
+    }
+    if (estimatedOneRepMax.present) {
+      map['estimated_one_rep_max'] = Variable<double>(estimatedOneRepMax.value);
+    }
+    if (sourceSetLogId.present) {
+      map['source_set_log_id'] = Variable<String>(sourceSetLogId.value);
+    }
+    if (isManualOverride.present) {
+      map['is_manual_override'] = Variable<bool>(isManualOverride.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WorkingWeightsCompanion(')
+          ..write('exerciseId: $exerciseId, ')
+          ..write('weight: $weight, ')
+          ..write('unit: $unit, ')
+          ..write('estimatedOneRepMax: $estimatedOneRepMax, ')
+          ..write('sourceSetLogId: $sourceSetLogId, ')
+          ..write('isManualOverride: $isManualOverride, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $BodyweightLogsTable extends BodyweightLogs
     with TableInfo<$BodyweightLogsTable, BodyweightLog> {
   @override
@@ -7412,6 +7908,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $SessionLogsTable sessionLogs = $SessionLogsTable(this);
   late final $ExerciseLogsTable exerciseLogs = $ExerciseLogsTable(this);
   late final $SetLogsTable setLogs = $SetLogsTable(this);
+  late final $WorkingWeightsTable workingWeights = $WorkingWeightsTable(this);
   late final $BodyweightLogsTable bodyweightLogs = $BodyweightLogsTable(this);
   late final $GoalsTable goals = $GoalsTable(this);
   late final $SeedRunsTable seedRuns = $SeedRunsTable(this);
@@ -7430,6 +7927,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     sessionLogs,
     exerciseLogs,
     setLogs,
+    workingWeights,
     bodyweightLogs,
     goals,
     seedRuns,
@@ -7521,6 +8019,27 @@ final class $$ExercisesTableReferences
     ).filter((f) => f.exerciseId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_exerciseLogsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$WorkingWeightsTable, List<WorkingWeight>>
+  _workingWeightsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.workingWeights,
+    aliasName: $_aliasNameGenerator(
+      db.exercises.id,
+      db.workingWeights.exerciseId,
+    ),
+  );
+
+  $$WorkingWeightsTableProcessedTableManager get workingWeightsRefs {
+    final manager = $$WorkingWeightsTableTableManager(
+      $_db,
+      $_db.workingWeights,
+    ).filter((f) => f.exerciseId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_workingWeightsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -7649,6 +8168,31 @@ class $$ExercisesTableFilterComposer
           }) => $$ExerciseLogsTableFilterComposer(
             $db: $db,
             $table: $db.exerciseLogs,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> workingWeightsRefs(
+    Expression<bool> Function($$WorkingWeightsTableFilterComposer f) f,
+  ) {
+    final $$WorkingWeightsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.workingWeights,
+      getReferencedColumn: (t) => t.exerciseId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$WorkingWeightsTableFilterComposer(
+            $db: $db,
+            $table: $db.workingWeights,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -7853,6 +8397,31 @@ class $$ExercisesTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> workingWeightsRefs<T extends Object>(
+    Expression<T> Function($$WorkingWeightsTableAnnotationComposer a) f,
+  ) {
+    final $$WorkingWeightsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.workingWeights,
+      getReferencedColumn: (t) => t.exerciseId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$WorkingWeightsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.workingWeights,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$ExercisesTableTableManager
@@ -7871,6 +8440,7 @@ class $$ExercisesTableTableManager
           PrefetchHooks Function({
             bool workoutTemplateExercisesRefs,
             bool exerciseLogsRefs,
+            bool workingWeightsRefs,
           })
         > {
   $$ExercisesTableTableManager(_$AppDatabase db, $ExercisesTable table)
@@ -7964,6 +8534,7 @@ class $$ExercisesTableTableManager
               ({
                 workoutTemplateExercisesRefs = false,
                 exerciseLogsRefs = false,
+                workingWeightsRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -7971,6 +8542,7 @@ class $$ExercisesTableTableManager
                     if (workoutTemplateExercisesRefs)
                       db.workoutTemplateExercises,
                     if (exerciseLogsRefs) db.exerciseLogs,
+                    if (workingWeightsRefs) db.workingWeights,
                   ],
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
@@ -8017,6 +8589,27 @@ class $$ExercisesTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (workingWeightsRefs)
+                        await $_getPrefetchedData<
+                          Exercise,
+                          $ExercisesTable,
+                          WorkingWeight
+                        >(
+                          currentTable: table,
+                          referencedTable: $$ExercisesTableReferences
+                              ._workingWeightsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$ExercisesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).workingWeightsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.exerciseId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -8040,6 +8633,7 @@ typedef $$ExercisesTableProcessedTableManager =
       PrefetchHooks Function({
         bool workoutTemplateExercisesRefs,
         bool exerciseLogsRefs,
+        bool workingWeightsRefs,
       })
     >;
 typedef $$CampaignsTableCreateCompanionBuilder =
@@ -12836,6 +13430,27 @@ final class $$SetLogsTableReferences
       manager.$state.copyWith(prefetchedData: [item]),
     );
   }
+
+  static MultiTypedResultKey<$WorkingWeightsTable, List<WorkingWeight>>
+  _workingWeightsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.workingWeights,
+    aliasName: $_aliasNameGenerator(
+      db.setLogs.id,
+      db.workingWeights.sourceSetLogId,
+    ),
+  );
+
+  $$WorkingWeightsTableProcessedTableManager get workingWeightsRefs {
+    final manager = $$WorkingWeightsTableTableManager(
+      $_db,
+      $_db.workingWeights,
+    ).filter((f) => f.sourceSetLogId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_workingWeightsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $$SetLogsTableFilterComposer
@@ -12918,6 +13533,31 @@ class $$SetLogsTableFilterComposer
           ),
     );
     return composer;
+  }
+
+  Expression<bool> workingWeightsRefs(
+    Expression<bool> Function($$WorkingWeightsTableFilterComposer f) f,
+  ) {
+    final $$WorkingWeightsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.workingWeights,
+      getReferencedColumn: (t) => t.sourceSetLogId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$WorkingWeightsTableFilterComposer(
+            $db: $db,
+            $table: $db.workingWeights,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
   }
 }
 
@@ -13073,6 +13713,31 @@ class $$SetLogsTableAnnotationComposer
     );
     return composer;
   }
+
+  Expression<T> workingWeightsRefs<T extends Object>(
+    Expression<T> Function($$WorkingWeightsTableAnnotationComposer a) f,
+  ) {
+    final $$WorkingWeightsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.workingWeights,
+      getReferencedColumn: (t) => t.sourceSetLogId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$WorkingWeightsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.workingWeights,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$SetLogsTableTableManager
@@ -13088,7 +13753,7 @@ class $$SetLogsTableTableManager
           $$SetLogsTableUpdateCompanionBuilder,
           (SetLog, $$SetLogsTableReferences),
           SetLog,
-          PrefetchHooks Function({bool exerciseLogId})
+          PrefetchHooks Function({bool exerciseLogId, bool workingWeightsRefs})
         > {
   $$SetLogsTableTableManager(_$AppDatabase db, $SetLogsTable table)
     : super(
@@ -13165,47 +13830,72 @@ class $$SetLogsTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({exerciseLogId = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (exerciseLogId) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.exerciseLogId,
-                                referencedTable: $$SetLogsTableReferences
-                                    ._exerciseLogIdTable(db),
-                                referencedColumn: $$SetLogsTableReferences
-                                    ._exerciseLogIdTable(db)
-                                    .id,
-                              )
-                              as T;
-                    }
+          prefetchHooksCallback:
+              ({exerciseLogId = false, workingWeightsRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (workingWeightsRefs) db.workingWeights,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (exerciseLogId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.exerciseLogId,
+                                    referencedTable: $$SetLogsTableReferences
+                                        ._exerciseLogIdTable(db),
+                                    referencedColumn: $$SetLogsTableReferences
+                                        ._exerciseLogIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
 
-                    return state;
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (workingWeightsRefs)
+                        await $_getPrefetchedData<
+                          SetLog,
+                          $SetLogsTable,
+                          WorkingWeight
+                        >(
+                          currentTable: table,
+                          referencedTable: $$SetLogsTableReferences
+                              ._workingWeightsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$SetLogsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).workingWeightsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.sourceSetLogId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
                   },
-              getPrefetchedDataCallback: (items) async {
-                return [];
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -13222,7 +13912,467 @@ typedef $$SetLogsTableProcessedTableManager =
       $$SetLogsTableUpdateCompanionBuilder,
       (SetLog, $$SetLogsTableReferences),
       SetLog,
-      PrefetchHooks Function({bool exerciseLogId})
+      PrefetchHooks Function({bool exerciseLogId, bool workingWeightsRefs})
+    >;
+typedef $$WorkingWeightsTableCreateCompanionBuilder =
+    WorkingWeightsCompanion Function({
+      required String exerciseId,
+      required double weight,
+      Value<String> unit,
+      Value<double?> estimatedOneRepMax,
+      Value<String?> sourceSetLogId,
+      Value<bool> isManualOverride,
+      required DateTime updatedAt,
+      Value<int> rowid,
+    });
+typedef $$WorkingWeightsTableUpdateCompanionBuilder =
+    WorkingWeightsCompanion Function({
+      Value<String> exerciseId,
+      Value<double> weight,
+      Value<String> unit,
+      Value<double?> estimatedOneRepMax,
+      Value<String?> sourceSetLogId,
+      Value<bool> isManualOverride,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+final class $$WorkingWeightsTableReferences
+    extends BaseReferences<_$AppDatabase, $WorkingWeightsTable, WorkingWeight> {
+  $$WorkingWeightsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $ExercisesTable _exerciseIdTable(_$AppDatabase db) =>
+      db.exercises.createAlias(
+        $_aliasNameGenerator(db.workingWeights.exerciseId, db.exercises.id),
+      );
+
+  $$ExercisesTableProcessedTableManager get exerciseId {
+    final $_column = $_itemColumn<String>('exercise_id')!;
+
+    final manager = $$ExercisesTableTableManager(
+      $_db,
+      $_db.exercises,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_exerciseIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $SetLogsTable _sourceSetLogIdTable(_$AppDatabase db) =>
+      db.setLogs.createAlias(
+        $_aliasNameGenerator(db.workingWeights.sourceSetLogId, db.setLogs.id),
+      );
+
+  $$SetLogsTableProcessedTableManager? get sourceSetLogId {
+    final $_column = $_itemColumn<String>('source_set_log_id');
+    if ($_column == null) return null;
+    final manager = $$SetLogsTableTableManager(
+      $_db,
+      $_db.setLogs,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_sourceSetLogIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$WorkingWeightsTableFilterComposer
+    extends Composer<_$AppDatabase, $WorkingWeightsTable> {
+  $$WorkingWeightsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<double> get weight => $composableBuilder(
+    column: $table.weight,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get unit => $composableBuilder(
+    column: $table.unit,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get estimatedOneRepMax => $composableBuilder(
+    column: $table.estimatedOneRepMax,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isManualOverride => $composableBuilder(
+    column: $table.isManualOverride,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$ExercisesTableFilterComposer get exerciseId {
+    final $$ExercisesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.exerciseId,
+      referencedTable: $db.exercises,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ExercisesTableFilterComposer(
+            $db: $db,
+            $table: $db.exercises,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$SetLogsTableFilterComposer get sourceSetLogId {
+    final $$SetLogsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.sourceSetLogId,
+      referencedTable: $db.setLogs,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SetLogsTableFilterComposer(
+            $db: $db,
+            $table: $db.setLogs,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$WorkingWeightsTableOrderingComposer
+    extends Composer<_$AppDatabase, $WorkingWeightsTable> {
+  $$WorkingWeightsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<double> get weight => $composableBuilder(
+    column: $table.weight,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get unit => $composableBuilder(
+    column: $table.unit,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get estimatedOneRepMax => $composableBuilder(
+    column: $table.estimatedOneRepMax,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isManualOverride => $composableBuilder(
+    column: $table.isManualOverride,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$ExercisesTableOrderingComposer get exerciseId {
+    final $$ExercisesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.exerciseId,
+      referencedTable: $db.exercises,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ExercisesTableOrderingComposer(
+            $db: $db,
+            $table: $db.exercises,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$SetLogsTableOrderingComposer get sourceSetLogId {
+    final $$SetLogsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.sourceSetLogId,
+      referencedTable: $db.setLogs,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SetLogsTableOrderingComposer(
+            $db: $db,
+            $table: $db.setLogs,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$WorkingWeightsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $WorkingWeightsTable> {
+  $$WorkingWeightsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<double> get weight =>
+      $composableBuilder(column: $table.weight, builder: (column) => column);
+
+  GeneratedColumn<String> get unit =>
+      $composableBuilder(column: $table.unit, builder: (column) => column);
+
+  GeneratedColumn<double> get estimatedOneRepMax => $composableBuilder(
+    column: $table.estimatedOneRepMax,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isManualOverride => $composableBuilder(
+    column: $table.isManualOverride,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  $$ExercisesTableAnnotationComposer get exerciseId {
+    final $$ExercisesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.exerciseId,
+      referencedTable: $db.exercises,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ExercisesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.exercises,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$SetLogsTableAnnotationComposer get sourceSetLogId {
+    final $$SetLogsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.sourceSetLogId,
+      referencedTable: $db.setLogs,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SetLogsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.setLogs,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$WorkingWeightsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $WorkingWeightsTable,
+          WorkingWeight,
+          $$WorkingWeightsTableFilterComposer,
+          $$WorkingWeightsTableOrderingComposer,
+          $$WorkingWeightsTableAnnotationComposer,
+          $$WorkingWeightsTableCreateCompanionBuilder,
+          $$WorkingWeightsTableUpdateCompanionBuilder,
+          (WorkingWeight, $$WorkingWeightsTableReferences),
+          WorkingWeight,
+          PrefetchHooks Function({bool exerciseId, bool sourceSetLogId})
+        > {
+  $$WorkingWeightsTableTableManager(
+    _$AppDatabase db,
+    $WorkingWeightsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$WorkingWeightsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$WorkingWeightsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$WorkingWeightsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> exerciseId = const Value.absent(),
+                Value<double> weight = const Value.absent(),
+                Value<String> unit = const Value.absent(),
+                Value<double?> estimatedOneRepMax = const Value.absent(),
+                Value<String?> sourceSetLogId = const Value.absent(),
+                Value<bool> isManualOverride = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => WorkingWeightsCompanion(
+                exerciseId: exerciseId,
+                weight: weight,
+                unit: unit,
+                estimatedOneRepMax: estimatedOneRepMax,
+                sourceSetLogId: sourceSetLogId,
+                isManualOverride: isManualOverride,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String exerciseId,
+                required double weight,
+                Value<String> unit = const Value.absent(),
+                Value<double?> estimatedOneRepMax = const Value.absent(),
+                Value<String?> sourceSetLogId = const Value.absent(),
+                Value<bool> isManualOverride = const Value.absent(),
+                required DateTime updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => WorkingWeightsCompanion.insert(
+                exerciseId: exerciseId,
+                weight: weight,
+                unit: unit,
+                estimatedOneRepMax: estimatedOneRepMax,
+                sourceSetLogId: sourceSetLogId,
+                isManualOverride: isManualOverride,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$WorkingWeightsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({exerciseId = false, sourceSetLogId = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (exerciseId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.exerciseId,
+                                    referencedTable:
+                                        $$WorkingWeightsTableReferences
+                                            ._exerciseIdTable(db),
+                                    referencedColumn:
+                                        $$WorkingWeightsTableReferences
+                                            ._exerciseIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+                        if (sourceSetLogId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.sourceSetLogId,
+                                    referencedTable:
+                                        $$WorkingWeightsTableReferences
+                                            ._sourceSetLogIdTable(db),
+                                    referencedColumn:
+                                        $$WorkingWeightsTableReferences
+                                            ._sourceSetLogIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$WorkingWeightsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $WorkingWeightsTable,
+      WorkingWeight,
+      $$WorkingWeightsTableFilterComposer,
+      $$WorkingWeightsTableOrderingComposer,
+      $$WorkingWeightsTableAnnotationComposer,
+      $$WorkingWeightsTableCreateCompanionBuilder,
+      $$WorkingWeightsTableUpdateCompanionBuilder,
+      (WorkingWeight, $$WorkingWeightsTableReferences),
+      WorkingWeight,
+      PrefetchHooks Function({bool exerciseId, bool sourceSetLogId})
     >;
 typedef $$BodyweightLogsTableCreateCompanionBuilder =
     BodyweightLogsCompanion Function({
@@ -14148,6 +15298,8 @@ class $AppDatabaseManager {
       $$ExerciseLogsTableTableManager(_db, _db.exerciseLogs);
   $$SetLogsTableTableManager get setLogs =>
       $$SetLogsTableTableManager(_db, _db.setLogs);
+  $$WorkingWeightsTableTableManager get workingWeights =>
+      $$WorkingWeightsTableTableManager(_db, _db.workingWeights);
   $$BodyweightLogsTableTableManager get bodyweightLogs =>
       $$BodyweightLogsTableTableManager(_db, _db.bodyweightLogs);
   $$GoalsTableTableManager get goals =>

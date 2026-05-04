@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_spacing.dart';
@@ -19,6 +20,58 @@ class ProgressScreen extends ConsumerStatefulWidget {
 
   @override
   ConsumerState<ProgressScreen> createState() => _ProgressScreenState();
+}
+
+final _exerciseProgressProvider = FutureProvider.autoDispose
+    .family<ExerciseProgressDetail?, String>((ref, exerciseId) async {
+      final repositories = AppRepositories(ref.watch(appDatabaseProvider));
+      return repositories.exercises.getProgressDetail(exerciseId);
+    });
+
+class ExerciseDetailScreen extends ConsumerWidget {
+  const ExerciseDetailScreen({required this.exerciseId, super.key});
+
+  static const routeName = 'exerciseDetail';
+  static const routePath = 'exercise/:exerciseId';
+
+  final String exerciseId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final detailAsync = ref.watch(_exerciseProgressProvider(exerciseId));
+
+    return Scaffold(
+      backgroundColor: AppColors.bg,
+      body: SafeArea(
+        child: detailAsync.when(
+          data: (detail) {
+            if (detail == null) {
+              return const Center(
+                child: Text(
+                  'Exercise not found',
+                  style: TextStyle(color: AppColors.inkMute),
+                ),
+              );
+            }
+
+            return _ExerciseDetailBody(detail: detail);
+          },
+          loading: () => const Center(
+            child: CircularProgressIndicator(color: AppColors.forest),
+          ),
+          error: (error, _) => Center(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: Text(
+                'Exercise progress could not be loaded: $error',
+                style: const TextStyle(color: AppColors.inkMute),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class _ProgressScreenState extends ConsumerState<ProgressScreen> {
@@ -44,6 +97,9 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
             weightController: _weightController,
             isSaving: _isSaving,
             onSaveWeight: _saveBodyweight,
+            onEditGoal: _editGoal,
+            onOpenExercise: _openExercise,
+            onEditWorkingWeight: _editWorkingWeight,
           ),
           loading: () => const Center(
             child: CircularProgressIndicator(color: AppColors.forest),
@@ -86,6 +142,403 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
       context,
     ).showSnackBar(const SnackBar(content: Text('Bodyweight logged')));
   }
+
+  Future<void> _editGoal(Goal goal) async {
+    final value = await showDialog<double>(
+      context: context,
+      builder: (context) => _GoalValueDialog(goal: goal),
+    );
+    if (value == null) return;
+
+    final repositories = AppRepositories(ref.read(appDatabaseProvider));
+    await repositories.goals.updateCurrentValue(
+      goalId: goal.id,
+      currentValue: value,
+    );
+
+    ref.invalidate(progressDashboardProvider);
+    if (!mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('${goal.name} updated')));
+  }
+
+  void _openExercise(String exerciseId) {
+    context.goNamed(
+      ExerciseDetailScreen.routeName,
+      pathParameters: {'exerciseId': exerciseId},
+    );
+  }
+
+  Future<void> _editWorkingWeight(WorkingWeightSummary summary) async {
+    final value = await showDialog<double>(
+      context: context,
+      builder: (context) => _WorkingWeightDialog(summary: summary),
+    );
+    if (value == null) return;
+
+    final repositories = AppRepositories(ref.read(appDatabaseProvider));
+    await repositories.exercises.setManualWorkingWeight(
+      exerciseId: summary.exercise.id,
+      weight: value,
+      unit: summary.workingWeight?.unit ?? summary.exercise.defaultUnit,
+    );
+
+    ref.invalidate(progressDashboardProvider);
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('${summary.exercise.name} working weight updated'),
+      ),
+    );
+  }
+}
+
+String _formatGoalValue(double? value) {
+  if (value == null) return '--';
+  return value == value.roundToDouble()
+      ? value.toInt().toString()
+      : value.toStringAsFixed(1);
+}
+
+String _formatSet(SetPerformance performance) {
+  final weight = _formatGoalValue(performance.weight);
+  final reps = performance.reps?.toString() ?? '--';
+  return '$weight x $reps';
+}
+
+String _formatDate(DateTime dt) {
+  final local = dt.toLocal();
+  const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+  return '${months[local.month - 1]} ${local.day}, ${local.year}';
+}
+
+class _GoalValueDialog extends StatefulWidget {
+  const _GoalValueDialog({required this.goal});
+
+  final Goal goal;
+
+  @override
+  State<_GoalValueDialog> createState() => _GoalValueDialogState();
+}
+
+class _GoalValueDialogState extends State<_GoalValueDialog> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(
+      text: widget.goal.currentValue == null
+          ? ''
+          : _formatGoalValue(widget.goal.currentValue),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: AppColors.surface,
+      title: Text(
+        'Update ${widget.goal.name}',
+        style: const TextStyle(color: AppColors.ink),
+      ),
+      content: TextField(
+        key: const Key('goal-current-value-field'),
+        controller: _controller,
+        autofocus: true,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
+        style: AppTheme.monoStyle(color: AppColors.ink),
+        decoration: InputDecoration(
+          labelText: 'Current value',
+          suffixText: widget.goal.unit,
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          key: const Key('goal-current-value-save-button'),
+          onPressed: () {
+            final parsed = double.tryParse(_controller.text.trim());
+            if (parsed == null || parsed < 0) return;
+            Navigator.of(context).pop(parsed);
+          },
+          child: const Text('Save'),
+        ),
+      ],
+    );
+  }
+}
+
+class _WorkingWeightDialog extends StatefulWidget {
+  const _WorkingWeightDialog({required this.summary});
+
+  final WorkingWeightSummary summary;
+
+  @override
+  State<_WorkingWeightDialog> createState() => _WorkingWeightDialogState();
+}
+
+class _WorkingWeightDialogState extends State<_WorkingWeightDialog> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(
+      text: _formatGoalValue(widget.summary.displayWeight),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final unit =
+        widget.summary.workingWeight?.unit ??
+        widget.summary.exercise.defaultUnit;
+
+    return AlertDialog(
+      backgroundColor: AppColors.surface,
+      title: Text(
+        'Correct ${widget.summary.exercise.name}',
+        style: const TextStyle(color: AppColors.ink),
+      ),
+      content: TextField(
+        key: const Key('working-weight-field'),
+        controller: _controller,
+        autofocus: true,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
+        style: AppTheme.monoStyle(color: AppColors.ink),
+        decoration: InputDecoration(
+          labelText: 'Working weight',
+          suffixText: unit,
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          key: const Key('working-weight-save-button'),
+          onPressed: () {
+            final parsed = double.tryParse(_controller.text.trim());
+            if (parsed == null || parsed < 0) return;
+            Navigator.of(context).pop(parsed);
+          },
+          child: const Text('Save'),
+        ),
+      ],
+    );
+  }
+}
+
+class _ExerciseDetailBody extends StatelessWidget {
+  const _ExerciseDetailBody({required this.detail});
+
+  final ExerciseProgressDetail detail;
+
+  @override
+  Widget build(BuildContext context) {
+    final workingWeight = detail.workingWeight;
+    final best = detail.bestPerformance;
+
+    return ListView(
+      padding: EdgeInsets.zero,
+      children: [
+        QfScreenHeader(
+          salutation: 'Exercise',
+          title: detail.exercise.name,
+          trailing: QfPill(
+            tone: QfPillTone.muted,
+            child: Text(detail.exercise.defaultUnit),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 18),
+          child: QfCard(
+            variant: QfCardVariant.embossed,
+            padding: const EdgeInsets.all(14),
+            child: Row(
+              children: [
+                Expanded(
+                  child: _DetailMetric(
+                    label: 'Working',
+                    value: workingWeight == null
+                        ? '--'
+                        : '${_formatGoalValue(workingWeight.weight)} ${workingWeight.unit}',
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _DetailMetric(
+                    label: 'Best Set',
+                    value: best == null ? '--' : _formatSet(best),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _DetailMetric(
+                    label: 'Est. 1RM',
+                    value: best?.estimatedOneRepMax == null
+                        ? '--'
+                        : _formatGoalValue(best!.estimatedOneRepMax),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const QfSectionHeader(title: 'Set History'),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 18),
+          child: _SetHistoryCard(performances: detail.performances),
+        ),
+        const SizedBox(height: 24),
+      ],
+    );
+  }
+}
+
+class _DetailMetric extends StatelessWidget {
+  const _DetailMetric({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label.toUpperCase(),
+          style: const TextStyle(fontSize: 10, color: AppColors.inkDim),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: AppTheme.monoStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+            color: AppColors.ink,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SetHistoryCard extends StatelessWidget {
+  const _SetHistoryCard({required this.performances});
+
+  final List<SetPerformance> performances;
+
+  @override
+  Widget build(BuildContext context) {
+    if (performances.isEmpty) {
+      return const QfCard(
+        padding: EdgeInsets.all(14),
+        child: Text(
+          'No logged sets yet.',
+          style: TextStyle(color: AppColors.inkMute),
+        ),
+      );
+    }
+
+    return QfCard(
+      padding: EdgeInsets.zero,
+      child: Column(
+        children: [
+          for (var i = 0; i < performances.take(20).length; i++) ...[
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          performances[i].workoutName,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: AppColors.ink,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          _formatDate(performances[i].sessionStartedAt),
+                          style: const TextStyle(
+                            color: AppColors.inkDim,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Text(
+                    _formatSet(performances[i]),
+                    style: AppTheme.monoStyle(
+                      color: AppColors.forest,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    performances[i].estimatedOneRepMax == null
+                        ? 'e1RM --'
+                        : 'e1RM ${_formatGoalValue(performances[i].estimatedOneRepMax)}',
+                    style: AppTheme.monoStyle(
+                      color: AppColors.inkDim,
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (i < performances.take(20).length - 1)
+              const Divider(height: 1, color: AppColors.outlineSoft),
+          ],
+        ],
+      ),
+    );
+  }
 }
 
 class _ProgressBody extends StatelessWidget {
@@ -94,12 +547,18 @@ class _ProgressBody extends StatelessWidget {
     required this.weightController,
     required this.isSaving,
     required this.onSaveWeight,
+    required this.onEditGoal,
+    required this.onOpenExercise,
+    required this.onEditWorkingWeight,
   });
 
   final ProgressDashboardData data;
   final TextEditingController weightController;
   final bool isSaving;
   final VoidCallback onSaveWeight;
+  final ValueChanged<Goal> onEditGoal;
+  final ValueChanged<String> onOpenExercise;
+  final ValueChanged<WorkingWeightSummary> onEditWorkingWeight;
 
   @override
   Widget build(BuildContext context) {
@@ -139,12 +598,33 @@ class _ProgressBody extends StatelessWidget {
           ),
         ),
 
-        // Goal campaign
-        if (data.bodyweightGoal != null) ...[
-          const QfSectionHeader(title: 'Goal Campaign · The Quest'),
+        if (data.workingWeights.isNotEmpty) ...[
+          const QfSectionHeader(
+            title: 'Working Weights',
+            moreLabel: 'Tap exercise',
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 18),
-            child: _GoalCampaignCard(goal: data.bodyweightGoal!),
+            child: _WorkingWeightsCard(
+              summaries: data.workingWeights.take(8).toList(),
+              onOpenExercise: onOpenExercise,
+              onEditWorkingWeight: onEditWorkingWeight,
+            ),
+          ),
+        ],
+
+        // Goal dashboard
+        if (data.goals.isNotEmpty) ...[
+          const QfSectionHeader(
+            title: 'Goals Dashboard',
+            moreLabel: '5 active',
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18),
+            child: _GoalsDashboardCard(
+              goals: data.goals,
+              onEditGoal: onEditGoal,
+            ),
           ),
         ],
 
@@ -460,6 +940,391 @@ class _QuickLogCard extends StatelessWidget {
   }
 }
 
+class _WorkingWeightsCard extends StatelessWidget {
+  const _WorkingWeightsCard({
+    required this.summaries,
+    required this.onOpenExercise,
+    required this.onEditWorkingWeight,
+  });
+
+  final List<WorkingWeightSummary> summaries;
+  final ValueChanged<String> onOpenExercise;
+  final ValueChanged<WorkingWeightSummary> onEditWorkingWeight;
+
+  @override
+  Widget build(BuildContext context) {
+    return QfCard(
+      padding: EdgeInsets.zero,
+      child: Column(
+        children: [
+          for (var i = 0; i < summaries.length; i++) ...[
+            _WorkingWeightRow(
+              summary: summaries[i],
+              onOpen: () => onOpenExercise(summaries[i].exercise.id),
+              onEdit: () => onEditWorkingWeight(summaries[i]),
+            ),
+            if (i < summaries.length - 1)
+              const Divider(height: 1, color: AppColors.outlineSoft),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _WorkingWeightRow extends StatelessWidget {
+  const _WorkingWeightRow({
+    required this.summary,
+    required this.onOpen,
+    required this.onEdit,
+  });
+
+  final WorkingWeightSummary summary;
+  final VoidCallback onOpen;
+  final VoidCallback onEdit;
+
+  @override
+  Widget build(BuildContext context) {
+    final weight = summary.displayWeight;
+    final unit = summary.workingWeight?.unit ?? summary.exercise.defaultUnit;
+    final best = summary.bestPerformance;
+    final e1rm = best?.estimatedOneRepMax;
+
+    return InkWell(
+      onTap: onOpen,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(14, 12, 8, 12),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    summary.exercise.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: AppColors.ink,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    summary.workingWeight?.isManualOverride ?? false
+                        ? 'Manual override'
+                        : best == null
+                        ? 'Seed target'
+                        : 'Best ${_formatSet(best)}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: AppColors.inkDim,
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  '${_formatGoalValue(weight)} $unit',
+                  style: AppTheme.monoStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.forest,
+                  ),
+                ),
+                Text(
+                  e1rm == null ? 'e1RM --' : 'e1RM ${_formatGoalValue(e1rm)}',
+                  style: AppTheme.monoStyle(
+                    fontSize: 10,
+                    color: AppColors.inkDim,
+                  ),
+                ),
+              ],
+            ),
+            IconButton(
+              key: ValueKey('edit-working-weight-${summary.exercise.id}'),
+              tooltip: 'Correct working weight',
+              onPressed: onEdit,
+              icon: const Icon(Icons.tune, size: 17),
+              color: AppColors.inkMute,
+              constraints: const BoxConstraints.tightFor(width: 36, height: 36),
+              padding: EdgeInsets.zero,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _GoalsDashboardCard extends StatelessWidget {
+  const _GoalsDashboardCard({required this.goals, required this.onEditGoal});
+
+  final List<Goal> goals;
+  final ValueChanged<Goal> onEditGoal;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        for (var i = 0; i < goals.length; i++) ...[
+          _GoalDashboardRow(goal: goals[i], onEdit: () => onEditGoal(goals[i])),
+          if (i < goals.length - 1) const SizedBox(height: 10),
+        ],
+      ],
+    );
+  }
+}
+
+class _GoalDashboardRow extends StatelessWidget {
+  const _GoalDashboardRow({required this.goal, required this.onEdit});
+
+  final Goal goal;
+  final VoidCallback onEdit;
+
+  @override
+  Widget build(BuildContext context) {
+    final current = goal.currentValue;
+    final progress = _goalProgress(goal);
+    final tone = _toneForGoal(goal);
+    final directionLabel = goal.direction == 'lower'
+        ? 'Lower is better'
+        : 'Higher is better';
+    final metricLabel = goal.linkedMetric == null
+        ? 'Manual'
+        : 'Linked: ${_metricLabel(goal.linkedMetric!)}';
+
+    return QfCard(
+      variant: QfCardVariant.raised,
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                  color: _toneColor(tone).withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: _toneColor(tone).withValues(alpha: 0.35),
+                  ),
+                ),
+                child: Icon(
+                  _iconForGoal(goal),
+                  size: 17,
+                  color: _toneColor(tone),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      goal.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
+                        color: AppColors.ink,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      '${goal.category.toUpperCase()} · $directionLabel',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 10,
+                        color: AppColors.inkDim,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              IconButton(
+                key: ValueKey('edit-goal-${goal.id}'),
+                tooltip: 'Edit current value',
+                onPressed: onEdit,
+                icon: const Icon(Icons.edit, size: 18),
+                color: AppColors.inkMute,
+                constraints: const BoxConstraints.tightFor(
+                  width: 36,
+                  height: 36,
+                ),
+                padding: EdgeInsets.zero,
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _GoalValueBlock(
+                  label: 'Current',
+                  value: _formatGoalValue(current),
+                  unit: goal.unit,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _GoalValueBlock(
+                  label: 'Target',
+                  value: _formatGoalValue(goal.targetValue),
+                  unit: goal.unit,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          _ThemedProgressBar(value: progress, tone: tone),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  '${(progress * 100).round()}% complete',
+                  style: AppTheme.monoStyle(
+                    fontSize: 11,
+                    color: _toneColor(tone),
+                  ),
+                ),
+              ),
+              Text(
+                _formatTargetDate(goal.targetDate),
+                style: const TextStyle(fontSize: 11, color: AppColors.inkDim),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            metricLabel,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontSize: 11, color: AppColors.inkMute),
+          ),
+        ],
+      ),
+    );
+  }
+
+  double _goalProgress(Goal goal) {
+    final current = goal.currentValue;
+    if (current == null || current <= 0 || goal.targetValue <= 0) return 0;
+    if (goal.direction == 'lower') {
+      return (goal.targetValue / current).clamp(0.0, 1.0);
+    }
+    return (current / goal.targetValue).clamp(0.0, 1.0);
+  }
+
+  _BarTone _toneForGoal(Goal goal) {
+    if (goal.category == 'cardio') return _BarTone.sky;
+    if (goal.category == 'body composition') return _BarTone.ember;
+    if (goal.name.toLowerCase().contains('pull')) return _BarTone.gold;
+    return _BarTone.forest;
+  }
+
+  Color _toneColor(_BarTone tone) => switch (tone) {
+    _BarTone.forest => AppColors.forest,
+    _BarTone.ember => AppColors.ember,
+    _BarTone.sky => AppColors.sky,
+    _BarTone.gold => AppColors.gold,
+  };
+
+  IconData _iconForGoal(Goal goal) {
+    if (goal.category == 'cardio') return Icons.directions_run;
+    if (goal.category == 'body composition') return Icons.monitor_weight;
+    if (goal.name.toLowerCase().contains('pull')) return Icons.fitness_center;
+    return Icons.sports_gymnastics;
+  }
+
+  String _metricLabel(String metric) {
+    if (metric == 'bodyweight') return 'Bodyweight log';
+    if (metric == 'cardio:5k_time') return '5 km run time';
+    if (metric.startsWith('exercise:')) {
+      return metric.substring('exercise:'.length).replaceAll('-', ' ');
+    }
+    return metric;
+  }
+
+  String _formatTargetDate(DateTime? date) {
+    if (date == null) return 'No target date';
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    final local = date.toLocal();
+    return '${months[local.month - 1]} ${local.day}, ${local.year}';
+  }
+}
+
+class _GoalValueBlock extends StatelessWidget {
+  const _GoalValueBlock({
+    required this.label,
+    required this.value,
+    required this.unit,
+  });
+
+  final String label;
+  final String value;
+  final String unit;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: AppColors.surface2,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppColors.outlineSoft),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(fontSize: 10, color: AppColors.inkDim),
+          ),
+          const SizedBox(height: 3),
+          Text(
+            '$value${unit.isEmpty ? '' : ' $unit'}',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTheme.monoStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: AppColors.ink,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ignore: unused_element
 class _GoalCampaignCard extends StatelessWidget {
   const _GoalCampaignCard({required this.goal});
 
@@ -540,10 +1405,15 @@ class _WeeklyVolumeCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Tonnage · this week',
-                style: TextStyle(fontSize: 11, color: AppColors.inkDim),
+              const Expanded(
+                child: Text(
+                  'Tonnage · this week',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 11, color: AppColors.inkDim),
+                ),
               ),
+              const SizedBox(width: 8),
               Row(
                 children: [
                   Text(

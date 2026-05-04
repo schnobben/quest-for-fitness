@@ -9,9 +9,13 @@ final progressDashboardProvider =
       final repositories = AppRepositories(ref.watch(appDatabaseProvider));
       final history = await repositories.bodyweight.getHistory();
       final goals = await repositories.goals.getActiveGoals();
+      final workingWeights = await repositories.exercises
+          .getWorkingWeightSummaries();
 
       return ProgressDashboardData(
         bodyweightHistory: history,
+        goals: goals,
+        workingWeights: workingWeights,
         bodyweightGoal: goals
             .where((goal) => goal.linkedMetric == 'bodyweight')
             .firstOrNull,
@@ -21,10 +25,14 @@ final progressDashboardProvider =
 class ProgressDashboardData {
   const ProgressDashboardData({
     required this.bodyweightHistory,
+    required this.goals,
+    required this.workingWeights,
     required this.bodyweightGoal,
   });
 
   final List<BodyweightLog> bodyweightHistory;
+  final List<Goal> goals;
+  final List<WorkingWeightSummary> workingWeights;
   final Goal? bodyweightGoal;
 
   BodyweightLog? get latestBodyweight =>

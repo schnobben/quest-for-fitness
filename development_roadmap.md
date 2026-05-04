@@ -437,6 +437,8 @@ Completion notes:
 
 ### Sprint 2.1 — Goals dashboard v1
 
+**Status:** Completed May 4, 2026.
+
 Tasks:
 
 - Build goal cards.
@@ -452,9 +454,20 @@ Exit criteria:
 - User can track the five seed goals.
 - User can edit current goal values.
 
+Completion notes:
+
+- Progress now includes a goals dashboard with all five seed goals as editable cards.
+- Goal cards show current value, target value, progress, higher/lower direction, target date, category, and linked metric status.
+- Manual current-value edits are available from each goal card and persist through the goal repository.
+- Bodyweight logging continues to update the linked bodyweight goal automatically.
+- Added repository and widget coverage for manual goal updates and the full Progress goal-edit flow.
+- Verification passed: `flutter analyze`, `flutter test --reporter expanded`, and `flutter build apk --debug`.
+
 ---
 
 ### Sprint 2.2 — Working weights and exercise history
+
+**Status:** Completed May 4, 2026.
 
 Tasks:
 
@@ -469,6 +482,16 @@ Exit criteria:
 
 - User can see how each exercise is progressing.
 - User can manually correct working weights.
+
+Completion notes:
+
+- Added a Drift-backed working weights table with migration support.
+- Completed workout logging now auto-updates per-exercise working weights from the best completed weighted set and stores estimated 1RM/source-set metadata.
+- Manual working-weight corrections are available from Progress and are preserved as overrides.
+- Progress now includes a working weights dashboard and exercise detail route with recent set history, best set, and estimated 1RM.
+- Session deletion handles linked working-weight source sets without foreign-key failures.
+- Added repository and widget coverage for auto-updated working weights, manual corrections, and the exercise-history flow.
+- Verification passed: `flutter analyze`, `flutter test --reporter expanded`, and `flutter build apk --debug`.
 
 ---
 
