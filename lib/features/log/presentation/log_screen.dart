@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -21,6 +22,7 @@ class LogScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final historyAsync = ref.watch(sessionHistoryProvider);
     final nextWorkoutAsync = ref.watch(nextPlannedWorkoutProvider);
+    final recentRunsAsync = ref.watch(recentRunsProvider);
 
     return Scaffold(
       backgroundColor: AppColors.bg,
@@ -31,6 +33,10 @@ class LogScreen extends ConsumerWidget {
             nextWorkout: nextWorkoutAsync.hasValue
                 ? nextWorkoutAsync.requireValue
                 : null,
+            recentRuns: recentRunsAsync.hasValue
+                ? recentRunsAsync.requireValue
+                : const [],
+            onLogRun: () => _logRun(context, ref),
             onDelete: (entry) => _deleteSession(context, ref, entry),
           ),
           loading: () => const Center(
@@ -89,17 +95,45 @@ class LogScreen extends ConsumerWidget {
       context,
     ).showSnackBar(const SnackBar(content: Text('Session deleted')));
   }
+
+  Future<void> _logRun(BuildContext context, WidgetRef ref) async {
+    final result = await showDialog<_RunInput>(
+      context: context,
+      builder: (context) => const _RunLogDialog(),
+    );
+    if (result == null || !context.mounted) return;
+
+    final repositories = AppRepositories(ref.read(appDatabaseProvider));
+    await repositories.cardio.logRun(
+      loggedAt: result.loggedAt,
+      distanceKm: result.distanceKm,
+      durationMinutes: result.durationMinutes,
+      notes: result.notes,
+    );
+
+    ref.invalidate(recentRunsProvider);
+    ref.invalidate(sessionHistoryProvider);
+
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Run logged')));
+  }
 }
 
 class _LogBody extends StatelessWidget {
   const _LogBody({
     required this.history,
     required this.nextWorkout,
+    required this.recentRuns,
+    required this.onLogRun,
     required this.onDelete,
   });
 
   final List<SessionHistoryEntry> history;
   final ScheduledWorkout? nextWorkout;
+  final List<CardioLog> recentRuns;
+  final VoidCallback onLogRun;
   final void Function(SessionHistoryEntry) onDelete;
 
   @override
@@ -117,8 +151,15 @@ class _LogBody extends StatelessWidget {
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18),
-          child: _QuickActionGrid(nextWorkout: nextWorkout),
+          child: _QuickActionGrid(nextWorkout: nextWorkout, onLogRun: onLogRun),
         ),
+        if (recentRuns.isNotEmpty) ...[
+          const QfSectionHeader(title: 'Recent Runs'),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18),
+            child: _RecentRunsCard(runs: recentRuns),
+          ),
+        ],
         const QfSectionHeader(title: 'Recent Entries'),
         if (history.isEmpty)
           const Padding(
@@ -170,10 +211,186 @@ class _SampleNotice extends StatelessWidget {
   }
 }
 
+class _RunLogDialog extends StatefulWidget {
+  const _RunLogDialog();
+
+  @override
+  State<_RunLogDialog> createState() => _RunLogDialogState();
+}
+
+class _RunLogDialogState extends State<_RunLogDialog> {
+  final _distanceController = TextEditingController();
+  final _durationController = TextEditingController();
+  final _notesController = TextEditingController();
+
+  @override
+  void dispose() {
+    _distanceController.dispose();
+    _durationController.dispose();
+    _notesController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: AppColors.surface,
+      title: const Text('Log Run', style: TextStyle(color: AppColors.ink)),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            key: const Key('run-distance-field'),
+            controller: _distanceController,
+            autofocus: true,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+            ],
+            style: const TextStyle(color: AppColors.ink),
+            decoration: const InputDecoration(
+              labelText: 'Distance',
+              suffixText: 'km',
+            ),
+          ),
+          const SizedBox(height: 10),
+          TextField(
+            key: const Key('run-duration-field'),
+            controller: _durationController,
+            keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            style: const TextStyle(color: AppColors.ink),
+            decoration: const InputDecoration(
+              labelText: 'Duration',
+              suffixText: 'min',
+            ),
+          ),
+          const SizedBox(height: 10),
+          TextField(
+            key: const Key('run-notes-field'),
+            controller: _notesController,
+            style: const TextStyle(color: AppColors.ink),
+            decoration: const InputDecoration(labelText: 'Notes'),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          key: const Key('run-save-button'),
+          onPressed: () {
+            final distance = double.tryParse(_distanceController.text.trim());
+            final duration = int.tryParse(_durationController.text.trim());
+            if (distance == null ||
+                distance <= 0 ||
+                duration == null ||
+                duration <= 0) {
+              return;
+            }
+            Navigator.of(context).pop(
+              _RunInput(
+                loggedAt: DateTime.now(),
+                distanceKm: distance,
+                durationMinutes: duration,
+                notes: _notesController.text.trim().isEmpty
+                    ? null
+                    : _notesController.text.trim(),
+              ),
+            );
+          },
+          child: const Text('Save'),
+        ),
+      ],
+    );
+  }
+}
+
+class _RunInput {
+  const _RunInput({
+    required this.loggedAt,
+    required this.distanceKm,
+    required this.durationMinutes,
+    this.notes,
+  });
+
+  final DateTime loggedAt;
+  final double distanceKm;
+  final int durationMinutes;
+  final String? notes;
+}
+
+class _RecentRunsCard extends StatelessWidget {
+  const _RecentRunsCard({required this.runs});
+
+  final List<CardioLog> runs;
+
+  @override
+  Widget build(BuildContext context) {
+    return QfCard(
+      padding: EdgeInsets.zero,
+      child: Column(
+        children: [
+          for (var i = 0; i < runs.take(5).length; i++) ...[
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.directions_run,
+                    color: AppColors.sky,
+                    size: 18,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${_fmt(runs[i].distanceMeters / 1000)} km · ${_formatDuration(runs[i].durationSeconds)}',
+                          style: const TextStyle(
+                            color: AppColors.ink,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 13,
+                          ),
+                        ),
+                        Text(
+                          _formatDate(runs[i].loggedAt),
+                          style: const TextStyle(
+                            color: AppColors.inkDim,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Text(
+                    '${_formatPace(runs[i].paceSecondsPerKm)}/km',
+                    style: const TextStyle(
+                      color: AppColors.sky,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (i < runs.take(5).length - 1)
+              const Divider(height: 1, color: AppColors.outlineSoft),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
 class _QuickActionGrid extends StatelessWidget {
-  const _QuickActionGrid({required this.nextWorkout});
+  const _QuickActionGrid({required this.nextWorkout, required this.onLogRun});
 
   final ScheduledWorkout? nextWorkout;
+  final VoidCallback onLogRun;
 
   @override
   Widget build(BuildContext context) {
@@ -210,11 +427,10 @@ class _QuickActionGrid extends StatelessWidget {
       _QuickAction(
         icon: Icons.directions_run,
         title: 'Log Run',
-        subtitle: 'Sprint 2.4',
+        subtitle: 'Live now',
         tone: _ActionTone.sky,
         wide: false,
-        onTap: () =>
-            _showMessage(context, 'Run logging is planned for Sprint 2.4.'),
+        onTap: onLogRun,
       ),
       _QuickAction(
         icon: Icons.monitor_weight_outlined,
@@ -497,6 +713,19 @@ String _formatSet(SetLog set) {
 
   return parts.join(' - ');
 }
+
+String _formatDuration(int seconds) {
+  final minutes = (seconds / 60).round();
+  return '$minutes min';
+}
+
+String _formatPace(double secondsPerKm) {
+  final minutes = secondsPerKm ~/ 60;
+  final seconds = (secondsPerKm % 60).round().toString().padLeft(2, '0');
+  return '$minutes:$seconds';
+}
+
+String _fmt(double value) => _formatNumber(value);
 
 String _formatNumber(double value) {
   return value.toStringAsFixed(value.truncateToDouble() == value ? 0 : 1);

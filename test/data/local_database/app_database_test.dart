@@ -31,10 +31,12 @@ void main() {
         'bodyweight_logs',
         'campaign_phases',
         'campaigns',
+        'cardio_logs',
         'exercise_logs',
         'exercises',
         'goals',
         'program_templates',
+        'progression_suggestions',
         'scheduled_workouts',
         'seed_runs',
         'session_logs',
@@ -232,6 +234,14 @@ void main() {
         ),
         isTrue,
       );
+      final analytics = await repositories.sessions.getAnalyticsSnapshot(
+        DateTime.utc(2026, 5, 6),
+      );
+      expect(analytics.weeklyWorkoutCount, 1);
+      expect(analytics.plannedWorkoutCount, greaterThanOrEqualTo(1));
+      expect(analytics.completedScheduledWorkoutCount, 1);
+      expect(analytics.weeklyVolumeKg, greaterThan(0));
+      expect(analytics.currentTrainingStreakDays, 1);
       expect(updatedScheduledWorkout.status, 'completed');
     },
   );
@@ -370,4 +380,143 @@ void main() {
     expect(bench.workingWeight?.weight, 105);
     expect(bench.workingWeight?.isManualOverride, isTrue);
   });
+
+  test('run logging stores pace and updates 5k goal when faster', () async {
+    final database = AppDatabase.inMemory();
+    addTearDown(database.close);
+    await AppSeedDataService(
+      database,
+    ).loadMaySeptember2026SeedCampaign(appliedAt: DateTime.utc(2026, 5, 3));
+    final repositories = AppRepositories(database);
+
+    final run = await repositories.cardio.logRun(
+      loggedAt: DateTime.utc(2026, 5, 12, 7),
+      distanceKm: 5,
+      durationMinutes: 29,
+      notes: 'Comfortable benchmark',
+    );
+
+    final runs = await repositories.cardio.getRecentRuns();
+    final goals = await repositories.goals.getActiveGoals();
+    final fiveKmGoal = goals.singleWhere(
+      (goal) => goal.linkedMetric == 'cardio:5k_time',
+    );
+
+    expect(runs, hasLength(1));
+    expect(run.distanceMeters, 5000);
+    expect(run.durationSeconds, 1740);
+    expect(run.paceSecondsPerKm, 348);
+    expect(run.notes, 'Comfortable benchmark');
+    expect(fiveKmGoal.currentValue, closeTo(29, 0.001));
+  });
+
+  test('progression suggestions can be accepted or ignored', () async {
+    final database = AppDatabase.inMemory();
+    addTearDown(database.close);
+    await AppSeedDataService(
+      database,
+    ).loadMaySeptember2026SeedCampaign(appliedAt: DateTime.utc(2026, 5, 3));
+    final repositories = AppRepositories(database);
+
+    final firstWorkout =
+        (await repositories.campaigns.getUpcomingScheduledWorkouts(
+          from: DateTime.utc(2026, 5, 5),
+          limit: 30,
+        )).first;
+    final secondWorkout = ScheduledWorkout(
+      id: 'progression-day-b-repeat',
+      campaignId: firstWorkout.campaignId,
+      programTemplateId: firstWorkout.programTemplateId,
+      workoutTemplateId: firstWorkout.workoutTemplateId,
+      scheduledFor: firstWorkout.scheduledFor.add(const Duration(days: 7)),
+      status: 'planned',
+      notes: null,
+      createdAt: firstWorkout.createdAt,
+      updatedAt: firstWorkout.updatedAt,
+    );
+    await database
+        .into(database.scheduledWorkouts)
+        .insert(
+          ScheduledWorkoutsCompanion.insert(
+            id: secondWorkout.id,
+            campaignId: Value(secondWorkout.campaignId),
+            programTemplateId: Value(secondWorkout.programTemplateId),
+            workoutTemplateId: secondWorkout.workoutTemplateId,
+            scheduledFor: secondWorkout.scheduledFor,
+            status: Value(secondWorkout.status),
+            createdAt: secondWorkout.createdAt,
+            updatedAt: secondWorkout.updatedAt,
+          ),
+        );
+    final scheduled = [firstWorkout, secondWorkout];
+
+    for (final workout in scheduled) {
+      final template = (await repositories.workouts.getTemplate(
+        workout.workoutTemplateId,
+      ))!;
+      final targets = await repositories.workouts.getExerciseTargets(
+        template.id,
+      );
+      await repositories.sessions.completePlannedWorkout(
+        scheduledWorkout: workout,
+        workoutTemplate: template,
+        exercises: [
+          for (final target in targets)
+            CompletedExerciseInput(
+              exerciseId: target.exercise.id,
+              sortOrder: target.templateExercise.sortOrder,
+              sets: [
+                for (
+                  var setNumber = 1;
+                  setNumber <= (target.templateExercise.targetSets ?? 1);
+                  setNumber++
+                )
+                  CompletedSetInput(
+                    setNumber: setNumber,
+                    isComplete: true,
+                    reps: _upperRepTarget(target.templateExercise.targetReps),
+                    weight: target.templateExercise.targetWeight,
+                    rpe: target.templateExercise.targetRpe,
+                  ),
+              ],
+            ),
+        ],
+        startedAt: workout.scheduledFor.add(const Duration(hours: 6)),
+        completedAt: workout.scheduledFor.add(const Duration(hours: 7)),
+      );
+    }
+
+    final suggestions = await repositories.exercises
+        .getProgressionSuggestions();
+    final deadlift = suggestions.singleWhere(
+      (suggestion) => suggestion.exercise.id == 'conventional-deadlift',
+    );
+    expect(deadlift.suggestion.currentWeight, 160);
+    expect(deadlift.suggestion.suggestedWeight, 162.5);
+
+    await repositories.exercises.acceptProgressionSuggestion(
+      deadlift.suggestion.id,
+    );
+    final deadliftWeight =
+        await (database.select(database.workingWeights)..where(
+              (table) => table.exerciseId.equals('conventional-deadlift'),
+            ))
+            .getSingle();
+    expect(deadliftWeight.weight, 162.5);
+
+    final remaining = await repositories.exercises.getProgressionSuggestions();
+    final rdl = remaining.singleWhere(
+      (suggestion) => suggestion.exercise.id == 'romanian-deadlift',
+    );
+    await repositories.exercises.ignoreProgressionSuggestion(rdl.suggestion.id);
+    final ignored = await (database.select(
+      database.progressionSuggestions,
+    )..where((table) => table.id.equals(rdl.suggestion.id))).getSingle();
+    expect(ignored.status, 'ignored');
+  });
+}
+
+int? _upperRepTarget(String? targetReps) {
+  if (targetReps == null) return null;
+  return int.tryParse(targetReps.split('-').last.trim());
 }

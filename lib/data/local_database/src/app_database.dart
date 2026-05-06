@@ -20,6 +20,8 @@ part 'app_database.g.dart';
     ExerciseLogs,
     SetLogs,
     WorkingWeights,
+    CardioLogs,
+    ProgressionSuggestions,
     BodyweightLogs,
     Goals,
     SeedRuns,
@@ -35,7 +37,7 @@ class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration {
@@ -44,6 +46,12 @@ class AppDatabase extends _$AppDatabase {
       onUpgrade: (migrator, from, to) async {
         if (from < 2) {
           await migrator.createTable(workingWeights);
+        }
+        if (from < 3) {
+          await migrator.createTable(cardioLogs);
+        }
+        if (from < 4) {
+          await migrator.createTable(progressionSuggestions);
         }
       },
       beforeOpen: (details) async {
@@ -236,6 +244,35 @@ class WorkingWeights extends Table {
 
   @override
   Set<Column<Object>> get primaryKey => {exerciseId};
+}
+
+class CardioLogs extends Table {
+  TextColumn get id => text()();
+  DateTimeColumn get loggedAt => dateTime()();
+  TextColumn get activityType => text().withDefault(const Constant('run'))();
+  RealColumn get distanceMeters => real()();
+  IntColumn get durationSeconds => integer()();
+  RealColumn get paceSecondsPerKm => real()();
+  TextColumn get notes => text().nullable()();
+  DateTimeColumn get createdAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+class ProgressionSuggestions extends Table {
+  TextColumn get id => text()();
+  TextColumn get exerciseId => text().references(Exercises, #id)();
+  RealColumn get currentWeight => real()();
+  RealColumn get suggestedWeight => real()();
+  TextColumn get unit => text().withDefault(const Constant('kg'))();
+  TextColumn get reason => text()();
+  TextColumn get status => text().withDefault(const Constant('pending'))();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get resolvedAt => dateTime().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
 }
 
 class BodyweightLogs extends Table {

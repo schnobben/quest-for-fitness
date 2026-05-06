@@ -67,6 +67,67 @@ class SessionRepository {
     return entries;
   }
 
+  Future<SessionAnalyticsSnapshot> getAnalyticsSnapshot(DateTime today) async {
+    final day = DateTime(today.year, today.month, today.day);
+    final weekStart = day.subtract(Duration(days: day.weekday - 1));
+    final weekEnd = weekStart.add(const Duration(days: 7));
+
+    final sessions =
+        await (_database.select(_database.sessionLogs)
+              ..where(
+                (table) => table.startedAt.isBiggerOrEqualValue(weekStart),
+              )
+              ..where((table) => table.startedAt.isSmallerThanValue(weekEnd)))
+            .get();
+
+    final scheduled =
+        await (_database.select(_database.scheduledWorkouts)
+              ..where(
+                (table) => table.scheduledFor.isBiggerOrEqualValue(weekStart),
+              )
+              ..where(
+                (table) => table.scheduledFor.isSmallerThanValue(weekEnd),
+              ))
+            .get();
+
+    var weeklyVolume = 0.0;
+    for (final session in sessions) {
+      final exerciseLogs = await (_database.select(
+        _database.exerciseLogs,
+      )..where((table) => table.sessionLogId.equals(session.id))).get();
+      for (final exerciseLog in exerciseLogs) {
+        final sets =
+            await (_database.select(_database.setLogs)
+                  ..where((table) => table.exerciseLogId.equals(exerciseLog.id))
+                  ..where((table) => table.isComplete.equals(true)))
+                .get();
+        for (final set in sets) {
+          if (set.weight != null && set.reps != null) {
+            weeklyVolume += set.weight! * set.reps!;
+          }
+        }
+      }
+    }
+
+    final completedScheduledCount = scheduled
+        .where((workout) => workout.status == 'completed')
+        .length;
+    final adherence = scheduled.isEmpty
+        ? 0.0
+        : completedScheduledCount / scheduled.length;
+
+    return SessionAnalyticsSnapshot(
+      weekStart: weekStart,
+      weekEndExclusive: weekEnd,
+      weeklyWorkoutCount: sessions.length,
+      plannedWorkoutCount: scheduled.length,
+      completedScheduledWorkoutCount: completedScheduledCount,
+      weeklyVolumeKg: weeklyVolume,
+      adherence: adherence,
+      currentTrainingStreakDays: await _trainingStreakDays(),
+    );
+  }
+
   Future<void> upsertSession(SessionLogsCompanion session) {
     return _database
         .into(_database.sessionLogs)
@@ -256,6 +317,58 @@ class SessionRepository {
     }
     return weight * (1 + reps / 30);
   }
+
+  Future<int> _trainingStreakDays() async {
+    final sessions = await (_database.select(
+      _database.sessionLogs,
+    )..orderBy([(table) => OrderingTerm.desc(table.startedAt)])).get();
+    if (sessions.isEmpty) return 0;
+
+    final days =
+        sessions
+            .map((session) {
+              final date = session.startedAt;
+              return DateTime(date.year, date.month, date.day);
+            })
+            .toSet()
+            .toList()
+          ..sort((a, b) => b.compareTo(a));
+
+    var streak = 1;
+    var cursor = days.first;
+    for (final day in days.skip(1)) {
+      final expectedPrevious = cursor.subtract(const Duration(days: 1));
+      if (day == expectedPrevious) {
+        streak++;
+        cursor = day;
+      } else {
+        break;
+      }
+    }
+    return streak;
+  }
+}
+
+class SessionAnalyticsSnapshot {
+  const SessionAnalyticsSnapshot({
+    required this.weekStart,
+    required this.weekEndExclusive,
+    required this.weeklyWorkoutCount,
+    required this.plannedWorkoutCount,
+    required this.completedScheduledWorkoutCount,
+    required this.weeklyVolumeKg,
+    required this.adherence,
+    required this.currentTrainingStreakDays,
+  });
+
+  final DateTime weekStart;
+  final DateTime weekEndExclusive;
+  final int weeklyWorkoutCount;
+  final int plannedWorkoutCount;
+  final int completedScheduledWorkoutCount;
+  final double weeklyVolumeKg;
+  final double adherence;
+  final int currentTrainingStreakDays;
 }
 
 class SessionHistoryEntry {

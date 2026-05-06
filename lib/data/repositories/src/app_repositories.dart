@@ -1,6 +1,7 @@
 import '../../local_database/local_database.dart';
 import 'bodyweight_repository.dart';
 import 'campaign_repository.dart';
+import 'cardio_repository.dart';
 import 'exercise_repository.dart';
 import 'goal_repository.dart';
 import 'session_repository.dart';
@@ -12,6 +13,7 @@ class AppRepositories {
       campaigns = CampaignRepository(database),
       workouts = WorkoutRepository(database),
       sessions = SessionRepository(database),
+      cardio = CardioRepository(database),
       bodyweight = BodyweightRepository(database),
       goals = GoalRepository(database);
 
@@ -19,6 +21,7 @@ class AppRepositories {
   final CampaignRepository campaigns;
   final WorkoutRepository workouts;
   final SessionRepository sessions;
+  final CardioRepository cardio;
   final BodyweightRepository bodyweight;
   final GoalRepository goals;
 }

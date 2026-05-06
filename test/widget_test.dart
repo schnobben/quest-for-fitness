@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart' hide isNotNull;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -144,12 +145,31 @@ void main() {
     await tester.tap(find.byKey(const Key('complete-session-button')));
     await tester.pumpAndSettle();
 
+    await database
+        .into(database.progressionSuggestions)
+        .insert(
+          ProgressionSuggestionsCompanion.insert(
+            id: 'test-progression-deadlift',
+            exerciseId: 'conventional-deadlift',
+            currentWeight: 160,
+            suggestedWeight: 162.5,
+            unit: const Value('kg'),
+            reason: 'Hit target reps at target RPE for 2 straight sessions.',
+            createdAt: DateTime.utc(2026, 5, 5, 7),
+          ),
+        );
+
     await tester.tap(find.text('Progress').last);
     await tester.pumpAndSettle();
 
+    expect(find.text('ANALYTICS SNAPSHOT'), findsOneWidget);
+    expect(find.text('WORKOUTS'), findsOneWidget);
+    expect(find.textContaining('kg'), findsWidgets);
     expect(find.text('WORKING WEIGHTS'), findsOneWidget);
-    expect(find.text('Conventional Deadlift'), findsOneWidget);
+    expect(find.text('Conventional Deadlift'), findsWidgets);
     expect(find.textContaining('e1RM'), findsWidgets);
+    expect(find.text('PROGRESSION FLAGS'), findsOneWidget);
+    expect(find.textContaining('160 -> 162.5 kg'), findsOneWidget);
 
     await tester.tap(
       find.byKey(const ValueKey('edit-working-weight-conventional-deadlift')),
@@ -171,12 +191,27 @@ void main() {
     expect(deadliftWorkingWeight.isManualOverride, isTrue);
     expect(find.text('170 kg'), findsOneWidget);
 
-    await tester.tap(find.text('Conventional Deadlift'));
+    await tester.tap(find.text('Conventional Deadlift').first);
     await tester.pumpAndSettle();
 
     expect(find.text('SET HISTORY'), findsOneWidget);
     expect(find.text('BEST SET'), findsOneWidget);
     expect(find.textContaining('160 x 4'), findsWidgets);
+
+    await tester.tap(find.text('Progress').last);
+    await tester.pumpAndSettle();
+    final acceptProgression = find.byKey(
+      const ValueKey('accept-progression-test-progression-deadlift'),
+    );
+    await tester.ensureVisible(acceptProgression);
+    await tester.pumpAndSettle();
+    await tester.tap(acceptProgression);
+    await tester.pumpAndSettle();
+    final acceptedSuggestion =
+        await (database.select(database.progressionSuggestions)
+              ..where((table) => table.id.equals('test-progression-deadlift')))
+            .getSingle();
+    expect(acceptedSuggestion.status, 'accepted');
 
     await _unmountApp(tester);
   });
@@ -240,14 +275,31 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Start Next Plan'), findsOneWidget);
-      expect(find.text('Sprint 2.4'), findsOneWidget);
+      expect(find.text('Live now'), findsWidgets);
 
       await tester.tap(find.text('Log Run'));
       await tester.pumpAndSettle();
-      expect(
-        find.text('Run logging is planned for Sprint 2.4.'),
-        findsOneWidget,
+      await tester.enterText(find.byKey(const Key('run-distance-field')), '5');
+      await tester.enterText(find.byKey(const Key('run-duration-field')), '29');
+      await tester.enterText(
+        find.byKey(const Key('run-notes-field')),
+        'Benchmark',
       );
+      await tester.tap(find.byKey(const Key('run-save-button')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Run logged'), findsOneWidget);
+      expect(find.text('RECENT RUNS'), findsOneWidget);
+      expect(find.textContaining('5 km'), findsWidgets);
+      expect(find.textContaining('5:48/km'), findsOneWidget);
+
+      await tester.tap(find.text('Progress').last);
+      await tester.pumpAndSettle();
+      expect(find.text('PACE TREND'), findsOneWidget);
+      expect(find.textContaining('5:48/km'), findsWidgets);
+
+      await tester.tap(find.text('Log').last);
+      await tester.pumpAndSettle();
 
       await tester.tap(find.text('Start Next Plan'));
       await tester.pumpAndSettle();

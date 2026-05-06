@@ -27,8 +27,8 @@ The roadmap is split into milestones. Each milestone contains sprints and tasks.
 | Milestone | Name | Purpose |
 |---|---|---|
 | 0 | Product & Project Foundation | Completed May 3, 2026 |
-| 1 | Fitness Core MVP | Build the workout/session logging app |
-| 2 | Goals, Analytics & Progression | Add useful progress dashboards and training insights |
+| 1 | Fitness Core MVP | Completed May 6, 2026 |
+| 2 | Goals, Analytics & Progression | Completed May 6, 2026 |
 | 3 | Quest Engine V1 | Add Adventurer, XP, levels, achievements, and basic rewards |
 | 4 | Pet System V1 | Add companion, bond, mood, evolution, and basic care loop |
 | 5 | Modular Builder V1 | Add custom exercises, workouts, programs, and campaigns |
@@ -171,11 +171,24 @@ Completion notes:
 
 ## 4. Milestone 1 — Fitness Core MVP
 
+**Status:** Completed May 6, 2026.
+
 ### Goal
 
 Build the usable workout tracker.
 
 This milestone should make the app valuable even before the RPG features exist.
+
+Milestone completion notes:
+
+- Local Drift/SQLite persistence, repository access, migrations, seed loading, and reset/dev tooling are in place.
+- Fresh installs load the May-September 2026 sample campaign with active phases, scheduled workouts, goals, and starter bodyweight data.
+- Today can determine the active campaign/phase, recommend the next training action, show weekly plan context, and start planned workouts.
+- Planned workout execution supports target display, editable set logging, session completion, and persisted exercise/set logs.
+- Log supports session history, expandable session detail, and deletion of test sessions.
+- Progress supports fast bodyweight logging, bodyweight history, trend display, and linked bodyweight goal updates.
+- Current verification passes: `flutter analyze`, `flutter test --reporter expanded`, and `flutter build apk --debug`.
+- iOS simulator execution remains unverified from this Windows development host.
 
 ---
 
@@ -394,11 +407,24 @@ Completion notes:
 
 ## 5. Milestone 2 — Goals, Analytics & Progression
 
+**Status:** Completed May 6, 2026.
+
 ### Goal
 
 Make the app useful for understanding progress.
 
 Milestone 2 starts with a small polish bridge sprint before the deeper goals and analytics work. Sprint 2.0 exists because Milestone 1 is technically usable, but a fresh install can still feel confusing when the seed campaign has future-dated workouts or when future feature areas still look like dummy placeholders.
+
+Milestone completion notes:
+
+- Fresh-install usability is polished so seed/sample content is clearly labeled and users can immediately test the first planned workout.
+- Progress includes editable goal cards, higher/lower-is-better progress handling, target dates, and linked metric updates.
+- Working weights are auto-derived from completed sessions, manually correctable, and connected to exercise detail/history views.
+- Analytics now summarize weekly workouts, adherence, volume, training streak, goal progress, bodyweight trend, and recent PR highlights.
+- Log supports run/cardio entry with computed pace, recent run history, pace trend display, and automatic 5 km goal updates.
+- Progression suggestions are generated from consecutive successful sessions, displayed as progression flags, and can be accepted or ignored.
+- Current verification passes: `flutter analyze`, `flutter test --reporter expanded`, and `flutter build apk --debug`.
+- iOS simulator execution remains unverified from this Windows development host.
 
 ---
 
@@ -497,6 +523,8 @@ Completion notes:
 
 ### Sprint 2.3 — Basic analytics dashboard
 
+**Status:** Completed May 6, 2026.
+
 Tasks:
 
 - Add weekly workout count.
@@ -510,9 +538,21 @@ Exit criteria:
 
 - Progress screen provides useful information at a glance.
 
+Completion notes:
+
+- Added session-derived weekly analytics for workout count, planned/completed adherence, weekly tonnage, and current training-day streak.
+- Progress now shows an analytics snapshot near the top of the screen instead of the previous static weekly volume placeholder.
+- Bodyweight trend remains visible in the bodyweight hero card and goal progress remains visible in the goals dashboard.
+- Recent PR highlights are derived from working-weight/best-set data and show estimated 1RM where available.
+- Log's next-planned-workout provider now uses the shared testable date provider instead of `DateTime.now()`, keeping Log and Today behavior consistent.
+- Added repository and widget coverage for the analytics snapshot.
+- Verification passed: `flutter analyze`, `flutter test --reporter expanded`, and `flutter build apk --debug`.
+
 ---
 
 ### Sprint 2.4 — Run/cardio log v1
+
+**Status:** Completed May 6, 2026.
 
 Tasks:
 
@@ -531,9 +571,21 @@ Exit criteria:
 
 - User can log runs and see pace progression.
 
+Completion notes:
+
+- Added a Drift-backed `cardio_logs` table with migration support for run/cardio entries.
+- Added cardio repository support for logging runs with date, distance, duration, computed pace, notes, and recent-run history.
+- Log now has a live `Log Run` quick action with distance/duration/notes capture and a recent runs section.
+- Progress now shows a pace trend card with latest pace, trend change, and sparkline when run history exists.
+- 5 km run goal current value updates automatically when a logged run produces a faster 5 km equivalent.
+- Added repository and widget coverage for run logging, pace computation, recent runs, pace trend, and 5 km goal updates.
+- Verification passed: `flutter analyze`, `flutter test --reporter expanded`, and `flutter build apk --debug`.
+
 ---
 
 ### Sprint 2.5 — Progression suggestions v1
+
+**Status:** Completed May 6, 2026.
 
 Tasks:
 
@@ -546,6 +598,15 @@ Tasks:
 Exit criteria:
 
 - App can suggest simple load increases without forcing them.
+
+Completion notes:
+
+- Added a Drift-backed `progression_suggestions` table with migration support.
+- Implemented a simple progression rule engine that detects two consecutive successful exercise logs where target reps were hit at or below target RPE.
+- Progress now shows pending progression flags with current-to-suggested load, reason text, and accept/ignore actions.
+- Accepting a suggestion updates the exercise working weight and marks the suggestion accepted; ignoring marks it ignored without changing load.
+- Added repository and widget coverage for rule generation, accept/ignore behavior, and Progress display.
+- Verification passed: `flutter analyze`, `flutter test --reporter expanded`, and `flutter build apk --debug`.
 
 ---
 

@@ -100,6 +100,8 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
             onEditGoal: _editGoal,
             onOpenExercise: _openExercise,
             onEditWorkingWeight: _editWorkingWeight,
+            onAcceptSuggestion: _acceptProgressionSuggestion,
+            onIgnoreSuggestion: _ignoreProgressionSuggestion,
           ),
           loading: () => const Center(
             child: CircularProgressIndicator(color: AppColors.forest),
@@ -192,6 +194,36 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
       ),
     );
   }
+
+  Future<void> _acceptProgressionSuggestion(
+    ProgressionSuggestionView suggestion,
+  ) async {
+    final repositories = AppRepositories(ref.read(appDatabaseProvider));
+    await repositories.exercises.acceptProgressionSuggestion(
+      suggestion.suggestion.id,
+    );
+    ref.invalidate(progressDashboardProvider);
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('${suggestion.exercise.name} progression accepted'),
+      ),
+    );
+  }
+
+  Future<void> _ignoreProgressionSuggestion(
+    ProgressionSuggestionView suggestion,
+  ) async {
+    final repositories = AppRepositories(ref.read(appDatabaseProvider));
+    await repositories.exercises.ignoreProgressionSuggestion(
+      suggestion.suggestion.id,
+    );
+    ref.invalidate(progressDashboardProvider);
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('${suggestion.exercise.name} suggestion ignored')),
+    );
+  }
 }
 
 String _formatGoalValue(double? value) {
@@ -205,6 +237,12 @@ String _formatSet(SetPerformance performance) {
   final weight = _formatGoalValue(performance.weight);
   final reps = performance.reps?.toString() ?? '--';
   return '$weight x $reps';
+}
+
+String _formatPace(double secondsPerKm) {
+  final minutes = secondsPerKm ~/ 60;
+  final seconds = (secondsPerKm % 60).round().toString().padLeft(2, '0');
+  return '$minutes:$seconds';
 }
 
 String _formatDate(DateTime dt) {
@@ -550,6 +588,8 @@ class _ProgressBody extends StatelessWidget {
     required this.onEditGoal,
     required this.onOpenExercise,
     required this.onEditWorkingWeight,
+    required this.onAcceptSuggestion,
+    required this.onIgnoreSuggestion,
   });
 
   final ProgressDashboardData data;
@@ -559,6 +599,8 @@ class _ProgressBody extends StatelessWidget {
   final ValueChanged<Goal> onEditGoal;
   final ValueChanged<String> onOpenExercise;
   final ValueChanged<WorkingWeightSummary> onEditWorkingWeight;
+  final ValueChanged<ProgressionSuggestionView> onAcceptSuggestion;
+  final ValueChanged<ProgressionSuggestionView> onIgnoreSuggestion;
 
   @override
   Widget build(BuildContext context) {
@@ -587,6 +629,20 @@ class _ProgressBody extends StatelessWidget {
           ),
         ),
 
+        const QfSectionHeader(title: 'Analytics Snapshot'),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 18),
+          child: _AnalyticsSnapshotCard(data: data),
+        ),
+
+        if (data.recentRuns.isNotEmpty) ...[
+          const QfSectionHeader(title: 'Pace Trend'),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18),
+            child: _PaceTrendCard(runs: data.chronologicalRuns),
+          ),
+        ],
+
         // Quick log entry
         const SizedBox(height: 12),
         Padding(
@@ -613,6 +669,18 @@ class _ProgressBody extends StatelessWidget {
           ),
         ],
 
+        if (data.progressionSuggestions.isNotEmpty) ...[
+          const QfSectionHeader(title: 'Progression Flags'),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18),
+            child: _ProgressionSuggestionsCard(
+              suggestions: data.progressionSuggestions,
+              onAccept: onAcceptSuggestion,
+              onIgnore: onIgnoreSuggestion,
+            ),
+          ),
+        ],
+
         // Goal dashboard
         if (data.goals.isNotEmpty) ...[
           const QfSectionHeader(
@@ -628,11 +696,10 @@ class _ProgressBody extends StatelessWidget {
           ),
         ],
 
-        // Weekly volume bars (static placeholder)
-        const QfSectionHeader(title: 'Weekly Volume'),
+        const QfSectionHeader(title: 'Recent PR Highlights'),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18),
-          child: _WeeklyVolumeCard(),
+          child: _PrHighlightsCard(highlights: data.prHighlights),
         ),
 
         // Bodyweight history
@@ -966,6 +1033,188 @@ class _WorkingWeightsCard extends StatelessWidget {
             if (i < summaries.length - 1)
               const Divider(height: 1, color: AppColors.outlineSoft),
           ],
+        ],
+      ),
+    );
+  }
+}
+
+class _PrHighlightsCard extends StatelessWidget {
+  const _PrHighlightsCard({required this.highlights});
+
+  final List<WorkingWeightSummary> highlights;
+
+  @override
+  Widget build(BuildContext context) {
+    if (highlights.isEmpty) {
+      return const QfCard(
+        padding: EdgeInsets.all(14),
+        child: Text(
+          'Complete weighted sets to unlock PR highlights.',
+          style: TextStyle(color: AppColors.inkMute),
+        ),
+      );
+    }
+
+    return QfCard(
+      padding: EdgeInsets.zero,
+      child: Column(
+        children: [
+          for (var i = 0; i < highlights.length; i++) ...[
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          highlights[i].exercise.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: AppColors.ink,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          highlights[i].bestPerformance == null
+                              ? 'No set logged'
+                              : 'Best ${_formatSet(highlights[i].bestPerformance!)}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: AppColors.inkDim,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Text(
+                    highlights[i].bestPerformance?.estimatedOneRepMax == null
+                        ? 'e1RM --'
+                        : 'e1RM ${_formatGoalValue(highlights[i].bestPerformance!.estimatedOneRepMax)}',
+                    style: AppTheme.monoStyle(
+                      color: AppColors.gold,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (i < highlights.length - 1)
+              const Divider(height: 1, color: AppColors.outlineSoft),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _ProgressionSuggestionsCard extends StatelessWidget {
+  const _ProgressionSuggestionsCard({
+    required this.suggestions,
+    required this.onAccept,
+    required this.onIgnore,
+  });
+
+  final List<ProgressionSuggestionView> suggestions;
+  final ValueChanged<ProgressionSuggestionView> onAccept;
+  final ValueChanged<ProgressionSuggestionView> onIgnore;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        for (var i = 0; i < suggestions.length; i++) ...[
+          _ProgressionSuggestionCard(
+            suggestion: suggestions[i],
+            onAccept: () => onAccept(suggestions[i]),
+            onIgnore: () => onIgnore(suggestions[i]),
+          ),
+          if (i < suggestions.length - 1) const SizedBox(height: 10),
+        ],
+      ],
+    );
+  }
+}
+
+class _ProgressionSuggestionCard extends StatelessWidget {
+  const _ProgressionSuggestionCard({
+    required this.suggestion,
+    required this.onAccept,
+    required this.onIgnore,
+  });
+
+  final ProgressionSuggestionView suggestion;
+  final VoidCallback onAccept;
+  final VoidCallback onIgnore;
+
+  @override
+  Widget build(BuildContext context) {
+    final data = suggestion.suggestion;
+    return QfCard(
+      variant: QfCardVariant.raised,
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.trending_up, color: AppColors.forest, size: 18),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  suggestion.exercise.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: AppColors.ink,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              Text(
+                '${_formatGoalValue(data.currentWeight)} -> ${_formatGoalValue(data.suggestedWeight)} ${data.unit}',
+                style: AppTheme.monoStyle(
+                  color: AppColors.forest,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            data.reason,
+            style: const TextStyle(color: AppColors.inkMute, fontSize: 12),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  key: ValueKey('ignore-progression-${data.id}'),
+                  onPressed: onIgnore,
+                  child: const Text('Ignore'),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: FilledButton(
+                  key: ValueKey('accept-progression-${data.id}'),
+                  onPressed: onAccept,
+                  child: const Text('Accept'),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -1375,28 +1624,63 @@ class _GoalCampaignCard extends StatelessWidget {
   }
 }
 
-class _WeeklyVolumeCard extends StatelessWidget {
+class _AnalyticsSnapshotCard extends StatelessWidget {
+  const _AnalyticsSnapshotCard({required this.data});
+
+  final ProgressDashboardData data;
+
   @override
   Widget build(BuildContext context) {
-    const bars = [42, 38, 51, 47, 55, 49, 58, 62];
+    final analytics = data.analytics;
+    final volumeFraction = (analytics.weeklyVolumeKg / 25000).clamp(0.04, 1.0);
 
     return QfCard(
       padding: const EdgeInsets.all(14),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Row(
+            children: [
+              Expanded(
+                child: _AnalyticsMetric(
+                  label: 'Workouts',
+                  value:
+                      '${analytics.weeklyWorkoutCount}/${analytics.plannedWorkoutCount}',
+                  detail: 'this week',
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _AnalyticsMetric(
+                  label: 'Adherence',
+                  value: '${(analytics.adherence * 100).round()}%',
+                  detail: 'scheduled',
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _AnalyticsMetric(
+                  label: 'Streak',
+                  value: '${analytics.currentTrainingStreakDays}',
+                  detail: 'days',
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
           SizedBox(
-            height: 80,
+            height: 56,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                for (var i = 0; i < bars.length; i++) ...[
+                for (var i = 0; i < 7; i++) ...[
                   Expanded(
                     child: _VolumeBar(
-                      fraction: bars[i] / 100.0,
-                      isCurrent: i == bars.length - 1,
+                      fraction: i == 6 ? volumeFraction : 0.08,
+                      isCurrent: i == 6,
                     ),
                   ),
-                  if (i < bars.length - 1) const SizedBox(width: 4),
+                  if (i < 6) const SizedBox(width: 4),
                 ],
               ],
             ),
@@ -1417,14 +1701,14 @@ class _WeeklyVolumeCard extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    '21,840 kg',
+                    '${_formatGoalValue(analytics.weeklyVolumeKg)} kg',
                     style: AppTheme.monoStyle(
                       fontSize: 11,
                       color: AppColors.forest,
                     ),
                   ),
                   Text(
-                    ' (+8%)',
+                    ' (${analytics.completedScheduledWorkoutCount} done)',
                     style: AppTheme.monoStyle(
                       fontSize: 11,
                       color: AppColors.inkDim,
@@ -1433,6 +1717,121 @@ class _WeeklyVolumeCard extends StatelessWidget {
                 ],
               ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PaceTrendCard extends StatelessWidget {
+  const _PaceTrendCard({required this.runs});
+
+  final List<CardioLog> runs;
+
+  @override
+  Widget build(BuildContext context) {
+    final latest = runs.isEmpty ? null : runs.last;
+    final first = runs.isEmpty ? null : runs.first;
+    final delta = latest == null || first == null
+        ? 0.0
+        : latest.paceSecondsPerKm - first.paceSecondsPerKm;
+
+    return QfCard(
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: _AnalyticsMetric(
+                  label: 'Latest Pace',
+                  value: latest == null
+                      ? '--'
+                      : '${_formatPace(latest.paceSecondsPerKm)}/km',
+                  detail: latest == null
+                      ? 'no runs'
+                      : '${_formatGoalValue(latest.distanceMeters / 1000)} km',
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _AnalyticsMetric(
+                  label: 'Trend',
+                  value: delta == 0
+                      ? '--'
+                      : '${delta < 0 ? '' : '+'}${delta.round()}s',
+                  detail: delta < 0 ? 'faster/km' : 'change/km',
+                ),
+              ),
+            ],
+          ),
+          if (runs.length >= 2) ...[
+            const SizedBox(height: 12),
+            SizedBox(
+              height: 58,
+              child: CustomPaint(
+                painter: _SparklinePainter(
+                  values: runs.map((run) => run.paceSecondsPerKm).toList(),
+                  lineColor: AppColors.sky,
+                  fillColor: AppColors.sky.withValues(alpha: 0.14),
+                ),
+                size: const Size(double.infinity, 58),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _AnalyticsMetric extends StatelessWidget {
+  const _AnalyticsMetric({
+    required this.label,
+    required this.value,
+    required this.detail,
+  });
+
+  final String label;
+  final String value;
+  final String detail;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: AppColors.surface2,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppColors.outlineSoft),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label.toUpperCase(),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontSize: 10, color: AppColors.inkDim),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTheme.monoStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: AppColors.ink,
+            ),
+          ),
+          Text(
+            detail,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontSize: 10, color: AppColors.inkDim),
           ),
         ],
       ),
