@@ -11,7 +11,17 @@
       "Bash(flutter build *)",
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(Get-Process -Name \"dart\",\"flutter\" -ErrorAction SilentlyContinue)",
+      "Bash(Select-Object Id, Name, CPU, WorkingSet, StartTime)",
+      "Bash(Format-Table)",
+      "PowerShell(Get-Process *)",
+      "Bash(dart --version)",
+      "Bash(dart eval *)",
+      "Bash(dart format *)",
+      "Bash(flutter test *)",
+      "Bash(xargs cat *)",
+      "Bash(cd \"C:\\\\\\\\Users\\\\\\\\georg\\\\\\\\Projects\\\\\\\\quest-for-fitness\")"
     ]
   }
 }

@@ -31,7 +31,10 @@ class QfPill extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (icon != null) ...[
-            IconTheme(data: IconThemeData(color: fg, size: 11), child: icon!),
+            IconTheme(
+              data: IconThemeData(color: fg, size: 11),
+              child: icon!,
+            ),
             const SizedBox(width: 5),
           ],
           DefaultTextStyle(
@@ -52,35 +55,35 @@ class QfPill extends StatelessWidget {
   (Color, Color, Color) _toneColors() {
     return switch (tone) {
       QfPillTone.forest => (
-          const Color(0x1A68D391),
-          const Color(0x4068D391),
-          AppColors.forest,
-        ),
+        const Color(0x1A68D391),
+        const Color(0x4068D391),
+        AppColors.forest,
+      ),
       QfPillTone.ember => (
-          const Color(0x1AF6AD55),
-          const Color(0x40F6AD55),
-          AppColors.ember,
-        ),
+        const Color(0x1AF6AD55),
+        const Color(0x40F6AD55),
+        AppColors.ember,
+      ),
       QfPillTone.sky => (
-          const Color(0x1A63B3ED),
-          const Color(0x4063B3ED),
-          AppColors.sky,
-        ),
+        const Color(0x1A63B3ED),
+        const Color(0x4063B3ED),
+        AppColors.sky,
+      ),
       QfPillTone.gold => (
-          const Color(0x1AECC94B),
-          const Color(0x40ECC94B),
-          AppColors.gold,
-        ),
+        const Color(0x1AECC94B),
+        const Color(0x40ECC94B),
+        AppColors.gold,
+      ),
       QfPillTone.rune => (
-          const Color(0x14B79A55),
-          const Color(0x40B79A55),
-          AppColors.rune,
-        ),
+        const Color(0x14B79A55),
+        const Color(0x40B79A55),
+        AppColors.rune,
+      ),
       QfPillTone.muted => (
-          AppColors.surface2,
-          AppColors.outlineSoft,
-          AppColors.inkMute,
-        ),
+        AppColors.surface2,
+        AppColors.outlineSoft,
+        AppColors.inkMute,
+      ),
     };
   }
 }

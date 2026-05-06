@@ -259,16 +259,8 @@ class AppTheme {
         height: 1.3,
         color: ink,
       ),
-      bodyLarge: GoogleFonts.interTight(
-        fontSize: 16,
-        height: 1.45,
-        color: ink,
-      ),
-      bodyMedium: GoogleFonts.interTight(
-        fontSize: 14,
-        height: 1.4,
-        color: ink,
-      ),
+      bodyLarge: GoogleFonts.interTight(fontSize: 16, height: 1.45, color: ink),
+      bodyMedium: GoogleFonts.interTight(fontSize: 14, height: 1.4, color: ink),
       bodySmall: GoogleFonts.interTight(
         fontSize: 12,
         height: 1.4,

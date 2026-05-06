@@ -636,6 +636,44 @@ Exit criteria:
 - User has an Adventurer identity.
 - Adventurer can gain XP and level up.
 
+Completion notes:
+
+- Added Adventurers Drift table at schema version 5.
+- AdventurerRepository implements getOrCreatePrimary(), grantXp(), xpRequiredForLevel(), and title promotion logic.
+- adventurerProfileProvider (FutureProvider, non-autoDispose) wires the repository to the Quest screen.
+- Quest screen Hero tab renders persisted adventurer name, class, title, level, XP bar, attributes grid, and equipment slots from live DB data.
+- Temporary "Gain 125 XP" button added for integration testing.
+- DB test and widget test cover profile persistence, XP grant, level-up, and Quest screen rendering.
+- Verification passed: flutter analyze, flutter test --reporter expanded, flutter build apk --debug.
+
+---
+
+### Sprint 3.1.5 — XP architecture bridge
+
+**Goal:** Close the gaps identified in the Milestone 0–2 code review before the XP event system is built. Sprint 3.2 requires XP to fire from workout completion, run logging, bodyweight logging, and goal updates — this sprint lays the architecture so Sprint 3.2 can wire those hooks cleanly.
+
+Tasks:
+
+- Create `XpEventService` with one method per fitness action:
+  - `onWorkoutCompleted({required int setCount})` — base XP plus per-set bonus
+  - `onRunLogged({required double distanceKm})` — XP scaled to distance
+  - `onBodyweightLogged()` — flat XP reward
+  - `onGoalCompleted()` — bonus XP on goal milestone
+- Define the XP values for each action (tunable constants, not magic numbers).
+- Register `XpEventService` in `AppRepositories` so repositories can call it inside their existing Drift transactions.
+- Refactor the temporary inline XP grant in `quest_screen.dart` into a dedicated Riverpod controller provider so all future XP sources use the same invalidation path.
+- Add a multi-level-up test: `grantXp(500)` from level 1 should produce the correct level and residual XP across multiple threshold crossings.
+- Add a `QfNotification` toast component (or a consistent `SnackBar` wrapper) to the design system for use by the XP event feedback UI in Sprint 3.2.
+
+Exit criteria:
+
+- `XpEventService` exists with defined XP values and is wired into `AppRepositories`.
+- No repository calls `AdventurerRepository.grantXp()` directly — all go through `XpEventService`.
+- The Quest screen XP button uses the new controller provider, not an inline repository instantiation.
+- Multi-level-up edge case is covered by a dedicated test.
+- Design system has a reusable notification/toast component ready for Sprint 3.2.
+- Verification passes: `flutter analyze`, `flutter test --reporter expanded`, `flutter build apk --debug`.
+
 ---
 
 ### Sprint 3.2 — XP event system

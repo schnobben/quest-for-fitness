@@ -33,10 +33,7 @@ class QfCard extends StatelessWidget {
         gradient: gradient,
         borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
         border: Border.all(color: borderColor ?? border),
-        boxShadow: [
-          ?shadows,
-          ?extraShadow,
-        ],
+        boxShadow: [?shadows, ?extraShadow],
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
@@ -53,31 +50,31 @@ class QfCard extends StatelessWidget {
   (Color, LinearGradient?, Color, BoxShadow?) _variantStyle() {
     return switch (variant) {
       QfCardVariant.regular => (
-          AppColors.surface,
-          null,
-          AppColors.outlineSoft,
-          null,
-        ),
+        AppColors.surface,
+        null,
+        AppColors.outlineSoft,
+        null,
+      ),
       QfCardVariant.raised => (
-          AppColors.surface2,
-          null,
-          AppColors.outlineSoft,
-          null,
-        ),
+        AppColors.surface2,
+        null,
+        AppColors.outlineSoft,
+        null,
+      ),
       QfCardVariant.embossed => (
-          AppColors.surface2,
-          const LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [AppColors.surface2, AppColors.surface],
-          ),
-          AppColors.outline,
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.3),
-            offset: const Offset(0, 1),
-            blurRadius: 0,
-          ),
+        AppColors.surface2,
+        const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [AppColors.surface2, AppColors.surface],
         ),
+        AppColors.outline,
+        BoxShadow(
+          color: Colors.black.withValues(alpha: 0.3),
+          offset: const Offset(0, 1),
+          blurRadius: 0,
+        ),
+      ),
     };
   }
 
@@ -104,19 +101,21 @@ class _OrnCorner extends StatelessWidget {
     const color = AppColors.rune;
     const opacity = 0.55;
 
-    final top = (position == OrnPosition.topLeft ||
-            position == OrnPosition.topRight)
+    final top =
+        (position == OrnPosition.topLeft || position == OrnPosition.topRight)
         ? -1.0
         : null;
-    final bottom = (position == OrnPosition.bottomLeft ||
+    final bottom =
+        (position == OrnPosition.bottomLeft ||
             position == OrnPosition.bottomRight)
         ? -1.0
         : null;
-    final left = (position == OrnPosition.topLeft ||
-            position == OrnPosition.bottomLeft)
+    final left =
+        (position == OrnPosition.topLeft || position == OrnPosition.bottomLeft)
         ? -1.0
         : null;
-    final right = (position == OrnPosition.topRight ||
+    final right =
+        (position == OrnPosition.topRight ||
             position == OrnPosition.bottomRight)
         ? -1.0
         : null;

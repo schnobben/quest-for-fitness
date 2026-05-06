@@ -36,11 +36,31 @@ class _QfNavBar extends StatelessWidget {
 
   static const _tabs = [
     _NavTab(icon: Icons.home_outlined, activeIcon: Icons.home, label: 'Today'),
-    _NavTab(icon: Icons.add_circle_outline, activeIcon: Icons.add_circle, label: 'Log'),
-    _NavTab(icon: Icons.show_chart_outlined, activeIcon: Icons.show_chart, label: 'Progress'),
-    _NavTab(icon: Icons.shield_outlined, activeIcon: Icons.shield, label: 'Quest'),
-    _NavTab(icon: Icons.menu_book_outlined, activeIcon: Icons.menu_book, label: 'Library'),
-    _NavTab(icon: Icons.settings_outlined, activeIcon: Icons.settings, label: 'Settings'),
+    _NavTab(
+      icon: Icons.add_circle_outline,
+      activeIcon: Icons.add_circle,
+      label: 'Log',
+    ),
+    _NavTab(
+      icon: Icons.show_chart_outlined,
+      activeIcon: Icons.show_chart,
+      label: 'Progress',
+    ),
+    _NavTab(
+      icon: Icons.shield_outlined,
+      activeIcon: Icons.shield,
+      label: 'Quest',
+    ),
+    _NavTab(
+      icon: Icons.menu_book_outlined,
+      activeIcon: Icons.menu_book,
+      label: 'Library',
+    ),
+    _NavTab(
+      icon: Icons.settings_outlined,
+      activeIcon: Icons.settings,
+      label: 'Settings',
+    ),
   ];
 
   @override

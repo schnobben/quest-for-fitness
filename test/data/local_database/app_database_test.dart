@@ -29,6 +29,7 @@ void main() {
       tableNames,
       containsAll({
         'bodyweight_logs',
+        'adventurers',
         'campaign_phases',
         'campaigns',
         'cardio_logs',
@@ -513,6 +514,29 @@ void main() {
       database.progressionSuggestions,
     )..where((table) => table.id.equals(rdl.suggestion.id))).getSingle();
     expect(ignored.status, 'ignored');
+  });
+
+  test('adventurer profile persists xp and level progression', () async {
+    final database = AppDatabase.inMemory();
+    addTearDown(database.close);
+    final repositories = AppRepositories(database);
+
+    final initial = await repositories.adventurer.getOrCreatePrimary();
+    expect(initial.name, 'Iron Ranger');
+    expect(initial.level, 1);
+    expect(initial.xp, 0);
+    expect(initial.selectedClass, 'Warrior');
+    expect(initial.currentTitle, 'Novice Adventurer');
+    expect(initial.might, greaterThan(0));
+
+    final leveled = await repositories.adventurer.grantXp(125);
+    expect(leveled.level, 2);
+    expect(leveled.xp, 25);
+    expect(leveled.currentTitle, 'Trail Initiate');
+
+    final reloaded = await repositories.adventurer.getOrCreatePrimary();
+    expect(reloaded.level, 2);
+    expect(reloaded.xp, 25);
   });
 }
 

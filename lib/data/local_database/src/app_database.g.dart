@@ -7430,6 +7430,789 @@ class ProgressionSuggestionsCompanion
   }
 }
 
+class $AdventurersTable extends Adventurers
+    with TableInfo<$AdventurersTable, Adventurer> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $AdventurersTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _levelMeta = const VerificationMeta('level');
+  @override
+  late final GeneratedColumn<int> level = GeneratedColumn<int>(
+    'level',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _xpMeta = const VerificationMeta('xp');
+  @override
+  late final GeneratedColumn<int> xp = GeneratedColumn<int>(
+    'xp',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _selectedClassMeta = const VerificationMeta(
+    'selectedClass',
+  );
+  @override
+  late final GeneratedColumn<String> selectedClass = GeneratedColumn<String>(
+    'selected_class',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _currentTitleMeta = const VerificationMeta(
+    'currentTitle',
+  );
+  @override
+  late final GeneratedColumn<String> currentTitle = GeneratedColumn<String>(
+    'current_title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _mightMeta = const VerificationMeta('might');
+  @override
+  late final GeneratedColumn<int> might = GeneratedColumn<int>(
+    'might',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(10),
+  );
+  static const VerificationMeta _enduranceMeta = const VerificationMeta(
+    'endurance',
+  );
+  @override
+  late final GeneratedColumn<int> endurance = GeneratedColumn<int>(
+    'endurance',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(10),
+  );
+  static const VerificationMeta _disciplineMeta = const VerificationMeta(
+    'discipline',
+  );
+  @override
+  late final GeneratedColumn<int> discipline = GeneratedColumn<int>(
+    'discipline',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(10),
+  );
+  static const VerificationMeta _vitalityMeta = const VerificationMeta(
+    'vitality',
+  );
+  @override
+  late final GeneratedColumn<int> vitality = GeneratedColumn<int>(
+    'vitality',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(10),
+  );
+  static const VerificationMeta _agilityMeta = const VerificationMeta(
+    'agility',
+  );
+  @override
+  late final GeneratedColumn<int> agility = GeneratedColumn<int>(
+    'agility',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(10),
+  );
+  static const VerificationMeta _wisdomMeta = const VerificationMeta('wisdom');
+  @override
+  late final GeneratedColumn<int> wisdom = GeneratedColumn<int>(
+    'wisdom',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(10),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    name,
+    level,
+    xp,
+    selectedClass,
+    currentTitle,
+    might,
+    endurance,
+    discipline,
+    vitality,
+    agility,
+    wisdom,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'adventurers';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Adventurer> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('level')) {
+      context.handle(
+        _levelMeta,
+        level.isAcceptableOrUnknown(data['level']!, _levelMeta),
+      );
+    }
+    if (data.containsKey('xp')) {
+      context.handle(_xpMeta, xp.isAcceptableOrUnknown(data['xp']!, _xpMeta));
+    }
+    if (data.containsKey('selected_class')) {
+      context.handle(
+        _selectedClassMeta,
+        selectedClass.isAcceptableOrUnknown(
+          data['selected_class']!,
+          _selectedClassMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_selectedClassMeta);
+    }
+    if (data.containsKey('current_title')) {
+      context.handle(
+        _currentTitleMeta,
+        currentTitle.isAcceptableOrUnknown(
+          data['current_title']!,
+          _currentTitleMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_currentTitleMeta);
+    }
+    if (data.containsKey('might')) {
+      context.handle(
+        _mightMeta,
+        might.isAcceptableOrUnknown(data['might']!, _mightMeta),
+      );
+    }
+    if (data.containsKey('endurance')) {
+      context.handle(
+        _enduranceMeta,
+        endurance.isAcceptableOrUnknown(data['endurance']!, _enduranceMeta),
+      );
+    }
+    if (data.containsKey('discipline')) {
+      context.handle(
+        _disciplineMeta,
+        discipline.isAcceptableOrUnknown(data['discipline']!, _disciplineMeta),
+      );
+    }
+    if (data.containsKey('vitality')) {
+      context.handle(
+        _vitalityMeta,
+        vitality.isAcceptableOrUnknown(data['vitality']!, _vitalityMeta),
+      );
+    }
+    if (data.containsKey('agility')) {
+      context.handle(
+        _agilityMeta,
+        agility.isAcceptableOrUnknown(data['agility']!, _agilityMeta),
+      );
+    }
+    if (data.containsKey('wisdom')) {
+      context.handle(
+        _wisdomMeta,
+        wisdom.isAcceptableOrUnknown(data['wisdom']!, _wisdomMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Adventurer map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Adventurer(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      level: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}level'],
+      )!,
+      xp: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}xp'],
+      )!,
+      selectedClass: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}selected_class'],
+      )!,
+      currentTitle: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}current_title'],
+      )!,
+      might: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}might'],
+      )!,
+      endurance: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}endurance'],
+      )!,
+      discipline: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}discipline'],
+      )!,
+      vitality: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}vitality'],
+      )!,
+      agility: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}agility'],
+      )!,
+      wisdom: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}wisdom'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $AdventurersTable createAlias(String alias) {
+    return $AdventurersTable(attachedDatabase, alias);
+  }
+}
+
+class Adventurer extends DataClass implements Insertable<Adventurer> {
+  final String id;
+  final String name;
+  final int level;
+  final int xp;
+  final String selectedClass;
+  final String currentTitle;
+  final int might;
+  final int endurance;
+  final int discipline;
+  final int vitality;
+  final int agility;
+  final int wisdom;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  const Adventurer({
+    required this.id,
+    required this.name,
+    required this.level,
+    required this.xp,
+    required this.selectedClass,
+    required this.currentTitle,
+    required this.might,
+    required this.endurance,
+    required this.discipline,
+    required this.vitality,
+    required this.agility,
+    required this.wisdom,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name'] = Variable<String>(name);
+    map['level'] = Variable<int>(level);
+    map['xp'] = Variable<int>(xp);
+    map['selected_class'] = Variable<String>(selectedClass);
+    map['current_title'] = Variable<String>(currentTitle);
+    map['might'] = Variable<int>(might);
+    map['endurance'] = Variable<int>(endurance);
+    map['discipline'] = Variable<int>(discipline);
+    map['vitality'] = Variable<int>(vitality);
+    map['agility'] = Variable<int>(agility);
+    map['wisdom'] = Variable<int>(wisdom);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  AdventurersCompanion toCompanion(bool nullToAbsent) {
+    return AdventurersCompanion(
+      id: Value(id),
+      name: Value(name),
+      level: Value(level),
+      xp: Value(xp),
+      selectedClass: Value(selectedClass),
+      currentTitle: Value(currentTitle),
+      might: Value(might),
+      endurance: Value(endurance),
+      discipline: Value(discipline),
+      vitality: Value(vitality),
+      agility: Value(agility),
+      wisdom: Value(wisdom),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory Adventurer.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Adventurer(
+      id: serializer.fromJson<String>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      level: serializer.fromJson<int>(json['level']),
+      xp: serializer.fromJson<int>(json['xp']),
+      selectedClass: serializer.fromJson<String>(json['selectedClass']),
+      currentTitle: serializer.fromJson<String>(json['currentTitle']),
+      might: serializer.fromJson<int>(json['might']),
+      endurance: serializer.fromJson<int>(json['endurance']),
+      discipline: serializer.fromJson<int>(json['discipline']),
+      vitality: serializer.fromJson<int>(json['vitality']),
+      agility: serializer.fromJson<int>(json['agility']),
+      wisdom: serializer.fromJson<int>(json['wisdom']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'name': serializer.toJson<String>(name),
+      'level': serializer.toJson<int>(level),
+      'xp': serializer.toJson<int>(xp),
+      'selectedClass': serializer.toJson<String>(selectedClass),
+      'currentTitle': serializer.toJson<String>(currentTitle),
+      'might': serializer.toJson<int>(might),
+      'endurance': serializer.toJson<int>(endurance),
+      'discipline': serializer.toJson<int>(discipline),
+      'vitality': serializer.toJson<int>(vitality),
+      'agility': serializer.toJson<int>(agility),
+      'wisdom': serializer.toJson<int>(wisdom),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  Adventurer copyWith({
+    String? id,
+    String? name,
+    int? level,
+    int? xp,
+    String? selectedClass,
+    String? currentTitle,
+    int? might,
+    int? endurance,
+    int? discipline,
+    int? vitality,
+    int? agility,
+    int? wisdom,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) => Adventurer(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    level: level ?? this.level,
+    xp: xp ?? this.xp,
+    selectedClass: selectedClass ?? this.selectedClass,
+    currentTitle: currentTitle ?? this.currentTitle,
+    might: might ?? this.might,
+    endurance: endurance ?? this.endurance,
+    discipline: discipline ?? this.discipline,
+    vitality: vitality ?? this.vitality,
+    agility: agility ?? this.agility,
+    wisdom: wisdom ?? this.wisdom,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  Adventurer copyWithCompanion(AdventurersCompanion data) {
+    return Adventurer(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      level: data.level.present ? data.level.value : this.level,
+      xp: data.xp.present ? data.xp.value : this.xp,
+      selectedClass: data.selectedClass.present
+          ? data.selectedClass.value
+          : this.selectedClass,
+      currentTitle: data.currentTitle.present
+          ? data.currentTitle.value
+          : this.currentTitle,
+      might: data.might.present ? data.might.value : this.might,
+      endurance: data.endurance.present ? data.endurance.value : this.endurance,
+      discipline: data.discipline.present
+          ? data.discipline.value
+          : this.discipline,
+      vitality: data.vitality.present ? data.vitality.value : this.vitality,
+      agility: data.agility.present ? data.agility.value : this.agility,
+      wisdom: data.wisdom.present ? data.wisdom.value : this.wisdom,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Adventurer(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('level: $level, ')
+          ..write('xp: $xp, ')
+          ..write('selectedClass: $selectedClass, ')
+          ..write('currentTitle: $currentTitle, ')
+          ..write('might: $might, ')
+          ..write('endurance: $endurance, ')
+          ..write('discipline: $discipline, ')
+          ..write('vitality: $vitality, ')
+          ..write('agility: $agility, ')
+          ..write('wisdom: $wisdom, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    name,
+    level,
+    xp,
+    selectedClass,
+    currentTitle,
+    might,
+    endurance,
+    discipline,
+    vitality,
+    agility,
+    wisdom,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Adventurer &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.level == this.level &&
+          other.xp == this.xp &&
+          other.selectedClass == this.selectedClass &&
+          other.currentTitle == this.currentTitle &&
+          other.might == this.might &&
+          other.endurance == this.endurance &&
+          other.discipline == this.discipline &&
+          other.vitality == this.vitality &&
+          other.agility == this.agility &&
+          other.wisdom == this.wisdom &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class AdventurersCompanion extends UpdateCompanion<Adventurer> {
+  final Value<String> id;
+  final Value<String> name;
+  final Value<int> level;
+  final Value<int> xp;
+  final Value<String> selectedClass;
+  final Value<String> currentTitle;
+  final Value<int> might;
+  final Value<int> endurance;
+  final Value<int> discipline;
+  final Value<int> vitality;
+  final Value<int> agility;
+  final Value<int> wisdom;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const AdventurersCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.level = const Value.absent(),
+    this.xp = const Value.absent(),
+    this.selectedClass = const Value.absent(),
+    this.currentTitle = const Value.absent(),
+    this.might = const Value.absent(),
+    this.endurance = const Value.absent(),
+    this.discipline = const Value.absent(),
+    this.vitality = const Value.absent(),
+    this.agility = const Value.absent(),
+    this.wisdom = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  AdventurersCompanion.insert({
+    required String id,
+    required String name,
+    this.level = const Value.absent(),
+    this.xp = const Value.absent(),
+    required String selectedClass,
+    required String currentTitle,
+    this.might = const Value.absent(),
+    this.endurance = const Value.absent(),
+    this.discipline = const Value.absent(),
+    this.vitality = const Value.absent(),
+    this.agility = const Value.absent(),
+    this.wisdom = const Value.absent(),
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       name = Value(name),
+       selectedClass = Value(selectedClass),
+       currentTitle = Value(currentTitle),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<Adventurer> custom({
+    Expression<String>? id,
+    Expression<String>? name,
+    Expression<int>? level,
+    Expression<int>? xp,
+    Expression<String>? selectedClass,
+    Expression<String>? currentTitle,
+    Expression<int>? might,
+    Expression<int>? endurance,
+    Expression<int>? discipline,
+    Expression<int>? vitality,
+    Expression<int>? agility,
+    Expression<int>? wisdom,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (level != null) 'level': level,
+      if (xp != null) 'xp': xp,
+      if (selectedClass != null) 'selected_class': selectedClass,
+      if (currentTitle != null) 'current_title': currentTitle,
+      if (might != null) 'might': might,
+      if (endurance != null) 'endurance': endurance,
+      if (discipline != null) 'discipline': discipline,
+      if (vitality != null) 'vitality': vitality,
+      if (agility != null) 'agility': agility,
+      if (wisdom != null) 'wisdom': wisdom,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  AdventurersCompanion copyWith({
+    Value<String>? id,
+    Value<String>? name,
+    Value<int>? level,
+    Value<int>? xp,
+    Value<String>? selectedClass,
+    Value<String>? currentTitle,
+    Value<int>? might,
+    Value<int>? endurance,
+    Value<int>? discipline,
+    Value<int>? vitality,
+    Value<int>? agility,
+    Value<int>? wisdom,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return AdventurersCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      level: level ?? this.level,
+      xp: xp ?? this.xp,
+      selectedClass: selectedClass ?? this.selectedClass,
+      currentTitle: currentTitle ?? this.currentTitle,
+      might: might ?? this.might,
+      endurance: endurance ?? this.endurance,
+      discipline: discipline ?? this.discipline,
+      vitality: vitality ?? this.vitality,
+      agility: agility ?? this.agility,
+      wisdom: wisdom ?? this.wisdom,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (level.present) {
+      map['level'] = Variable<int>(level.value);
+    }
+    if (xp.present) {
+      map['xp'] = Variable<int>(xp.value);
+    }
+    if (selectedClass.present) {
+      map['selected_class'] = Variable<String>(selectedClass.value);
+    }
+    if (currentTitle.present) {
+      map['current_title'] = Variable<String>(currentTitle.value);
+    }
+    if (might.present) {
+      map['might'] = Variable<int>(might.value);
+    }
+    if (endurance.present) {
+      map['endurance'] = Variable<int>(endurance.value);
+    }
+    if (discipline.present) {
+      map['discipline'] = Variable<int>(discipline.value);
+    }
+    if (vitality.present) {
+      map['vitality'] = Variable<int>(vitality.value);
+    }
+    if (agility.present) {
+      map['agility'] = Variable<int>(agility.value);
+    }
+    if (wisdom.present) {
+      map['wisdom'] = Variable<int>(wisdom.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AdventurersCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('level: $level, ')
+          ..write('xp: $xp, ')
+          ..write('selectedClass: $selectedClass, ')
+          ..write('currentTitle: $currentTitle, ')
+          ..write('might: $might, ')
+          ..write('endurance: $endurance, ')
+          ..write('discipline: $discipline, ')
+          ..write('vitality: $vitality, ')
+          ..write('agility: $agility, ')
+          ..write('wisdom: $wisdom, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $BodyweightLogsTable extends BodyweightLogs
     with TableInfo<$BodyweightLogsTable, BodyweightLog> {
   @override
@@ -9013,6 +9796,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $CardioLogsTable cardioLogs = $CardioLogsTable(this);
   late final $ProgressionSuggestionsTable progressionSuggestions =
       $ProgressionSuggestionsTable(this);
+  late final $AdventurersTable adventurers = $AdventurersTable(this);
   late final $BodyweightLogsTable bodyweightLogs = $BodyweightLogsTable(this);
   late final $GoalsTable goals = $GoalsTable(this);
   late final $SeedRunsTable seedRuns = $SeedRunsTable(this);
@@ -9034,6 +9818,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     workingWeights,
     cardioLogs,
     progressionSuggestions,
+    adventurers,
     bodyweightLogs,
     goals,
     seedRuns,
@@ -16273,6 +17058,383 @@ typedef $$ProgressionSuggestionsTableProcessedTableManager =
       ProgressionSuggestion,
       PrefetchHooks Function({bool exerciseId})
     >;
+typedef $$AdventurersTableCreateCompanionBuilder =
+    AdventurersCompanion Function({
+      required String id,
+      required String name,
+      Value<int> level,
+      Value<int> xp,
+      required String selectedClass,
+      required String currentTitle,
+      Value<int> might,
+      Value<int> endurance,
+      Value<int> discipline,
+      Value<int> vitality,
+      Value<int> agility,
+      Value<int> wisdom,
+      required DateTime createdAt,
+      required DateTime updatedAt,
+      Value<int> rowid,
+    });
+typedef $$AdventurersTableUpdateCompanionBuilder =
+    AdventurersCompanion Function({
+      Value<String> id,
+      Value<String> name,
+      Value<int> level,
+      Value<int> xp,
+      Value<String> selectedClass,
+      Value<String> currentTitle,
+      Value<int> might,
+      Value<int> endurance,
+      Value<int> discipline,
+      Value<int> vitality,
+      Value<int> agility,
+      Value<int> wisdom,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$AdventurersTableFilterComposer
+    extends Composer<_$AppDatabase, $AdventurersTable> {
+  $$AdventurersTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get level => $composableBuilder(
+    column: $table.level,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get xp => $composableBuilder(
+    column: $table.xp,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get selectedClass => $composableBuilder(
+    column: $table.selectedClass,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get currentTitle => $composableBuilder(
+    column: $table.currentTitle,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get might => $composableBuilder(
+    column: $table.might,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get endurance => $composableBuilder(
+    column: $table.endurance,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get discipline => $composableBuilder(
+    column: $table.discipline,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get vitality => $composableBuilder(
+    column: $table.vitality,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get agility => $composableBuilder(
+    column: $table.agility,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get wisdom => $composableBuilder(
+    column: $table.wisdom,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$AdventurersTableOrderingComposer
+    extends Composer<_$AppDatabase, $AdventurersTable> {
+  $$AdventurersTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get level => $composableBuilder(
+    column: $table.level,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get xp => $composableBuilder(
+    column: $table.xp,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get selectedClass => $composableBuilder(
+    column: $table.selectedClass,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get currentTitle => $composableBuilder(
+    column: $table.currentTitle,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get might => $composableBuilder(
+    column: $table.might,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get endurance => $composableBuilder(
+    column: $table.endurance,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get discipline => $composableBuilder(
+    column: $table.discipline,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get vitality => $composableBuilder(
+    column: $table.vitality,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get agility => $composableBuilder(
+    column: $table.agility,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get wisdom => $composableBuilder(
+    column: $table.wisdom,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$AdventurersTableAnnotationComposer
+    extends Composer<_$AppDatabase, $AdventurersTable> {
+  $$AdventurersTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<int> get level =>
+      $composableBuilder(column: $table.level, builder: (column) => column);
+
+  GeneratedColumn<int> get xp =>
+      $composableBuilder(column: $table.xp, builder: (column) => column);
+
+  GeneratedColumn<String> get selectedClass => $composableBuilder(
+    column: $table.selectedClass,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get currentTitle => $composableBuilder(
+    column: $table.currentTitle,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get might =>
+      $composableBuilder(column: $table.might, builder: (column) => column);
+
+  GeneratedColumn<int> get endurance =>
+      $composableBuilder(column: $table.endurance, builder: (column) => column);
+
+  GeneratedColumn<int> get discipline => $composableBuilder(
+    column: $table.discipline,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get vitality =>
+      $composableBuilder(column: $table.vitality, builder: (column) => column);
+
+  GeneratedColumn<int> get agility =>
+      $composableBuilder(column: $table.agility, builder: (column) => column);
+
+  GeneratedColumn<int> get wisdom =>
+      $composableBuilder(column: $table.wisdom, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$AdventurersTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $AdventurersTable,
+          Adventurer,
+          $$AdventurersTableFilterComposer,
+          $$AdventurersTableOrderingComposer,
+          $$AdventurersTableAnnotationComposer,
+          $$AdventurersTableCreateCompanionBuilder,
+          $$AdventurersTableUpdateCompanionBuilder,
+          (
+            Adventurer,
+            BaseReferences<_$AppDatabase, $AdventurersTable, Adventurer>,
+          ),
+          Adventurer,
+          PrefetchHooks Function()
+        > {
+  $$AdventurersTableTableManager(_$AppDatabase db, $AdventurersTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$AdventurersTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$AdventurersTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$AdventurersTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<int> level = const Value.absent(),
+                Value<int> xp = const Value.absent(),
+                Value<String> selectedClass = const Value.absent(),
+                Value<String> currentTitle = const Value.absent(),
+                Value<int> might = const Value.absent(),
+                Value<int> endurance = const Value.absent(),
+                Value<int> discipline = const Value.absent(),
+                Value<int> vitality = const Value.absent(),
+                Value<int> agility = const Value.absent(),
+                Value<int> wisdom = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => AdventurersCompanion(
+                id: id,
+                name: name,
+                level: level,
+                xp: xp,
+                selectedClass: selectedClass,
+                currentTitle: currentTitle,
+                might: might,
+                endurance: endurance,
+                discipline: discipline,
+                vitality: vitality,
+                agility: agility,
+                wisdom: wisdom,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String name,
+                Value<int> level = const Value.absent(),
+                Value<int> xp = const Value.absent(),
+                required String selectedClass,
+                required String currentTitle,
+                Value<int> might = const Value.absent(),
+                Value<int> endurance = const Value.absent(),
+                Value<int> discipline = const Value.absent(),
+                Value<int> vitality = const Value.absent(),
+                Value<int> agility = const Value.absent(),
+                Value<int> wisdom = const Value.absent(),
+                required DateTime createdAt,
+                required DateTime updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => AdventurersCompanion.insert(
+                id: id,
+                name: name,
+                level: level,
+                xp: xp,
+                selectedClass: selectedClass,
+                currentTitle: currentTitle,
+                might: might,
+                endurance: endurance,
+                discipline: discipline,
+                vitality: vitality,
+                agility: agility,
+                wisdom: wisdom,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$AdventurersTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $AdventurersTable,
+      Adventurer,
+      $$AdventurersTableFilterComposer,
+      $$AdventurersTableOrderingComposer,
+      $$AdventurersTableAnnotationComposer,
+      $$AdventurersTableCreateCompanionBuilder,
+      $$AdventurersTableUpdateCompanionBuilder,
+      (
+        Adventurer,
+        BaseReferences<_$AppDatabase, $AdventurersTable, Adventurer>,
+      ),
+      Adventurer,
+      PrefetchHooks Function()
+    >;
 typedef $$BodyweightLogsTableCreateCompanionBuilder =
     BodyweightLogsCompanion Function({
       required String id,
@@ -17206,6 +18368,8 @@ class $AppDatabaseManager {
         _db,
         _db.progressionSuggestions,
       );
+  $$AdventurersTableTableManager get adventurers =>
+      $$AdventurersTableTableManager(_db, _db.adventurers);
   $$BodyweightLogsTableTableManager get bodyweightLogs =>
       $$BodyweightLogsTableTableManager(_db, _db.bodyweightLogs);
   $$GoalsTableTableManager get goals =>

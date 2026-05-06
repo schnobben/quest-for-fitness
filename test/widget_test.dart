@@ -423,12 +423,49 @@ void main() {
 
     expect(weightedPullUp.currentValue, 35);
   });
+
+  testWidgets('Quest shows persisted Adventurer profile and can gain XP', (
+    tester,
+  ) async {
+    final database = AppDatabase.inMemory();
+    addTearDown(database.close);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [appDatabaseProvider.overrideWithValue(database)],
+        child: const QuestForFitnessApp(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Quest').last);
+    await tester.pumpAndSettle();
+
+    expect(find.text('THE ADVENTURER'), findsOneWidget);
+    expect(find.text('Iron Ranger'), findsWidgets);
+    expect(find.text('Novice Adventurer'), findsOneWidget);
+    expect(find.text('LV 1'), findsOneWidget);
+    expect(find.text('0 / 100 XP to level 2'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('grant-adventurer-xp-button')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('LV 2'), findsOneWidget);
+    expect(find.text('25 / 150 XP to level 3'), findsOneWidget);
+
+    final adventurer = await database.select(database.adventurers).getSingle();
+    expect(adventurer.level, 2);
+    expect(adventurer.xp, 25);
+  });
 }
 
 const _destinations = [
   _DestinationCopy(label: 'Log', placeholderText: 'No sessions yet'),
   _DestinationCopy(label: 'Progress', placeholderText: 'LOG BODYWEIGHT'),
-  _DestinationCopy(label: 'Quest', placeholderText: 'Preview only.'),
+  _DestinationCopy(
+    label: 'Quest',
+    placeholderText: 'Adventurer profile is live.',
+  ),
   _DestinationCopy(label: 'Library', placeholderText: 'Sample codex content.'),
   _DestinationCopy(
     label: 'Settings',

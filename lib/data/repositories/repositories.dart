@@ -1,3 +1,4 @@
+export 'src/adventurer_repository.dart';
 export 'src/app_repositories.dart';
 export 'src/bodyweight_repository.dart';
 export 'src/campaign_repository.dart';

@@ -36,10 +36,7 @@ class QfSectionHeader extends StatelessWidget {
               onTap: onMoreTapped,
               child: Text(
                 moreLabel!,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppColors.inkDim,
-                ),
+                style: const TextStyle(fontSize: 12, color: AppColors.inkDim),
               ),
             ),
         ],

@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_theme.dart';
+import '../../../data/data_providers.dart';
+import '../../../data/repositories/repositories.dart';
+import '../application/adventurer_profile_controller.dart';
 import '../../../shared/presentation/design_system/design_system.dart';
 
 class QuestScreen extends StatefulWidget {
@@ -123,7 +127,7 @@ class _PreviewNotice extends StatelessWidget {
   }
 }
 
-class _AdventurerView extends StatelessWidget {
+class _AdventurerView extends ConsumerWidget {
   const _AdventurerView({
     required this.selectedTab,
     required this.onTabChanged,
@@ -132,23 +136,67 @@ class _AdventurerView extends StatelessWidget {
   final int selectedTab;
   final ValueChanged<int> onTabChanged;
 
-  static const _attrs = [
-    _Attr('MIGHT', 38, AppColors.ember),
-    _Attr('ENDURANCE', 24, AppColors.sky),
-    _Attr('DISCIPLINE', 41, AppColors.forest),
-    _Attr('VITALITY', 22, AppColors.rose),
-    _Attr('AGILITY', 19, AppColors.gold),
-    _Attr('WISDOM', 28, AppColors.rune),
-  ];
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final profile = ref.watch(adventurerProfileProvider);
+
+    return profile.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stackTrace) => Center(
+        child: Padding(
+          padding: const EdgeInsets.all(18),
+          child: QfCard(
+            padding: const EdgeInsets.all(16),
+            child: Text(
+              'Unable to load Adventurer profile: $error',
+              style: const TextStyle(color: AppColors.inkMute),
+            ),
+          ),
+        ),
+      ),
+      data: (profile) => _AdventurerContent(
+        profile: profile,
+        onTabChanged: onTabChanged,
+        onGrantXp: () async {
+          await AppRepositories(
+            ref.read(appDatabaseProvider),
+          ).adventurer.grantXp(125);
+          ref.invalidate(adventurerProfileProvider);
+        },
+      ),
+    );
+  }
+}
+
+class _AdventurerContent extends StatelessWidget {
+  const _AdventurerContent({
+    required this.profile,
+    required this.onTabChanged,
+    required this.onGrantXp,
+  });
+
+  final AdventurerProfile profile;
+  final ValueChanged<int> onTabChanged;
+  final VoidCallback onGrantXp;
 
   @override
   Widget build(BuildContext context) {
+    final adventurer = profile.adventurer;
+    final attrs = [
+      _Attr('MIGHT', adventurer.might, AppColors.ember),
+      _Attr('ENDURANCE', adventurer.endurance, AppColors.sky),
+      _Attr('DISCIPLINE', adventurer.discipline, AppColors.forest),
+      _Attr('VITALITY', adventurer.vitality, AppColors.rose),
+      _Attr('AGILITY', adventurer.agility, AppColors.gold),
+      _Attr('WISDOM', adventurer.wisdom, AppColors.rune),
+    ];
+
     return ListView(
       padding: EdgeInsets.zero,
       children: [
         QfScreenHeader(
           salutation: 'The Adventurer',
-          title: 'Iron Ranger',
+          title: adventurer.name,
           trailing: const Icon(
             Icons.settings_outlined,
             size: 18,
@@ -159,7 +207,7 @@ class _AdventurerView extends StatelessWidget {
           padding: EdgeInsets.fromLTRB(18, 0, 18, 12),
           child: _PreviewNotice(
             text:
-                'Preview only. Adventurer, pet, achievements, and expeditions are visual mockups until Milestone 3+.',
+                'Adventurer profile is live. Pet, achievements, and expeditions remain preview content until later Milestone 3+ sprints.',
           ),
         ),
         _QuestTabBar(
@@ -197,7 +245,7 @@ class _AdventurerView extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'Iron Ranger',
+                        adventurer.name,
                         style: AppTheme.fantasyStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.w600,
@@ -205,7 +253,7 @@ class _AdventurerView extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        '"Earned for 3 strength + 2 runs this week"',
+                        adventurer.currentTitle,
                         style: AppTheme.fantasyStyle(
                           fontSize: 11,
                           color: AppColors.inkDim,
@@ -218,23 +266,33 @@ class _AdventurerView extends StatelessWidget {
                           QfPill(
                             tone: QfPillTone.gold,
                             icon: const Icon(Icons.workspace_premium),
-                            child: const Text('LV 7'),
+                            child: Text('LV ${adventurer.level}'),
                           ),
                           const SizedBox(width: 8),
-                          const QfPill(
+                          QfPill(
                             tone: QfPillTone.muted,
-                            child: Text('Day 84'),
+                            child: Text('${adventurer.xp} XP'),
                           ),
                         ],
                       ),
                       const SizedBox(height: 10),
-                      _QfBar(value: 0.62, tone: _BarTone.ember),
+                      _QfBar(value: profile.xpProgress, tone: _BarTone.ember),
                       const SizedBox(height: 4),
                       Text(
-                        '1,840 / 3,000 XP',
+                        '${adventurer.xp} / ${profile.xpToNextLevel} XP to level ${adventurer.level + 1}',
                         style: AppTheme.monoStyle(
                           fontSize: 10,
                           color: AppColors.inkDim,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: FilledButton.icon(
+                          key: const Key('grant-adventurer-xp-button'),
+                          onPressed: onGrantXp,
+                          icon: const Icon(Icons.bolt, size: 16),
+                          label: const Text('Gain 125 XP'),
                         ),
                       ),
                     ],
@@ -255,7 +313,7 @@ class _AdventurerView extends StatelessWidget {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             childAspectRatio: 2.5,
-            children: [for (final a in _attrs) _AttrCard(attr: a)],
+            children: [for (final a in attrs) _AttrCard(attr: a)],
           ),
         ),
 

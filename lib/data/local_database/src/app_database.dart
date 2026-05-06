@@ -22,6 +22,7 @@ part 'app_database.g.dart';
     WorkingWeights,
     CardioLogs,
     ProgressionSuggestions,
+    Adventurers,
     BodyweightLogs,
     Goals,
     SeedRuns,
@@ -37,7 +38,7 @@ class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration {
@@ -52,6 +53,9 @@ class AppDatabase extends _$AppDatabase {
         }
         if (from < 4) {
           await migrator.createTable(progressionSuggestions);
+        }
+        if (from < 5) {
+          await migrator.createTable(adventurers);
         }
       },
       beforeOpen: (details) async {
@@ -270,6 +274,26 @@ class ProgressionSuggestions extends Table {
   TextColumn get status => text().withDefault(const Constant('pending'))();
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get resolvedAt => dateTime().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+class Adventurers extends Table {
+  TextColumn get id => text()();
+  TextColumn get name => text()();
+  IntColumn get level => integer().withDefault(const Constant(1))();
+  IntColumn get xp => integer().withDefault(const Constant(0))();
+  TextColumn get selectedClass => text()();
+  TextColumn get currentTitle => text()();
+  IntColumn get might => integer().withDefault(const Constant(10))();
+  IntColumn get endurance => integer().withDefault(const Constant(10))();
+  IntColumn get discipline => integer().withDefault(const Constant(10))();
+  IntColumn get vitality => integer().withDefault(const Constant(10))();
+  IntColumn get agility => integer().withDefault(const Constant(10))();
+  IntColumn get wisdom => integer().withDefault(const Constant(10))();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
 
   @override
   Set<Column<Object>> get primaryKey => {id};
