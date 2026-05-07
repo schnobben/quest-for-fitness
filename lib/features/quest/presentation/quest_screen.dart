@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_theme.dart';
-import '../../../data/data_providers.dart';
-import '../../../data/repositories/repositories.dart';
 import '../application/adventurer_profile_controller.dart';
 import '../../../shared/presentation/design_system/design_system.dart';
 
@@ -158,10 +156,8 @@ class _AdventurerView extends ConsumerWidget {
         profile: profile,
         onTabChanged: onTabChanged,
         onGrantXp: () async {
-          await AppRepositories(
-            ref.read(appDatabaseProvider),
-          ).adventurer.grantXp(125);
-          ref.invalidate(adventurerProfileProvider);
+          await ref.read(adventurerXpControllerProvider).grantTestXp();
+          if (context.mounted) QfNotification.show(context, '+125 XP gained');
         },
       ),
     );

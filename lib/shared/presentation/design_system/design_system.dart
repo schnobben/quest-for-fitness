@@ -1,6 +1,7 @@
 // Base
 export 'base/app_card.dart';
 export 'base/qf_card.dart';
+export 'base/qf_notification.dart';
 export 'base/qf_pill.dart';
 export 'base/qf_rune_divider.dart';
 export 'base/qf_screen_header.dart';

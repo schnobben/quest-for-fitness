@@ -30,3 +30,22 @@ class AdventurerProfile {
   double get xpProgress =>
       xpToNextLevel <= 0 ? 0 : adventurer.xp / xpToNextLevel;
 }
+
+// ─── XP controller ────────────────────────────────────────────────────────────
+
+final adventurerXpControllerProvider = Provider<AdventurerXpController>(
+  (ref) => AdventurerXpController(ref),
+);
+
+class AdventurerXpController {
+  const AdventurerXpController(this._ref);
+
+  final Ref _ref;
+
+  Future<void> grantTestXp() async {
+    await AppRepositories(
+      _ref.read(appDatabaseProvider),
+    ).adventurer.grantXp(125);
+    _ref.invalidate(adventurerProfileProvider);
+  }
+}
