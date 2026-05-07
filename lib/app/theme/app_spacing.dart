@@ -1,6 +1,7 @@
 class AppSpacing {
   const AppSpacing._();
 
+  // Base scale
   static const double xs = 4;
   static const double sm = 8;
   static const double md = 12;
@@ -9,5 +10,11 @@ class AppSpacing {
   static const double xxl = 32;
 
   static const double minTapTarget = 48;
-  static const double cardRadius = 8;
+
+  // Border radii
+  static const double cardRadius = 10;
+  static const double radSm = 6;
+  static const double radMd = 10;
+  static const double radLg = 14;
+  static const double radXl = 20;
 }

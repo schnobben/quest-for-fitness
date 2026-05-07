@@ -70,6 +70,20 @@ class CampaignRepository {
         .get();
   }
 
+  Future<ScheduledWorkout?> getNextPlannedWorkout(DateTime from) {
+    final start = DateTime(from.year, from.month, from.day);
+
+    return (_database.select(_database.scheduledWorkouts)
+          ..where(
+            (table) =>
+                table.scheduledFor.isBiggerOrEqualValue(start) &
+                table.status.equals('planned'),
+          )
+          ..orderBy([(table) => OrderingTerm.asc(table.scheduledFor)])
+          ..limit(1))
+        .getSingleOrNull();
+  }
+
   Future<List<ScheduledWorkout>> getScheduledWorkoutsBetween({
     required DateTime start,
     required DateTime end,

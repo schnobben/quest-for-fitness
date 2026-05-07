@@ -27,8 +27,8 @@ The roadmap is split into milestones. Each milestone contains sprints and tasks.
 | Milestone | Name | Purpose |
 |---|---|---|
 | 0 | Product & Project Foundation | Completed May 3, 2026 |
-| 1 | Fitness Core MVP | Build the workout/session logging app |
-| 2 | Goals, Analytics & Progression | Add useful progress dashboards and training insights |
+| 1 | Fitness Core MVP | Completed May 6, 2026 |
+| 2 | Goals, Analytics & Progression | Completed May 6, 2026 |
 | 3 | Quest Engine V1 | Add Adventurer, XP, levels, achievements, and basic rewards |
 | 4 | Pet System V1 | Add companion, bond, mood, evolution, and basic care loop |
 | 5 | Modular Builder V1 | Add custom exercises, workouts, programs, and campaigns |
@@ -171,11 +171,24 @@ Completion notes:
 
 ## 4. Milestone 1 — Fitness Core MVP
 
+**Status:** Completed May 6, 2026.
+
 ### Goal
 
 Build the usable workout tracker.
 
 This milestone should make the app valuable even before the RPG features exist.
+
+Milestone completion notes:
+
+- Local Drift/SQLite persistence, repository access, migrations, seed loading, and reset/dev tooling are in place.
+- Fresh installs load the May-September 2026 sample campaign with active phases, scheduled workouts, goals, and starter bodyweight data.
+- Today can determine the active campaign/phase, recommend the next training action, show weekly plan context, and start planned workouts.
+- Planned workout execution supports target display, editable set logging, session completion, and persisted exercise/set logs.
+- Log supports session history, expandable session detail, and deletion of test sessions.
+- Progress supports fast bodyweight logging, bodyweight history, trend display, and linked bodyweight goal updates.
+- Current verification passes: `flutter analyze`, `flutter test --reporter expanded`, and `flutter build apk --debug`.
+- iOS simulator execution remains unverified from this Windows development host.
 
 ---
 
@@ -394,13 +407,63 @@ Completion notes:
 
 ## 5. Milestone 2 — Goals, Analytics & Progression
 
+**Status:** Completed May 6, 2026.
+
 ### Goal
 
 Make the app useful for understanding progress.
 
+Milestone 2 starts with a small polish bridge sprint before the deeper goals and analytics work. Sprint 2.0 exists because Milestone 1 is technically usable, but a fresh install can still feel confusing when the seed campaign has future-dated workouts or when future feature areas still look like dummy placeholders.
+
+Milestone completion notes:
+
+- Fresh-install usability is polished so seed/sample content is clearly labeled and users can immediately test the first planned workout.
+- Progress includes editable goal cards, higher/lower-is-better progress handling, target dates, and linked metric updates.
+- Working weights are auto-derived from completed sessions, manually correctable, and connected to exercise detail/history views.
+- Analytics now summarize weekly workouts, adherence, volume, training streak, goal progress, bodyweight trend, and recent PR highlights.
+- Log supports run/cardio entry with computed pace, recent run history, pace trend display, and automatic 5 km goal updates.
+- Progression suggestions are generated from consecutive successful sessions, displayed as progression flags, and can be accepted or ignored.
+- Current verification passes: `flutter analyze`, `flutter test --reporter expanded`, and `flutter build apk --debug`.
+- iOS simulator execution remains unverified from this Windows development host.
+
+---
+
+### Sprint 2.0 — Fresh-install usability polish
+
+**Status:** Completed May 3, 2026.
+
+Tasks:
+
+- Clearly label May–September 2026 content as sample/seed campaign content in user-facing surfaces.
+- Improve Today screen behavior before the first seed workout or on rest days so the user can still test the app immediately.
+- Add a start-next-planned-workout action when there is no workout scheduled for today.
+- Add a basic manual workout start path from Log or another appropriate fitness surface.
+- Make placeholder/future-feature screens feel intentional rather than like dummy data.
+- Add development/testing affordance for trying the seeded campaign without waiting for the exact calendar date.
+- Review fresh-install copy so the app explains what is real, what is sample content, and what is coming later.
+
+Exit criteria:
+
+- A fresh install no longer feels broken or filled with unexplained dummy data.
+- The user can start testing workout logging immediately, even before May 5, 2026 or on a rest day.
+- Seed/sample content is clearly presented as editable starter content, not as fake user history.
+- Future areas communicate their status without blocking the Milestone 1 testing loop.
+
+Completion notes:
+
+- Today now labels the May-September 2026 campaign as sample seed content and can start the next planned workout before the first seed date or on rest days.
+- Log now includes a start-next-plan path into workout execution, a real session history surface, bodyweight navigation, and clear coming-later messaging for manual sessions, runs, and recovery days.
+- Workout execution is reachable through a top-level route, so starts from Today and Log both land on the visible active session screen.
+- Quest, Library, and Settings now make preview/future content explicit instead of presenting it as unexplained dummy data.
+- Library phase labels were constrained to avoid overflow in the current UI.
+- Widget coverage now verifies fresh-install workout start, Log quick start/future-action copy, bodyweight logging, and the updated placeholder copy.
+- Verification passed: `flutter analyze`, `flutter test --reporter expanded`, and `flutter build apk --debug`.
+
 ---
 
 ### Sprint 2.1 — Goals dashboard v1
+
+**Status:** Completed May 4, 2026.
 
 Tasks:
 
@@ -417,9 +480,20 @@ Exit criteria:
 - User can track the five seed goals.
 - User can edit current goal values.
 
+Completion notes:
+
+- Progress now includes a goals dashboard with all five seed goals as editable cards.
+- Goal cards show current value, target value, progress, higher/lower direction, target date, category, and linked metric status.
+- Manual current-value edits are available from each goal card and persist through the goal repository.
+- Bodyweight logging continues to update the linked bodyweight goal automatically.
+- Added repository and widget coverage for manual goal updates and the full Progress goal-edit flow.
+- Verification passed: `flutter analyze`, `flutter test --reporter expanded`, and `flutter build apk --debug`.
+
 ---
 
 ### Sprint 2.2 — Working weights and exercise history
+
+**Status:** Completed May 4, 2026.
 
 Tasks:
 
@@ -435,9 +509,21 @@ Exit criteria:
 - User can see how each exercise is progressing.
 - User can manually correct working weights.
 
+Completion notes:
+
+- Added a Drift-backed working weights table with migration support.
+- Completed workout logging now auto-updates per-exercise working weights from the best completed weighted set and stores estimated 1RM/source-set metadata.
+- Manual working-weight corrections are available from Progress and are preserved as overrides.
+- Progress now includes a working weights dashboard and exercise detail route with recent set history, best set, and estimated 1RM.
+- Session deletion handles linked working-weight source sets without foreign-key failures.
+- Added repository and widget coverage for auto-updated working weights, manual corrections, and the exercise-history flow.
+- Verification passed: `flutter analyze`, `flutter test --reporter expanded`, and `flutter build apk --debug`.
+
 ---
 
 ### Sprint 2.3 — Basic analytics dashboard
+
+**Status:** Completed May 6, 2026.
 
 Tasks:
 
@@ -452,9 +538,21 @@ Exit criteria:
 
 - Progress screen provides useful information at a glance.
 
+Completion notes:
+
+- Added session-derived weekly analytics for workout count, planned/completed adherence, weekly tonnage, and current training-day streak.
+- Progress now shows an analytics snapshot near the top of the screen instead of the previous static weekly volume placeholder.
+- Bodyweight trend remains visible in the bodyweight hero card and goal progress remains visible in the goals dashboard.
+- Recent PR highlights are derived from working-weight/best-set data and show estimated 1RM where available.
+- Log's next-planned-workout provider now uses the shared testable date provider instead of `DateTime.now()`, keeping Log and Today behavior consistent.
+- Added repository and widget coverage for the analytics snapshot.
+- Verification passed: `flutter analyze`, `flutter test --reporter expanded`, and `flutter build apk --debug`.
+
 ---
 
 ### Sprint 2.4 — Run/cardio log v1
+
+**Status:** Completed May 6, 2026.
 
 Tasks:
 
@@ -473,9 +571,21 @@ Exit criteria:
 
 - User can log runs and see pace progression.
 
+Completion notes:
+
+- Added a Drift-backed `cardio_logs` table with migration support for run/cardio entries.
+- Added cardio repository support for logging runs with date, distance, duration, computed pace, notes, and recent-run history.
+- Log now has a live `Log Run` quick action with distance/duration/notes capture and a recent runs section.
+- Progress now shows a pace trend card with latest pace, trend change, and sparkline when run history exists.
+- 5 km run goal current value updates automatically when a logged run produces a faster 5 km equivalent.
+- Added repository and widget coverage for run logging, pace computation, recent runs, pace trend, and 5 km goal updates.
+- Verification passed: `flutter analyze`, `flutter test --reporter expanded`, and `flutter build apk --debug`.
+
 ---
 
 ### Sprint 2.5 — Progression suggestions v1
+
+**Status:** Completed May 6, 2026.
 
 Tasks:
 
@@ -488,6 +598,15 @@ Tasks:
 Exit criteria:
 
 - App can suggest simple load increases without forcing them.
+
+Completion notes:
+
+- Added a Drift-backed `progression_suggestions` table with migration support.
+- Implemented a simple progression rule engine that detects two consecutive successful exercise logs where target reps were hit at or below target RPE.
+- Progress now shows pending progression flags with current-to-suggested load, reason text, and accept/ignore actions.
+- Accepting a suggestion updates the exercise working weight and marks the suggestion accepted; ignoring marks it ignored without changing load.
+- Added repository and widget coverage for rule generation, accept/ignore behavior, and Progress display.
+- Verification passed: `flutter analyze`, `flutter test --reporter expanded`, and `flutter build apk --debug`.
 
 ---
 
@@ -517,9 +636,49 @@ Exit criteria:
 - User has an Adventurer identity.
 - Adventurer can gain XP and level up.
 
+Completion notes:
+
+- Added Adventurers Drift table at schema version 5.
+- AdventurerRepository implements getOrCreatePrimary(), grantXp(), xpRequiredForLevel(), and title promotion logic.
+- adventurerProfileProvider (FutureProvider, non-autoDispose) wires the repository to the Quest screen.
+- Quest screen Hero tab renders persisted adventurer name, class, title, level, XP bar, attributes grid, and equipment slots from live DB data.
+- Temporary "Gain 125 XP" button added for integration testing.
+- DB test and widget test cover profile persistence, XP grant, level-up, and Quest screen rendering.
+- Verification passed: flutter analyze, flutter test --reporter expanded, flutter build apk --debug.
+
+---
+
+### Sprint 3.1.5 — XP architecture bridge
+
+**Goal:** Close the gaps identified in the Milestone 0–2 code review before the XP event system is built. Sprint 3.2 requires XP to fire from workout completion, run logging, bodyweight logging, and goal updates — this sprint lays the architecture so Sprint 3.2 can wire those hooks cleanly.
+
+Tasks:
+
+- Create `XpEventService` with one method per fitness action:
+  - `onWorkoutCompleted({required int setCount})` — base XP plus per-set bonus
+  - `onRunLogged({required double distanceKm})` — XP scaled to distance
+  - `onBodyweightLogged()` — flat XP reward
+  - `onGoalCompleted()` — bonus XP on goal milestone
+- Define the XP values for each action (tunable constants, not magic numbers).
+- Register `XpEventService` in `AppRepositories` so repositories can call it inside their existing Drift transactions.
+- Refactor the temporary inline XP grant in `quest_screen.dart` into a dedicated Riverpod controller provider so all future XP sources use the same invalidation path.
+- Add a multi-level-up test: `grantXp(500)` from level 1 should produce the correct level and residual XP across multiple threshold crossings.
+- Add a `QfNotification` toast component (or a consistent `SnackBar` wrapper) to the design system for use by the XP event feedback UI in Sprint 3.2.
+
+Exit criteria:
+
+- `XpEventService` exists with defined XP values and is wired into `AppRepositories`.
+- No repository calls `AdventurerRepository.grantXp()` directly — all go through `XpEventService`.
+- The Quest screen XP button uses the new controller provider, not an inline repository instantiation.
+- Multi-level-up edge case is covered by a dedicated test.
+- Design system has a reusable notification/toast component ready for Sprint 3.2.
+- Verification passes: `flutter analyze`, `flutter test --reporter expanded`, `flutter build apk --debug`.
+
 ---
 
 ### Sprint 3.2 — XP event system
+
+**Status:** Completed May 7, 2026.
 
 Tasks:
 
@@ -540,9 +699,22 @@ Exit criteria:
 - Real fitness actions produce RPG progress.
 - Reward history is stored.
 
+Completion notes:
+
+- Added Drift-backed fitness event, reward event, and XP history tables at schema version 6.
+- `XpEventService` now records canonical fitness events, derived XP reward events, and level/xp before-after history for every grant.
+- Workout completion, run logging, bodyweight logging, manual goal updates, goal completions, and strength PRs now emit reward events and grant Adventurer XP.
+- Workout completion returns a reward summary with XP gained, level-up state, and PR count; the workout screen shows this in the completion notification.
+- Quest debug XP now flows through `XpEventService`, so it records history instead of directly mutating Adventurer XP.
+- Database reset/dev tooling clears reward history, fitness events, XP history, adventurer state, cardio logs, and progression suggestions.
+- Repository and widget coverage now verifies stored reward/XP history and post-workout XP feedback.
+- Verification passed: `dart format lib test`, `flutter analyze`, `flutter test --reporter expanded`, and `flutter build apk --debug`.
+
 ---
 
 ### Sprint 3.3 — Achievements v1
+
+**Status:** Completed May 7, 2026.
 
 Tasks:
 
@@ -564,6 +736,16 @@ Exit criteria:
 
 - User can unlock achievements.
 - Achievements feel rewarding but not intrusive.
+
+Completion notes:
+
+- Added Drift-backed achievement definitions and achievement state/progress tables at schema version 7.
+- Added `AchievementRepository` with the first seven built-in achievements: first workout, first run, first bodyweight log, 4 workouts in a week, first PR, 10 total workouts, and first goal milestone.
+- Fitness events now update achievement progress through the Sprint 3.2 event pipeline, and achievement unlocks are stored as reward events.
+- Quest now has a live Achievements tab with unlock count, progress cards, category styling, and recent achievement cards on the Hero tab.
+- Workout completion reward feedback now includes newly unlocked achievement count when applicable.
+- Added repository and widget coverage for achievement definitions, progress, unlocks, reward history, and the Achievements tab.
+- Verification passed: `dart format lib test`, `flutter analyze`, `flutter test --reporter expanded`, and `flutter build apk --debug`.
 
 ---
 

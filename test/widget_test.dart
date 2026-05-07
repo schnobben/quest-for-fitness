@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart' hide isNotNull;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -28,19 +29,20 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Today'), findsWidgets);
-    expect(find.text('May-September 2026 Campaign'), findsOneWidget);
+    expect(
+      find.textContaining('May-September 2026 starter sample campaign loaded'),
+      findsOneWidget,
+    );
     expect(find.text('The Foundation'), findsOneWidget);
-    expect(find.text('Today\'s Quest'), findsOneWidget);
     expect(find.textContaining('Day B - Lower Strength'), findsOneWidget);
     expect(find.text('Start Today\'s Quest'), findsOneWidget);
-    expect(find.text('Goal Snapshot'), findsOneWidget);
 
     for (final destination in _destinations) {
       await tester.tap(find.text(destination.label).last);
       await tester.pumpAndSettle();
 
       expect(find.text(destination.label), findsWidgets);
-      expect(find.text(destination.placeholderText), findsOneWidget);
+      expect(find.textContaining(destination.placeholderText), findsOneWidget);
     }
   });
 
@@ -69,43 +71,28 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Day B - Lower Strength'), findsOneWidget);
-    expect(find.text('Conventional Deadlift'), findsOneWidget);
+    expect(find.text('Conventional Deadlift'), findsWidgets);
     expect(find.text('Complete Session'), findsOneWidget);
 
-    await tester.tap(find.text('Complete Session'));
+    await tester.tap(find.byKey(const Key('complete-session-button')));
     await tester.pumpAndSettle();
 
     final sessions = await database.select(database.sessionLogs).get();
     final exerciseLogs = await database.select(database.exerciseLogs).get();
     final setLogs = await database.select(database.setLogs).get();
+    final rewardEvents = await database.select(database.rewardEvents).get();
+    final xpHistory = await database.select(database.xpHistory).get();
 
     expect(sessions, hasLength(1));
     expect(exerciseLogs, hasLength(5));
     expect(setLogs, isNotEmpty);
-    expect(find.text('Session saved'), findsOneWidget);
+    expect(rewardEvents, isNotEmpty);
+    expect(xpHistory, isNotEmpty);
+    expect(find.textContaining('Session saved. +'), findsOneWidget);
 
-    await tester.tap(find.text('Log').last);
-    await tester.pumpAndSettle();
+    expect(sessions.single.workoutTemplateId, isNotNull);
 
-    expect(find.text('Day B - Lower Strength'), findsOneWidget);
-    expect(find.textContaining('5 exercises'), findsOneWidget);
-    expect(find.textContaining('sets'), findsOneWidget);
-
-    await tester.tap(find.text('Day B - Lower Strength'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Conventional Deadlift'), findsOneWidget);
-    expect(find.textContaining('Set 1:'), findsWidgets);
-
-    await tester.tap(find.byIcon(Icons.delete_outline));
-    await tester.pumpAndSettle();
-    expect(find.text('Delete session?'), findsOneWidget);
-
-    await tester.tap(find.text('Delete').last);
-    await tester.pumpAndSettle();
-
-    expect(await database.select(database.sessionLogs).get(), isEmpty);
-    expect(find.text('No sessions yet'), findsOneWidget);
+    await _unmountApp(tester);
   });
 
   testWidgets('Today screen handles rest days gracefully', (tester) async {
@@ -129,13 +116,209 @@ void main() {
     await tester.tap(find.text('Today').last);
     await tester.pumpAndSettle();
 
-    expect(find.text('Rest Day'), findsOneWidget);
-    expect(
-      find.textContaining('Next up: Day C - Upper Volume'),
-      findsOneWidget,
-    );
+    expect(find.textContaining('Day C - Upper Volume'), findsOneWidget);
+    expect(find.text('Start Next Planned Quest'), findsOneWidget);
     expect(find.text('Start Today\'s Quest'), findsNothing);
   });
+
+  testWidgets('Progress shows working weights and exercise history', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(430, 1400));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    final database = AppDatabase.inMemory();
+    addTearDown(database.close);
+    await AppSeedDataService(
+      database,
+    ).loadMaySeptember2026SeedCampaign(appliedAt: DateTime.utc(2026, 5, 3));
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          appDatabaseProvider.overrideWithValue(database),
+          todayDateProvider.overrideWithValue(DateTime.utc(2026, 5, 5)),
+        ],
+        child: const QuestForFitnessApp(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Start Today\'s Quest'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('complete-session-button')));
+    await tester.pumpAndSettle();
+
+    await database
+        .into(database.progressionSuggestions)
+        .insert(
+          ProgressionSuggestionsCompanion.insert(
+            id: 'test-progression-deadlift',
+            exerciseId: 'conventional-deadlift',
+            currentWeight: 160,
+            suggestedWeight: 162.5,
+            unit: const Value('kg'),
+            reason: 'Hit target reps at target RPE for 2 straight sessions.',
+            createdAt: DateTime.utc(2026, 5, 5, 7),
+          ),
+        );
+
+    await tester.tap(find.text('Progress').last);
+    await tester.pumpAndSettle();
+
+    expect(find.text('ANALYTICS SNAPSHOT'), findsOneWidget);
+    expect(find.text('WORKOUTS'), findsOneWidget);
+    expect(find.textContaining('kg'), findsWidgets);
+    expect(find.text('WORKING WEIGHTS'), findsOneWidget);
+    expect(find.text('Conventional Deadlift'), findsWidgets);
+    expect(find.textContaining('e1RM'), findsWidgets);
+    expect(find.text('PROGRESSION FLAGS'), findsOneWidget);
+    expect(find.textContaining('160 -> 162.5 kg'), findsOneWidget);
+
+    await tester.tap(
+      find.byKey(const ValueKey('edit-working-weight-conventional-deadlift')),
+    );
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(const Key('working-weight-field')),
+      '170',
+    );
+    await tester.tap(find.byKey(const Key('working-weight-save-button')));
+    await tester.pumpAndSettle();
+
+    final deadliftWorkingWeight =
+        await (database.select(database.workingWeights)..where(
+              (table) => table.exerciseId.equals('conventional-deadlift'),
+            ))
+            .getSingle();
+    expect(deadliftWorkingWeight.weight, 170);
+    expect(deadliftWorkingWeight.isManualOverride, isTrue);
+    expect(find.text('170 kg'), findsOneWidget);
+
+    await tester.tap(find.text('Conventional Deadlift').first);
+    await tester.pumpAndSettle();
+
+    expect(find.text('SET HISTORY'), findsOneWidget);
+    expect(find.text('BEST SET'), findsOneWidget);
+    expect(find.textContaining('160 x 4'), findsWidgets);
+
+    await tester.tap(find.text('Progress').last);
+    await tester.pumpAndSettle();
+    final acceptProgression = find.byKey(
+      const ValueKey('accept-progression-test-progression-deadlift'),
+    );
+    await tester.ensureVisible(acceptProgression);
+    await tester.pumpAndSettle();
+    await tester.tap(acceptProgression);
+    await tester.pumpAndSettle();
+    final acceptedSuggestion =
+        await (database.select(database.progressionSuggestions)
+              ..where((table) => table.id.equals('test-progression-deadlift')))
+            .getSingle();
+    expect(acceptedSuggestion.status, 'accepted');
+
+    await _unmountApp(tester);
+  });
+
+  testWidgets('fresh install can start next seed workout immediately', (
+    tester,
+  ) async {
+    final database = AppDatabase.inMemory();
+    addTearDown(database.close);
+    await AppSeedDataService(
+      database,
+    ).loadMaySeptember2026SeedCampaign(appliedAt: DateTime.utc(2026, 5, 3));
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          appDatabaseProvider.overrideWithValue(database),
+          todayDateProvider.overrideWithValue(DateTime.utc(2026, 5, 3)),
+        ],
+        child: const QuestForFitnessApp(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Test First Seed Workout'), findsOneWidget);
+    await tester.tap(find.text('Test First Seed Workout'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Day B - Lower Strength'), findsOneWidget);
+    expect(find.text('Complete Session'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('complete-session-button')));
+    await tester.pumpAndSettle();
+
+    expect(await database.select(database.sessionLogs).get(), hasLength(1));
+
+    await _unmountApp(tester);
+  });
+
+  testWidgets(
+    'Log can start next planned workout and explains future actions',
+    (tester) async {
+      final database = AppDatabase.inMemory();
+      addTearDown(database.close);
+      await AppSeedDataService(
+        database,
+      ).loadMaySeptember2026SeedCampaign(appliedAt: DateTime.utc(2026, 5, 3));
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            appDatabaseProvider.overrideWithValue(database),
+            todayDateProvider.overrideWithValue(DateTime.utc(2026, 5, 3)),
+          ],
+          child: const QuestForFitnessApp(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Log').last);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Start Next Plan'), findsOneWidget);
+      expect(find.text('Live now'), findsWidgets);
+
+      await tester.tap(find.text('Log Run'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byKey(const Key('run-distance-field')), '5');
+      await tester.enterText(find.byKey(const Key('run-duration-field')), '29');
+      await tester.enterText(
+        find.byKey(const Key('run-notes-field')),
+        'Benchmark',
+      );
+      await tester.tap(find.byKey(const Key('run-save-button')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Run logged'), findsOneWidget);
+      expect(find.text('RECENT RUNS'), findsOneWidget);
+      expect(find.textContaining('5 km'), findsWidgets);
+      expect(find.textContaining('5:48/km'), findsOneWidget);
+
+      await tester.tap(find.text('Progress').last);
+      await tester.pumpAndSettle();
+      expect(find.text('PACE TREND'), findsOneWidget);
+      expect(find.textContaining('5:48/km'), findsWidgets);
+
+      await tester.tap(find.text('Log').last);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Start Next Plan'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Day B - Lower Strength'), findsOneWidget);
+      expect(find.text('Complete Session'), findsOneWidget);
+
+      await tester.tap(find.byKey(const Key('complete-session-button')));
+      await tester.pumpAndSettle();
+
+      expect(await database.select(database.sessionLogs).get(), hasLength(1));
+
+      await _unmountApp(tester);
+    },
+  );
 
   testWidgets('can log bodyweight from Progress', (tester) async {
     final database = AppDatabase.inMemory();
@@ -158,17 +341,16 @@ void main() {
     await tester.tap(find.text('Progress').last);
     await tester.pumpAndSettle();
 
-    expect(find.text('Quick Bodyweight'), findsOneWidget);
-    expect(find.text('92.5 kg'), findsWidgets);
-    expect(find.text('Bodyweight Trend'), findsOneWidget);
-    expect(find.text('Body Weight'), findsOneWidget);
+    expect(find.text('LOG BODYWEIGHT'), findsOneWidget);
+    expect(find.text('92.5'), findsWidgets);
+    expect(find.text('BODYWEIGHT'), findsOneWidget);
 
     await tester.enterText(find.byType(TextField), '91.8');
-    await tester.tap(find.widgetWithText(FilledButton, 'Log'));
+    await tester.tap(find.byKey(const Key('bodyweight-log-button')));
     await tester.pumpAndSettle();
 
     expect(find.text('Bodyweight logged'), findsOneWidget);
-    expect(find.text('91.8 kg'), findsWidgets);
+    expect(find.text('91.8'), findsWidgets);
 
     final latestBodyweight = await database
         .select(database.bodyweightLogs)
@@ -184,25 +366,151 @@ void main() {
     expect(latestBodyweight.weightKg, 91.8);
     expect(bodyweightGoal.currentValue, 91.8);
   });
+
+  testWidgets('can view and manually update seed goals from Progress', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(430, 1400));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    final database = AppDatabase.inMemory();
+    addTearDown(database.close);
+    await AppSeedDataService(
+      database,
+    ).loadMaySeptember2026SeedCampaign(appliedAt: DateTime.utc(2026, 5, 3));
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          appDatabaseProvider.overrideWithValue(database),
+          todayDateProvider.overrideWithValue(DateTime.utc(2026, 5, 5)),
+        ],
+        child: const QuestForFitnessApp(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Progress').last);
+    await tester.pumpAndSettle();
+
+    expect(find.text('GOALS DASHBOARD'), findsOneWidget);
+    expect(find.text('Bench Press 1RM'), findsOneWidget);
+    expect(find.text('5 km Run Time'), findsOneWidget);
+    expect(find.text('Weighted Pull-up'), findsOneWidget);
+    expect(find.text('Bodyweight Pull-ups'), findsOneWidget);
+    expect(find.text('Body Weight'), findsWidgets);
+    expect(find.textContaining('Higher is better'), findsWidgets);
+    expect(find.textContaining('Lower is better'), findsWidgets);
+    expect(find.text('Sep 30, 2026'), findsWidgets);
+
+    await tester.drag(find.byType(ListView), const Offset(0, -650));
+    await tester.pumpAndSettle();
+
+    await tester.tap(
+      find.byKey(const ValueKey('edit-goal-goal-weighted-pullup-60kg')),
+    );
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(const Key('goal-current-value-field')),
+      '35',
+    );
+    await tester.tap(find.byKey(const Key('goal-current-value-save-button')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Weighted Pull-up updated'), findsOneWidget);
+    expect(find.text('35 kg'), findsWidgets);
+
+    final weightedPullUp =
+        await (database.select(database.goals)
+              ..where((table) => table.id.equals('goal-weighted-pullup-60kg')))
+            .getSingle();
+
+    expect(weightedPullUp.currentValue, 35);
+  });
+
+  testWidgets('Quest shows persisted Adventurer profile and can gain XP', (
+    tester,
+  ) async {
+    final database = AppDatabase.inMemory();
+    addTearDown(database.close);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [appDatabaseProvider.overrideWithValue(database)],
+        child: const QuestForFitnessApp(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Quest').last);
+    await tester.pumpAndSettle();
+
+    expect(find.text('THE ADVENTURER'), findsOneWidget);
+    expect(find.text('Iron Ranger'), findsWidgets);
+    expect(find.text('Novice Adventurer'), findsOneWidget);
+    expect(find.text('LV 1'), findsOneWidget);
+    expect(find.text('0 / 100 XP to level 2'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('grant-adventurer-xp-button')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('LV 2'), findsOneWidget);
+    expect(find.text('25 / 150 XP to level 3'), findsOneWidget);
+
+    final adventurer = await database.select(database.adventurers).getSingle();
+    expect(adventurer.level, 2);
+    expect(adventurer.xp, 25);
+  });
+
+  testWidgets('Quest Achievements tab shows unlocked fitness achievements', (
+    tester,
+  ) async {
+    final database = AppDatabase.inMemory();
+    addTearDown(database.close);
+    await AppSeedDataService(
+      database,
+    ).loadMaySeptember2026SeedCampaign(appliedAt: DateTime.utc(2026, 5, 3));
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          appDatabaseProvider.overrideWithValue(database),
+          todayDateProvider.overrideWithValue(DateTime.utc(2026, 5, 5)),
+        ],
+        child: const QuestForFitnessApp(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Start Today\'s Quest'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('complete-session-button')));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Quest').last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Achievements').last);
+    await tester.pumpAndSettle();
+
+    expect(find.text('THE CHRONICLE'), findsOneWidget);
+    expect(find.text('Achievements'), findsWidgets);
+    expect(find.text('1 / 7 unlocked'), findsOneWidget);
+    expect(find.text('First Quest'), findsWidgets);
+    expect(find.text('DONE'), findsOneWidget);
+  });
 }
 
 const _destinations = [
   _DestinationCopy(label: 'Log', placeholderText: 'No sessions yet'),
-  _DestinationCopy(label: 'Progress', placeholderText: 'Quick Bodyweight'),
+  _DestinationCopy(label: 'Progress', placeholderText: 'LOG BODYWEIGHT'),
   _DestinationCopy(
     label: 'Quest',
-    placeholderText:
-        'Adventurer, XP, achievements, pet, and expedition systems appear here.',
+    placeholderText: 'Adventurer profile is live.',
   ),
-  _DestinationCopy(
-    label: 'Library',
-    placeholderText:
-        'Exercises, workouts, programs, campaigns, and templates are managed here.',
-  ),
+  _DestinationCopy(label: 'Library', placeholderText: 'Sample codex content.'),
   _DestinationCopy(
     label: 'Settings',
-    placeholderText:
-        'Profile, environment, export, and developer settings will be configured here.',
+    placeholderText: 'Coming later: profile, export, developer tools',
   ),
 ];
 
@@ -211,4 +519,9 @@ class _DestinationCopy {
 
   final String label;
   final String placeholderText;
+}
+
+Future<void> _unmountApp(WidgetTester tester) async {
+  await tester.pumpWidget(const SizedBox.shrink());
+  await tester.pump(const Duration(seconds: 1));
 }

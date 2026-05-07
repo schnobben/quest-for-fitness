@@ -22,10 +22,7 @@ final todayDashboardProvider = FutureProvider<TodayDashboard>((ref) async {
   );
   final nextWorkout =
       todayWorkout ??
-      (await repositories.campaigns.getUpcomingScheduledWorkouts(
-        from: _startOfDay(today),
-        limit: 1,
-      )).firstOrNull;
+      await repositories.campaigns.getNextPlannedWorkout(_startOfDay(today));
   final workoutTemplate = nextWorkout == null
       ? null
       : await repositories.workouts.getTemplate(nextWorkout.workoutTemplateId);
@@ -80,12 +77,37 @@ class TodayDashboard {
 
   bool get isTrainingDay => todayWorkout != null;
 
+  bool get canStartWorkout => nextWorkout != null;
+
+  bool get isSeedCampaign => activeCampaign?.isSeedContent ?? false;
+
+  bool get isBeforeCampaignStart {
+    final campaign = activeCampaign;
+    if (campaign == null) {
+      return false;
+    }
+
+    return _startOfDay(today).isBefore(_startOfDay(campaign.startDate));
+  }
+
   String get primaryTitle {
     if (nextWorkoutTemplate == null) {
       return 'No Active Quest';
     }
 
     return isTrainingDay ? 'Today\'s Quest' : 'Rest Day';
+  }
+
+  String get startActionLabel {
+    if (isTrainingDay) {
+      return 'Start Today\'s Quest';
+    }
+
+    if (isBeforeCampaignStart) {
+      return 'Test First Seed Workout';
+    }
+
+    return 'Start Next Planned Quest';
   }
 
   String get primaryDescription {

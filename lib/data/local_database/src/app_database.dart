@@ -19,6 +19,15 @@ part 'app_database.g.dart';
     SessionLogs,
     ExerciseLogs,
     SetLogs,
+    WorkingWeights,
+    CardioLogs,
+    ProgressionSuggestions,
+    Adventurers,
+    FitnessEvents,
+    RewardEvents,
+    XpHistory,
+    Achievements,
+    AchievementStates,
     BodyweightLogs,
     Goals,
     SeedRuns,
@@ -34,13 +43,35 @@ class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration {
     return MigrationStrategy(
       onCreate: (migrator) => migrator.createAll(),
-      onUpgrade: (migrator, from, to) async {},
+      onUpgrade: (migrator, from, to) async {
+        if (from < 2) {
+          await migrator.createTable(workingWeights);
+        }
+        if (from < 3) {
+          await migrator.createTable(cardioLogs);
+        }
+        if (from < 4) {
+          await migrator.createTable(progressionSuggestions);
+        }
+        if (from < 5) {
+          await migrator.createTable(adventurers);
+        }
+        if (from < 6) {
+          await migrator.createTable(fitnessEvents);
+          await migrator.createTable(rewardEvents);
+          await migrator.createTable(xpHistory);
+        }
+        if (from < 7) {
+          await migrator.createTable(achievements);
+          await migrator.createTable(achievementStates);
+        }
+      },
       beforeOpen: (details) async {
         await customStatement('PRAGMA foreign_keys = ON');
       },
@@ -217,6 +248,132 @@ class SetLogs extends Table {
 
   @override
   Set<Column<Object>> get primaryKey => {id};
+}
+
+class WorkingWeights extends Table {
+  TextColumn get exerciseId => text().references(Exercises, #id)();
+  RealColumn get weight => real()();
+  TextColumn get unit => text().withDefault(const Constant('kg'))();
+  RealColumn get estimatedOneRepMax => real().nullable()();
+  TextColumn get sourceSetLogId => text().nullable().references(SetLogs, #id)();
+  BoolColumn get isManualOverride =>
+      boolean().withDefault(const Constant(false))();
+  DateTimeColumn get updatedAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {exerciseId};
+}
+
+class CardioLogs extends Table {
+  TextColumn get id => text()();
+  DateTimeColumn get loggedAt => dateTime()();
+  TextColumn get activityType => text().withDefault(const Constant('run'))();
+  RealColumn get distanceMeters => real()();
+  IntColumn get durationSeconds => integer()();
+  RealColumn get paceSecondsPerKm => real()();
+  TextColumn get notes => text().nullable()();
+  DateTimeColumn get createdAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+class ProgressionSuggestions extends Table {
+  TextColumn get id => text()();
+  TextColumn get exerciseId => text().references(Exercises, #id)();
+  RealColumn get currentWeight => real()();
+  RealColumn get suggestedWeight => real()();
+  TextColumn get unit => text().withDefault(const Constant('kg'))();
+  TextColumn get reason => text()();
+  TextColumn get status => text().withDefault(const Constant('pending'))();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get resolvedAt => dateTime().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+class Adventurers extends Table {
+  TextColumn get id => text()();
+  TextColumn get name => text()();
+  IntColumn get level => integer().withDefault(const Constant(1))();
+  IntColumn get xp => integer().withDefault(const Constant(0))();
+  TextColumn get selectedClass => text()();
+  TextColumn get currentTitle => text()();
+  IntColumn get might => integer().withDefault(const Constant(10))();
+  IntColumn get endurance => integer().withDefault(const Constant(10))();
+  IntColumn get discipline => integer().withDefault(const Constant(10))();
+  IntColumn get vitality => integer().withDefault(const Constant(10))();
+  IntColumn get agility => integer().withDefault(const Constant(10))();
+  IntColumn get wisdom => integer().withDefault(const Constant(10))();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+class FitnessEvents extends Table {
+  TextColumn get id => text()();
+  TextColumn get type => text()();
+  DateTimeColumn get occurredAt => dateTime()();
+  TextColumn get sourceType => text()();
+  TextColumn get sourceId => text().nullable()();
+  TextColumn get metadataJson => text().nullable()();
+  DateTimeColumn get createdAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+class RewardEvents extends Table {
+  TextColumn get id => text()();
+  TextColumn get fitnessEventId => text().references(FitnessEvents, #id)();
+  TextColumn get type => text()();
+  IntColumn get xpAmount => integer().withDefault(const Constant(0))();
+  TextColumn get summary => text()();
+  DateTimeColumn get createdAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+class XpHistory extends Table {
+  TextColumn get id => text()();
+  TextColumn get rewardEventId => text().references(RewardEvents, #id)();
+  TextColumn get adventurerId => text().references(Adventurers, #id)();
+  IntColumn get amount => integer()();
+  IntColumn get levelBefore => integer()();
+  IntColumn get levelAfter => integer()();
+  IntColumn get xpBefore => integer()();
+  IntColumn get xpAfter => integer()();
+  DateTimeColumn get createdAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+class Achievements extends Table {
+  TextColumn get id => text()();
+  TextColumn get name => text()();
+  TextColumn get description => text()();
+  TextColumn get category => text()();
+  IntColumn get targetValue => integer()();
+  DateTimeColumn get createdAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+class AchievementStates extends Table {
+  TextColumn get achievementId => text().references(Achievements, #id)();
+  IntColumn get currentValue => integer().withDefault(const Constant(0))();
+  BoolColumn get isUnlocked => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get unlockedAt => dateTime().nullable()();
+  DateTimeColumn get updatedAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {achievementId};
 }
 
 class BodyweightLogs extends Table {

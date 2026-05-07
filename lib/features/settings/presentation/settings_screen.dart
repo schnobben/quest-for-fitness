@@ -13,7 +13,7 @@ class SettingsScreen extends StatelessWidget {
     return const PlaceholderFeatureScreen(
       title: 'Settings',
       subtitle:
-          'Profile, environment, export, and developer settings will be configured here.',
+          'Coming later: profile, export, developer tools, and app preferences. Current testing works through Today, Log, and Progress.',
       icon: Icons.settings,
     );
   }
