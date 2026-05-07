@@ -559,6 +559,23 @@ Important scenarios:
 - missed days do not create punitive pet states
 - premium gates do not block core free logging
 
+### 14.1 Local verification workflow
+
+Use tiered verification during implementation so development does not spend most of its time in heavyweight Flutter tooling:
+
+1. Run focused tests for the changed repository/controller/widget first.
+2. Run `flutter analyze`.
+3. Run `flutter test --reporter expanded`.
+4. Run `flutter build apk --debug` when database/codegen/native-asset/platform behavior changed, at milestone boundaries, or when full roadmap verification is explicitly requested.
+
+Tooling rules for AI coding agents on the Windows development host:
+
+- Do not parallelize Flutter/Dart toolchain commands. `dart format`, `dart run build_runner build`, `flutter analyze`, `flutter test`, `flutter clean`, and `flutter build apk --debug` all touch shared `.dart_tool`, `build`, Gradle, or native-asset state.
+- It is fine to parallelize read-only source inspection commands such as `rg`, `Get-Content`, and `git diff`.
+- Use sandboxed execution for source inspection and ordinary project-local commands.
+- If a Flutter/Dart tool command fails with cache, native asset, file-lock, network, or timeout symptoms, rerun that specific command outside the sandbox using the approved prefix path rather than repeatedly retrying sandboxed execution.
+- If Android debug builds fail with a missing `libsqlite3.so` under `.dart_tool/hooks_runner`, treat it as stale native-asset state: run `flutter clean`, then `flutter pub get`, then rerun the needed verification.
+
 ---
 
 ## 15. Architecture decision log
@@ -573,5 +590,6 @@ Track major structural decisions here as the project evolves.
 | 2026-05-03 | Use internal fitness and reward events between systems. | RPG, pet, and achievement systems should react to completed real-world actions. |
 | 2026-05-03 | Treat the May–September 2026 campaign as seed data. | The product must support future custom campaigns and programs. |
 | 2026-05-03 | Add entitlement architecture before real billing. | Premium features should be gated without coupling app logic to a billing provider. |
+| 2026-05-07 | Use sequential, tiered Flutter verification and escalate known cache/tooling failures promptly. | The Windows Flutter toolchain shares mutable `.dart_tool`, `build`, Gradle, and native-asset state; sandboxed retries and parallel tool runs waste time and can hide non-code failures. |
 
 When an architecture decision changes, update the relevant section and add a row to this log.

@@ -80,11 +80,15 @@ void main() {
     final sessions = await database.select(database.sessionLogs).get();
     final exerciseLogs = await database.select(database.exerciseLogs).get();
     final setLogs = await database.select(database.setLogs).get();
+    final rewardEvents = await database.select(database.rewardEvents).get();
+    final xpHistory = await database.select(database.xpHistory).get();
 
     expect(sessions, hasLength(1));
     expect(exerciseLogs, hasLength(5));
     expect(setLogs, isNotEmpty);
-    expect(find.text('Session saved'), findsOneWidget);
+    expect(rewardEvents, isNotEmpty);
+    expect(xpHistory, isNotEmpty);
+    expect(find.textContaining('Session saved. +'), findsOneWidget);
 
     expect(sessions.single.workoutTemplateId, isNotNull);
 
@@ -456,6 +460,43 @@ void main() {
     final adventurer = await database.select(database.adventurers).getSingle();
     expect(adventurer.level, 2);
     expect(adventurer.xp, 25);
+  });
+
+  testWidgets('Quest Achievements tab shows unlocked fitness achievements', (
+    tester,
+  ) async {
+    final database = AppDatabase.inMemory();
+    addTearDown(database.close);
+    await AppSeedDataService(
+      database,
+    ).loadMaySeptember2026SeedCampaign(appliedAt: DateTime.utc(2026, 5, 3));
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          appDatabaseProvider.overrideWithValue(database),
+          todayDateProvider.overrideWithValue(DateTime.utc(2026, 5, 5)),
+        ],
+        child: const QuestForFitnessApp(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Start Today\'s Quest'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('complete-session-button')));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Quest').last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Achievements').last);
+    await tester.pumpAndSettle();
+
+    expect(find.text('THE CHRONICLE'), findsOneWidget);
+    expect(find.text('Achievements'), findsWidgets);
+    expect(find.text('1 / 7 unlocked'), findsOneWidget);
+    expect(find.text('First Quest'), findsWidgets);
+    expect(find.text('DONE'), findsOneWidget);
   });
 }
 

@@ -678,6 +678,8 @@ Exit criteria:
 
 ### Sprint 3.2 — XP event system
 
+**Status:** Completed May 7, 2026.
+
 Tasks:
 
 - Create internal fitness event system.
@@ -697,9 +699,22 @@ Exit criteria:
 - Real fitness actions produce RPG progress.
 - Reward history is stored.
 
+Completion notes:
+
+- Added Drift-backed fitness event, reward event, and XP history tables at schema version 6.
+- `XpEventService` now records canonical fitness events, derived XP reward events, and level/xp before-after history for every grant.
+- Workout completion, run logging, bodyweight logging, manual goal updates, goal completions, and strength PRs now emit reward events and grant Adventurer XP.
+- Workout completion returns a reward summary with XP gained, level-up state, and PR count; the workout screen shows this in the completion notification.
+- Quest debug XP now flows through `XpEventService`, so it records history instead of directly mutating Adventurer XP.
+- Database reset/dev tooling clears reward history, fitness events, XP history, adventurer state, cardio logs, and progression suggestions.
+- Repository and widget coverage now verifies stored reward/XP history and post-workout XP feedback.
+- Verification passed: `dart format lib test`, `flutter analyze`, `flutter test --reporter expanded`, and `flutter build apk --debug`.
+
 ---
 
 ### Sprint 3.3 — Achievements v1
+
+**Status:** Completed May 7, 2026.
 
 Tasks:
 
@@ -721,6 +736,16 @@ Exit criteria:
 
 - User can unlock achievements.
 - Achievements feel rewarding but not intrusive.
+
+Completion notes:
+
+- Added Drift-backed achievement definitions and achievement state/progress tables at schema version 7.
+- Added `AchievementRepository` with the first seven built-in achievements: first workout, first run, first bodyweight log, 4 workouts in a week, first PR, 10 total workouts, and first goal milestone.
+- Fitness events now update achievement progress through the Sprint 3.2 event pipeline, and achievement unlocks are stored as reward events.
+- Quest now has a live Achievements tab with unlock count, progress cards, category styling, and recent achievement cards on the Hero tab.
+- Workout completion reward feedback now includes newly unlocked achievement count when applicable.
+- Added repository and widget coverage for achievement definitions, progress, unlocks, reward history, and the Achievements tab.
+- Verification passed: `dart format lib test`, `flutter analyze`, `flutter test --reporter expanded`, and `flutter build apk --debug`.
 
 ---
 

@@ -29,6 +29,8 @@ void main() {
       tableNames,
       containsAll({
         'bodyweight_logs',
+        'achievement_states',
+        'achievements',
         'adventurers',
         'campaign_phases',
         'campaigns',
@@ -38,6 +40,8 @@ void main() {
         'goals',
         'program_templates',
         'progression_suggestions',
+        'fitness_events',
+        'reward_events',
         'scheduled_workouts',
         'seed_runs',
         'session_logs',
@@ -45,6 +49,7 @@ void main() {
         'working_weights',
         'workout_template_exercises',
         'workout_templates',
+        'xp_history',
       }),
     );
   });
@@ -181,7 +186,7 @@ void main() {
         workoutTemplate.id,
       );
 
-      await repositories.sessions.completePlannedWorkout(
+      final result = await repositories.sessions.completePlannedWorkout(
         scheduledWorkout: scheduledWorkout,
         workoutTemplate: workoutTemplate,
         exercises: [
@@ -244,6 +249,19 @@ void main() {
       expect(analytics.weeklyVolumeKg, greaterThan(0));
       expect(analytics.currentTrainingStreakDays, 1);
       expect(updatedScheduledWorkout.status, 'completed');
+      expect(
+        result.workoutReward.xpAmount,
+        xpWorkoutBase + setLogs.length * xpWorkoutPerSet,
+      );
+      expect(await database.select(database.fitnessEvents).get(), isNotEmpty);
+      expect(await database.select(database.rewardEvents).get(), isNotEmpty);
+      expect(await database.select(database.xpHistory).get(), isNotEmpty);
+      final achievements = await repositories.achievements
+          .getAchievementStates();
+      final firstWorkout = achievements.singleWhere(
+        (item) => item.achievement.id == AchievementId.firstWorkout,
+      );
+      expect(firstWorkout.state.isUnlocked, isTrue);
     },
   );
 
@@ -267,7 +285,7 @@ void main() {
         workoutTemplate.id,
       );
 
-      final sessionId = await repositories.sessions.completePlannedWorkout(
+      final result = await repositories.sessions.completePlannedWorkout(
         scheduledWorkout: scheduledWorkout,
         workoutTemplate: workoutTemplate,
         exercises: [
@@ -302,7 +320,7 @@ void main() {
       expect(history.single.setCount, targets.length);
       expect(history.single.session.notes, 'Solid session');
 
-      await repositories.sessions.deleteSession(sessionId);
+      await repositories.sessions.deleteSession(result.sessionId);
 
       expect(await repositories.sessions.getSessionHistory(), isEmpty);
       expect(await database.select(database.exerciseLogs).get(), isEmpty);
@@ -409,7 +427,102 @@ void main() {
     expect(run.paceSecondsPerKm, 348);
     expect(run.notes, 'Comfortable benchmark');
     expect(fiveKmGoal.currentValue, closeTo(29, 0.001));
+    final achievements = await repositories.achievements.getAchievementStates();
+    final firstRun = achievements.singleWhere(
+      (item) => item.achievement.id == AchievementId.firstRun,
+    );
+    expect(firstRun.state.isUnlocked, isTrue);
   });
+
+  test(
+    'achievement progress tracks bodyweight, PR, total workouts, and goals',
+    () async {
+      final database = AppDatabase.inMemory();
+      addTearDown(database.close);
+      await AppSeedDataService(
+        database,
+      ).loadMaySeptember2026SeedCampaign(appliedAt: DateTime.utc(2026, 5, 3));
+      final repositories = AppRepositories(database);
+
+      await repositories.bodyweight.logBodyweight(
+        weightKg: 83,
+        loggedAt: DateTime.utc(2026, 5, 10, 7),
+      );
+      await repositories.goals.updateCurrentValue(
+        goalId: 'goal-weighted-pullup-60kg',
+        currentValue: 60,
+      );
+
+      final firstWorkout =
+          (await repositories.campaigns.getUpcomingScheduledWorkouts(
+            from: DateTime.utc(2026, 5, 5),
+            limit: 30,
+          )).first;
+      final template = (await repositories.workouts.getTemplate(
+        firstWorkout.workoutTemplateId,
+      ))!;
+      final targets = await repositories.workouts.getExerciseTargets(
+        template.id,
+      );
+      for (var index = 0; index < 10; index++) {
+        final workout = firstWorkout.copyWith(
+          id: 'achievement-workout-$index',
+          scheduledFor: DateTime.utc(2026, 5, 5 + index, 7),
+          status: 'planned',
+        );
+        await database
+            .into(database.scheduledWorkouts)
+            .insert(
+              ScheduledWorkoutsCompanion.insert(
+                id: workout.id,
+                campaignId: Value(workout.campaignId),
+                programTemplateId: Value(workout.programTemplateId),
+                workoutTemplateId: workout.workoutTemplateId,
+                scheduledFor: workout.scheduledFor,
+                status: Value(workout.status),
+                createdAt: workout.createdAt,
+                updatedAt: workout.updatedAt,
+              ),
+            );
+        await repositories.sessions.completePlannedWorkout(
+          scheduledWorkout: workout,
+          workoutTemplate: template,
+          exercises: [
+            for (final target in targets)
+              CompletedExerciseInput(
+                exerciseId: target.exercise.id,
+                sortOrder: target.templateExercise.sortOrder,
+                sets: [
+                  CompletedSetInput(
+                    setNumber: 1,
+                    isComplete: true,
+                    reps: 6,
+                    weight:
+                        (target.templateExercise.targetWeight ?? 10) + index,
+                    rpe: target.templateExercise.targetRpe,
+                  ),
+                ],
+              ),
+          ],
+          startedAt: workout.scheduledFor,
+          completedAt: workout.scheduledFor.add(const Duration(hours: 1)),
+        );
+      }
+
+      final achievements = await repositories.achievements
+          .getAchievementStates();
+      bool unlocked(String id) => achievements
+          .singleWhere((item) => item.achievement.id == id)
+          .state
+          .isUnlocked;
+
+      expect(unlocked(AchievementId.firstBodyweightLog), isTrue);
+      expect(unlocked(AchievementId.firstGoalMilestone), isTrue);
+      expect(unlocked(AchievementId.firstPr), isTrue);
+      expect(unlocked(AchievementId.fourWorkoutsWeek), isTrue);
+      expect(unlocked(AchievementId.tenTotalWorkouts), isTrue);
+    },
+  );
 
   test('progression suggestions can be accepted or ignored', () async {
     final database = AppDatabase.inMemory();

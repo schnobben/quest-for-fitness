@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_theme.dart';
+import '../../../data/repositories/repositories.dart';
+import '../application/achievement_controller.dart';
 import '../application/adventurer_profile_controller.dart';
 import '../../../shared/presentation/design_system/design_system.dart';
 
@@ -30,6 +32,11 @@ class _QuestScreenState extends State<QuestScreen> {
               )
             : _selectedTab == 1
             ? _PetView(
+                selectedTab: _selectedTab,
+                onTabChanged: (i) => setState(() => _selectedTab = i),
+              )
+            : _selectedTab == 3
+            ? _AchievementsView(
                 selectedTab: _selectedTab,
                 onTabChanged: (i) => setState(() => _selectedTab = i),
               )
@@ -209,9 +216,7 @@ class _AdventurerContent extends StatelessWidget {
         _QuestTabBar(
           tabs: const ['Hero', 'Pet', 'Quests', 'Achievements', 'Expeditions'],
           selectedIndex: 0,
-          onTabChanged: (i) {
-            if (i <= 2) onTabChanged(i);
-          },
+          onTabChanged: onTabChanged,
         ),
         const SizedBox(height: 12),
 
@@ -360,46 +365,7 @@ class _AdventurerContent extends StatelessWidget {
           ),
         ),
 
-        QfSectionHeader(
-          title: 'Recent Achievements',
-          moreLabel: 'See all · 12',
-        ),
-        SizedBox(
-          height: 130,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 18),
-            children: const [
-              _AchievementBadge(
-                icon: Icons.local_fire_department,
-                tone: AppColors.ember,
-                name: 'Forged in Steel',
-                desc: 'New strength PR',
-              ),
-              SizedBox(width: 10),
-              _AchievementBadge(
-                icon: Icons.flag,
-                tone: AppColors.forest,
-                name: 'Iron Habit',
-                desc: '4 in a week',
-              ),
-              SizedBox(width: 10),
-              _AchievementBadge(
-                icon: Icons.directions_run,
-                tone: AppColors.sky,
-                name: 'Road Worn',
-                desc: '10 runs logged',
-              ),
-              SizedBox(width: 10),
-              _AchievementBadge(
-                icon: Icons.spa_outlined,
-                tone: AppColors.rune,
-                name: 'Campfire Wisdom',
-                desc: 'Planned recovery',
-              ),
-            ],
-          ),
-        ),
+        _RecentAchievementsStrip(onSeeAll: () => onTabChanged(3)),
 
         const SizedBox(height: 24),
       ],
@@ -408,6 +374,277 @@ class _AdventurerContent extends StatelessWidget {
 }
 
 // ─── Pet view ─────────────────────────────────────────────────────────────────
+
+class _RecentAchievementsStrip extends ConsumerWidget {
+  const _RecentAchievementsStrip({required this.onSeeAll});
+
+  final VoidCallback onSeeAll;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final achievements = ref.watch(achievementGalleryProvider);
+
+    return achievements.when(
+      loading: () => const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 18),
+        child: LinearProgressIndicator(color: AppColors.forest),
+      ),
+      error: (error, stackTrace) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18),
+        child: Text(
+          'Unable to load achievements: $error',
+          style: const TextStyle(color: AppColors.inkMute),
+        ),
+      ),
+      data: (items) {
+        final unlocked = items.where((item) => item.state.isUnlocked).toList()
+          ..sort((a, b) {
+            final aTime =
+                a.state.unlockedAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+            final bTime =
+                b.state.unlockedAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+            return bTime.compareTo(aTime);
+          });
+        final display = unlocked.isEmpty
+            ? items.take(4).toList()
+            : unlocked.take(4).toList();
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            QfSectionHeader(
+              title: 'Recent Achievements',
+              moreLabel: 'See all · ${items.length}',
+            ),
+            SizedBox(
+              height: 130,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 18),
+                itemBuilder: (context, index) {
+                  final item = display[index];
+                  return GestureDetector(
+                    onTap: onSeeAll,
+                    child: _AchievementBadge(
+                      icon: _achievementIcon(item.achievement.category),
+                      tone: _achievementTone(item.achievement.category),
+                      name: item.achievement.name,
+                      desc: item.state.isUnlocked
+                          ? 'Unlocked'
+                          : '${item.state.currentValue}/${item.achievement.targetValue}',
+                    ),
+                  );
+                },
+                separatorBuilder: (_, _) => const SizedBox(width: 10),
+                itemCount: display.length,
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _AchievementsView extends ConsumerWidget {
+  const _AchievementsView({
+    required this.selectedTab,
+    required this.onTabChanged,
+  });
+
+  final int selectedTab;
+  final ValueChanged<int> onTabChanged;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final achievements = ref.watch(achievementGalleryProvider);
+
+    return ListView(
+      padding: EdgeInsets.zero,
+      children: [
+        const QfScreenHeader(
+          salutation: 'The Chronicle',
+          title: 'Achievements',
+          trailing: Icon(Icons.workspace_premium, color: AppColors.gold),
+        ),
+        _QuestTabBar(
+          tabs: const ['Hero', 'Pet', 'Quests', 'Achievements', 'Expeditions'],
+          selectedIndex: selectedTab,
+          onTabChanged: onTabChanged,
+        ),
+        const SizedBox(height: 12),
+        achievements.when(
+          loading: () => const Padding(
+            padding: EdgeInsets.all(18),
+            child: LinearProgressIndicator(color: AppColors.forest),
+          ),
+          error: (error, stackTrace) => Padding(
+            padding: const EdgeInsets.all(18),
+            child: QfCard(
+              padding: const EdgeInsets.all(14),
+              child: Text(
+                'Achievements could not be loaded: $error',
+                style: const TextStyle(color: AppColors.inkMute),
+              ),
+            ),
+          ),
+          data: (items) {
+            final unlockedCount = items
+                .where((item) => item.state.isUnlocked)
+                .length;
+            return Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 18),
+                  child: QfCard(
+                    variant: QfCardVariant.embossed,
+                    ornamentCorners: true,
+                    padding: const EdgeInsets.all(14),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.emoji_events, color: AppColors.gold),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '$unlockedCount / ${items.length} unlocked',
+                                style: AppTheme.fantasyStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.ink,
+                                ),
+                              ),
+                              const Text(
+                                'Progress updates from workouts, runs, bodyweight logs, PRs, and goal milestones.',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: AppColors.inkMute,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 18),
+                  child: Column(
+                    children: [
+                      for (final item in items) ...[
+                        _AchievementProgressCard(item: item),
+                        const SizedBox(height: 10),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+        const SizedBox(height: 24),
+      ],
+    );
+  }
+}
+
+class _AchievementProgressCard extends StatelessWidget {
+  const _AchievementProgressCard({required this.item});
+
+  final AchievementStateView item;
+
+  @override
+  Widget build(BuildContext context) {
+    final unlocked = item.state.isUnlocked;
+    final category = item.achievement.category;
+    final tone = _achievementTone(category);
+
+    return QfCard(
+      variant: unlocked ? QfCardVariant.embossed : QfCardVariant.raised,
+      padding: const EdgeInsets.all(12),
+      child: Row(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: unlocked
+                  ? tone.withValues(alpha: 0.16)
+                  : AppColors.surface3,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: unlocked ? tone : AppColors.outline),
+            ),
+            child: Icon(
+              unlocked ? Icons.workspace_premium : _achievementIcon(category),
+              color: unlocked ? tone : AppColors.inkDim,
+              size: 22,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  item.achievement.name,
+                  style: AppTheme.fantasyStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.ink,
+                  ),
+                ),
+                Text(
+                  item.achievement.description,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: AppColors.inkMute,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                _QfBar(value: item.progress, color: tone),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            unlocked
+                ? 'DONE'
+                : '${item.state.currentValue}/${item.achievement.targetValue}',
+            style: AppTheme.monoStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: unlocked ? tone : AppColors.inkDim,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+IconData _achievementIcon(String category) {
+  return switch (category) {
+    'cardio' => Icons.directions_run,
+    'body' => Icons.monitor_weight_outlined,
+    'consistency' => Icons.flag,
+    'goals' => Icons.track_changes,
+    _ => Icons.fitness_center,
+  };
+}
+
+Color _achievementTone(String category) {
+  return switch (category) {
+    'cardio' => AppColors.sky,
+    'body' => AppColors.rose,
+    'consistency' => AppColors.forest,
+    'goals' => AppColors.gold,
+    _ => AppColors.ember,
+  };
+}
 
 class _PetView extends StatelessWidget {
   const _PetView({required this.selectedTab, required this.onTabChanged});
@@ -431,9 +668,7 @@ class _PetView extends StatelessWidget {
         _QuestTabBar(
           tabs: const ['Hero', 'Pet', 'Quests', 'Achievements', 'Expeditions'],
           selectedIndex: 1,
-          onTabChanged: (i) {
-            if (i <= 2) onTabChanged(i);
-          },
+          onTabChanged: onTabChanged,
         ),
         const SizedBox(height: 12),
 
@@ -773,9 +1008,7 @@ class _ExpeditionsView extends StatelessWidget {
         _QuestTabBar(
           tabs: const ['Hero', 'Pet', 'Quests', 'Achievements', 'Expeditions'],
           selectedIndex: 2,
-          onTabChanged: (i) {
-            if (i <= 2) onTabChanged(i);
-          },
+          onTabChanged: onTabChanged,
         ),
         const SizedBox(height: 12),
 

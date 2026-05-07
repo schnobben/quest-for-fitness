@@ -1,11 +1,13 @@
 import 'package:drift/drift.dart';
 
 import '../../local_database/local_database.dart';
+import 'xp_event_service.dart';
 
 class SessionRepository {
-  const SessionRepository(this._database);
+  const SessionRepository(this._database, this._xpEvents);
 
   final AppDatabase _database;
+  final XpEventService _xpEvents;
 
   Future<List<SessionLog>> getRecentSessions({int limit = 20}) {
     return (_database.select(_database.sessionLogs)
@@ -177,7 +179,7 @@ class SessionRepository {
     });
   }
 
-  Future<String> completePlannedWorkout({
+  Future<WorkoutCompletionResult> completePlannedWorkout({
     required ScheduledWorkout scheduledWorkout,
     required WorkoutTemplate workoutTemplate,
     required List<CompletedExerciseInput> exercises,
@@ -187,6 +189,13 @@ class SessionRepository {
   }) async {
     final sessionId = 'session-${scheduledWorkout.id}';
     final durationSeconds = completedAt.difference(startedAt).inSeconds;
+
+    final completedSetCount = exercises.fold<int>(
+      0,
+      (count, exercise) =>
+          count + exercise.sets.where((set) => set.isComplete).length,
+    );
+    final prSetIds = <String>[];
 
     await _database.transaction(() async {
       await _database
@@ -237,12 +246,15 @@ class SessionRepository {
               );
         }
 
-        await _updateWorkingWeightFromExercise(
+        final prSetId = await _updateWorkingWeightFromExercise(
           exerciseId: exercise.exerciseId,
           exerciseLogId: exerciseLogId,
           sets: exercise.sets,
           completedAt: completedAt,
         );
+        if (prSetId != null) {
+          prSetIds.add(prSetId);
+        }
       }
 
       await (_database.update(
@@ -253,12 +265,36 @@ class SessionRepository {
           updatedAt: Value(completedAt),
         ),
       );
+
+      for (final prSetId in prSetIds) {
+        final exerciseLogId = prSetId.substring(
+          0,
+          prSetId.lastIndexOf('-set-'),
+        );
+        final exercise = exercises.firstWhere(
+          (item) => '$sessionId-${item.exerciseId}' == exerciseLogId,
+        );
+        await _xpEvents.onPrAchieved(
+          exerciseId: exercise.exerciseId,
+          setLogId: prSetId,
+          occurredAt: completedAt,
+        );
+      }
     });
 
-    return sessionId;
+    final workoutReward = await _xpEvents.onWorkoutCompleted(
+      sessionId: sessionId,
+      setCount: completedSetCount,
+      occurredAt: completedAt,
+    );
+    return WorkoutCompletionResult(
+      sessionId: sessionId,
+      workoutReward: workoutReward,
+      prCount: prSetIds.length,
+    );
   }
 
-  Future<void> _updateWorkingWeightFromExercise({
+  Future<String?> _updateWorkingWeightFromExercise({
     required String exerciseId,
     required String exerciseLogId,
     required List<CompletedSetInput> sets,
@@ -271,12 +307,12 @@ class SessionRepository {
         bestSet = set;
       }
     }
-    if (bestSet == null) return;
+    if (bestSet == null) return null;
 
     final existing = await (_database.select(
       _database.workingWeights,
     )..where((table) => table.exerciseId.equals(exerciseId))).getSingleOrNull();
-    if (existing?.isManualOverride ?? false) return;
+    if (existing?.isManualOverride ?? false) return null;
 
     final estimatedOneRepMax = _estimatedOneRepMax(
       bestSet.weight,
@@ -286,7 +322,7 @@ class SessionRepository {
         existing?.estimatedOneRepMax ??
         existing?.weight ??
         double.negativeInfinity;
-    if (existing != null && _setScore(bestSet) < existingScore) return;
+    if (existing != null && _setScore(bestSet) < existingScore) return null;
 
     final exercise = await (_database.select(
       _database.exercises,
@@ -305,6 +341,9 @@ class SessionRepository {
             updatedAt: completedAt,
           ),
         );
+    final bestSetLogId = '$exerciseLogId-set-${bestSet.setNumber}';
+    if (existing == null) return null;
+    return _setScore(bestSet) > existingScore ? bestSetLogId : null;
   }
 
   double _setScore(CompletedSetInput set) {
@@ -369,6 +408,18 @@ class SessionAnalyticsSnapshot {
   final double weeklyVolumeKg;
   final double adherence;
   final int currentTrainingStreakDays;
+}
+
+class WorkoutCompletionResult {
+  const WorkoutCompletionResult({
+    required this.sessionId,
+    required this.workoutReward,
+    required this.prCount,
+  });
+
+  final String sessionId;
+  final RewardGrant workoutReward;
+  final int prCount;
 }
 
 class SessionHistoryEntry {

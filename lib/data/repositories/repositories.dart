@@ -1,3 +1,4 @@
+export 'src/achievement_repository.dart';
 export 'src/adventurer_repository.dart';
 export 'src/app_repositories.dart';
 export 'src/xp_event_service.dart';

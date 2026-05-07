@@ -1,11 +1,13 @@
 import 'package:drift/drift.dart';
 
 import '../../local_database/local_database.dart';
+import 'xp_event_service.dart';
 
 class BodyweightRepository {
-  const BodyweightRepository(this._database);
+  const BodyweightRepository(this._database, this._xpEvents);
 
   final AppDatabase _database;
+  final XpEventService _xpEvents;
 
   Future<List<BodyweightLog>> getHistory() {
     return (_database.select(
@@ -50,6 +52,11 @@ class BodyweightRepository {
             ),
           );
 
+      final goals = await (_database.select(
+        _database.goals,
+      )..where((table) => table.linkedMetric.equals('bodyweight'))).get();
+      final completedGoals = <Goal>[];
+
       await (_database.update(
         _database.goals,
       )..where((table) => table.linkedMetric.equals('bodyweight'))).write(
@@ -58,8 +65,36 @@ class BodyweightRepository {
           updatedAt: Value(DateTime.now()),
         ),
       );
+
+      for (final goal in goals) {
+        if (!_isGoalComplete(goal) && _isGoalValueComplete(goal, weightKg)) {
+          completedGoals.add(goal);
+        }
+      }
+
+      await _xpEvents.onBodyweightLogged(
+        bodyweightLogId: id,
+        occurredAt: effectiveLoggedAt,
+      );
+      for (final goal in completedGoals) {
+        await _xpEvents.onGoalCompleted(
+          goalId: goal.id,
+          occurredAt: effectiveLoggedAt,
+        );
+      }
     });
 
     return id;
+  }
+
+  bool _isGoalComplete(Goal goal) {
+    final value = goal.currentValue;
+    if (value == null) return false;
+    return _isGoalValueComplete(goal, value);
+  }
+
+  bool _isGoalValueComplete(Goal goal, double value) {
+    if (goal.direction == 'lower') return value <= goal.targetValue;
+    return value >= goal.targetValue;
   }
 }

@@ -21,10 +21,28 @@ The May–September 2026 personal training block is treated as seed/sample campa
 
 ## Verification
 
-Run the baseline checks with:
+For normal sprint work, use a tiered verification loop:
+
+1. Run targeted tests for the area being changed.
+2. Run `flutter analyze`.
+3. Run `flutter test --reporter expanded`.
+4. Run `flutter build apk --debug` only when the sprint changes database/codegen, native assets, platform build behavior, or when full roadmap verification is requested.
+
+Baseline full verification:
 
 ```sh
 flutter analyze
-flutter test
+flutter test --reporter expanded
 flutter build apk --debug
 ```
+
+### Flutter tooling notes for coding agents
+
+On this Windows development host, Flutter/Dart commands can hang or fail when sandboxed because they share state in `.dart_tool`, `build/`, Gradle caches, and native asset hooks. This is especially common around Drift/build_runner output and `sqlite3_flutter_libs` native asset generation.
+
+Operational rules:
+
+- Do not run Flutter/Dart toolchain commands in parallel. Run `dart format`, `dart run build_runner ...`, `flutter analyze`, `flutter test`, `flutter clean`, and `flutter build apk --debug` sequentially.
+- Prefer sandboxed commands for source inspection and normal file reads.
+- If Flutter/Dart tooling fails with cache, native asset, file-lock, or timeout symptoms, use the already approved outside-sandbox command path for the specific command instead of retrying repeatedly inside the sandbox.
+- If `flutter build apk --debug` reports a missing native SQLite artifact under `.dart_tool/hooks_runner`, run `flutter clean`, then `flutter pub get`, then rerun verification.

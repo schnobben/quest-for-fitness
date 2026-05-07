@@ -10,6 +10,8 @@ import '../../../app/theme/app_spacing.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../data/data_providers.dart';
 import '../../../data/repositories/repositories.dart';
+import '../../quest/application/achievement_controller.dart';
+import '../../quest/application/adventurer_profile_controller.dart';
 import '../../../shared/presentation/design_system/design_system.dart';
 import '../application/workout_execution_controller.dart';
 
@@ -185,10 +187,9 @@ class _WorkoutExecutionScreenState
   Future<void> _completeSession(WorkoutExecutionPlan plan) async {
     setState(() => _isSaving = true);
     final repositories = AppRepositories(ref.read(appDatabaseProvider));
-    final messenger = ScaffoldMessenger.of(context);
     final router = GoRouter.of(context);
 
-    await repositories.sessions.completePlannedWorkout(
+    final result = await repositories.sessions.completePlannedWorkout(
       scheduledWorkout: plan.scheduledWorkout,
       workoutTemplate: plan.workoutTemplate,
       exercises: [
@@ -220,9 +221,21 @@ class _WorkoutExecutionScreenState
           ? null
           : _sessionNotesController.text.trim(),
     );
+    ref.invalidate(adventurerProfileProvider);
+    ref.invalidate(achievementGalleryProvider);
 
     if (!mounted) return;
-    messenger.showSnackBar(const SnackBar(content: Text('Session saved')));
+    final levelText = result.workoutReward.leveledUp
+        ? ' Level ${result.workoutReward.levelAfter} reached.'
+        : '';
+    final prText = result.prCount > 0 ? ' ${result.prCount} PR reward(s).' : '';
+    final achievementText = result.workoutReward.unlockedAchievements.isNotEmpty
+        ? ' ${result.workoutReward.unlockedAchievements.length} achievement unlocked.'
+        : '';
+    QfNotification.show(
+      context,
+      'Session saved. +${result.workoutReward.xpAmount} XP.$levelText$prText$achievementText',
+    );
     router.go('/today');
   }
 }

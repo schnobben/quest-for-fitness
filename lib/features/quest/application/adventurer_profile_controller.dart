@@ -4,19 +4,17 @@ import '../../../data/data_providers.dart';
 import '../../../data/local_database/local_database.dart';
 import '../../../data/repositories/repositories.dart';
 
-final adventurerProfileProvider = FutureProvider<AdventurerProfile>(
-  (ref) async {
-    final repositories = AppRepositories(ref.watch(appDatabaseProvider));
-    final adventurer = await repositories.adventurer.getOrCreatePrimary();
+final adventurerProfileProvider = FutureProvider<AdventurerProfile>((
+  ref,
+) async {
+  final repositories = AppRepositories(ref.watch(appDatabaseProvider));
+  final adventurer = await repositories.adventurer.getOrCreatePrimary();
 
-    return AdventurerProfile(
-      adventurer: adventurer,
-      xpToNextLevel: repositories.adventurer.xpRequiredForLevel(
-        adventurer.level,
-      ),
-    );
-  },
-);
+  return AdventurerProfile(
+    adventurer: adventurer,
+    xpToNextLevel: repositories.adventurer.xpRequiredForLevel(adventurer.level),
+  );
+});
 
 class AdventurerProfile {
   const AdventurerProfile({
@@ -45,7 +43,7 @@ class AdventurerXpController {
   Future<void> grantTestXp() async {
     await AppRepositories(
       _ref.read(appDatabaseProvider),
-    ).adventurer.grantXp(125);
+    ).xpEvents.onDebugXpGranted(xpAmount: 125);
     _ref.invalidate(adventurerProfileProvider);
   }
 }

@@ -8213,6 +8213,2283 @@ class AdventurersCompanion extends UpdateCompanion<Adventurer> {
   }
 }
 
+class $FitnessEventsTable extends FitnessEvents
+    with TableInfo<$FitnessEventsTable, FitnessEvent> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $FitnessEventsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _typeMeta = const VerificationMeta('type');
+  @override
+  late final GeneratedColumn<String> type = GeneratedColumn<String>(
+    'type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _occurredAtMeta = const VerificationMeta(
+    'occurredAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> occurredAt = GeneratedColumn<DateTime>(
+    'occurred_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sourceTypeMeta = const VerificationMeta(
+    'sourceType',
+  );
+  @override
+  late final GeneratedColumn<String> sourceType = GeneratedColumn<String>(
+    'source_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sourceIdMeta = const VerificationMeta(
+    'sourceId',
+  );
+  @override
+  late final GeneratedColumn<String> sourceId = GeneratedColumn<String>(
+    'source_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _metadataJsonMeta = const VerificationMeta(
+    'metadataJson',
+  );
+  @override
+  late final GeneratedColumn<String> metadataJson = GeneratedColumn<String>(
+    'metadata_json',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    type,
+    occurredAt,
+    sourceType,
+    sourceId,
+    metadataJson,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'fitness_events';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<FitnessEvent> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('type')) {
+      context.handle(
+        _typeMeta,
+        type.isAcceptableOrUnknown(data['type']!, _typeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_typeMeta);
+    }
+    if (data.containsKey('occurred_at')) {
+      context.handle(
+        _occurredAtMeta,
+        occurredAt.isAcceptableOrUnknown(data['occurred_at']!, _occurredAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_occurredAtMeta);
+    }
+    if (data.containsKey('source_type')) {
+      context.handle(
+        _sourceTypeMeta,
+        sourceType.isAcceptableOrUnknown(data['source_type']!, _sourceTypeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sourceTypeMeta);
+    }
+    if (data.containsKey('source_id')) {
+      context.handle(
+        _sourceIdMeta,
+        sourceId.isAcceptableOrUnknown(data['source_id']!, _sourceIdMeta),
+      );
+    }
+    if (data.containsKey('metadata_json')) {
+      context.handle(
+        _metadataJsonMeta,
+        metadataJson.isAcceptableOrUnknown(
+          data['metadata_json']!,
+          _metadataJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  FitnessEvent map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return FitnessEvent(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      type: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}type'],
+      )!,
+      occurredAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}occurred_at'],
+      )!,
+      sourceType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_type'],
+      )!,
+      sourceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_id'],
+      ),
+      metadataJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}metadata_json'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $FitnessEventsTable createAlias(String alias) {
+    return $FitnessEventsTable(attachedDatabase, alias);
+  }
+}
+
+class FitnessEvent extends DataClass implements Insertable<FitnessEvent> {
+  final String id;
+  final String type;
+  final DateTime occurredAt;
+  final String sourceType;
+  final String? sourceId;
+  final String? metadataJson;
+  final DateTime createdAt;
+  const FitnessEvent({
+    required this.id,
+    required this.type,
+    required this.occurredAt,
+    required this.sourceType,
+    this.sourceId,
+    this.metadataJson,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['type'] = Variable<String>(type);
+    map['occurred_at'] = Variable<DateTime>(occurredAt);
+    map['source_type'] = Variable<String>(sourceType);
+    if (!nullToAbsent || sourceId != null) {
+      map['source_id'] = Variable<String>(sourceId);
+    }
+    if (!nullToAbsent || metadataJson != null) {
+      map['metadata_json'] = Variable<String>(metadataJson);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  FitnessEventsCompanion toCompanion(bool nullToAbsent) {
+    return FitnessEventsCompanion(
+      id: Value(id),
+      type: Value(type),
+      occurredAt: Value(occurredAt),
+      sourceType: Value(sourceType),
+      sourceId: sourceId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sourceId),
+      metadataJson: metadataJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(metadataJson),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory FitnessEvent.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return FitnessEvent(
+      id: serializer.fromJson<String>(json['id']),
+      type: serializer.fromJson<String>(json['type']),
+      occurredAt: serializer.fromJson<DateTime>(json['occurredAt']),
+      sourceType: serializer.fromJson<String>(json['sourceType']),
+      sourceId: serializer.fromJson<String?>(json['sourceId']),
+      metadataJson: serializer.fromJson<String?>(json['metadataJson']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'type': serializer.toJson<String>(type),
+      'occurredAt': serializer.toJson<DateTime>(occurredAt),
+      'sourceType': serializer.toJson<String>(sourceType),
+      'sourceId': serializer.toJson<String?>(sourceId),
+      'metadataJson': serializer.toJson<String?>(metadataJson),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  FitnessEvent copyWith({
+    String? id,
+    String? type,
+    DateTime? occurredAt,
+    String? sourceType,
+    Value<String?> sourceId = const Value.absent(),
+    Value<String?> metadataJson = const Value.absent(),
+    DateTime? createdAt,
+  }) => FitnessEvent(
+    id: id ?? this.id,
+    type: type ?? this.type,
+    occurredAt: occurredAt ?? this.occurredAt,
+    sourceType: sourceType ?? this.sourceType,
+    sourceId: sourceId.present ? sourceId.value : this.sourceId,
+    metadataJson: metadataJson.present ? metadataJson.value : this.metadataJson,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  FitnessEvent copyWithCompanion(FitnessEventsCompanion data) {
+    return FitnessEvent(
+      id: data.id.present ? data.id.value : this.id,
+      type: data.type.present ? data.type.value : this.type,
+      occurredAt: data.occurredAt.present
+          ? data.occurredAt.value
+          : this.occurredAt,
+      sourceType: data.sourceType.present
+          ? data.sourceType.value
+          : this.sourceType,
+      sourceId: data.sourceId.present ? data.sourceId.value : this.sourceId,
+      metadataJson: data.metadataJson.present
+          ? data.metadataJson.value
+          : this.metadataJson,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FitnessEvent(')
+          ..write('id: $id, ')
+          ..write('type: $type, ')
+          ..write('occurredAt: $occurredAt, ')
+          ..write('sourceType: $sourceType, ')
+          ..write('sourceId: $sourceId, ')
+          ..write('metadataJson: $metadataJson, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    type,
+    occurredAt,
+    sourceType,
+    sourceId,
+    metadataJson,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is FitnessEvent &&
+          other.id == this.id &&
+          other.type == this.type &&
+          other.occurredAt == this.occurredAt &&
+          other.sourceType == this.sourceType &&
+          other.sourceId == this.sourceId &&
+          other.metadataJson == this.metadataJson &&
+          other.createdAt == this.createdAt);
+}
+
+class FitnessEventsCompanion extends UpdateCompanion<FitnessEvent> {
+  final Value<String> id;
+  final Value<String> type;
+  final Value<DateTime> occurredAt;
+  final Value<String> sourceType;
+  final Value<String?> sourceId;
+  final Value<String?> metadataJson;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const FitnessEventsCompanion({
+    this.id = const Value.absent(),
+    this.type = const Value.absent(),
+    this.occurredAt = const Value.absent(),
+    this.sourceType = const Value.absent(),
+    this.sourceId = const Value.absent(),
+    this.metadataJson = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  FitnessEventsCompanion.insert({
+    required String id,
+    required String type,
+    required DateTime occurredAt,
+    required String sourceType,
+    this.sourceId = const Value.absent(),
+    this.metadataJson = const Value.absent(),
+    required DateTime createdAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       type = Value(type),
+       occurredAt = Value(occurredAt),
+       sourceType = Value(sourceType),
+       createdAt = Value(createdAt);
+  static Insertable<FitnessEvent> custom({
+    Expression<String>? id,
+    Expression<String>? type,
+    Expression<DateTime>? occurredAt,
+    Expression<String>? sourceType,
+    Expression<String>? sourceId,
+    Expression<String>? metadataJson,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (type != null) 'type': type,
+      if (occurredAt != null) 'occurred_at': occurredAt,
+      if (sourceType != null) 'source_type': sourceType,
+      if (sourceId != null) 'source_id': sourceId,
+      if (metadataJson != null) 'metadata_json': metadataJson,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  FitnessEventsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? type,
+    Value<DateTime>? occurredAt,
+    Value<String>? sourceType,
+    Value<String?>? sourceId,
+    Value<String?>? metadataJson,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return FitnessEventsCompanion(
+      id: id ?? this.id,
+      type: type ?? this.type,
+      occurredAt: occurredAt ?? this.occurredAt,
+      sourceType: sourceType ?? this.sourceType,
+      sourceId: sourceId ?? this.sourceId,
+      metadataJson: metadataJson ?? this.metadataJson,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (type.present) {
+      map['type'] = Variable<String>(type.value);
+    }
+    if (occurredAt.present) {
+      map['occurred_at'] = Variable<DateTime>(occurredAt.value);
+    }
+    if (sourceType.present) {
+      map['source_type'] = Variable<String>(sourceType.value);
+    }
+    if (sourceId.present) {
+      map['source_id'] = Variable<String>(sourceId.value);
+    }
+    if (metadataJson.present) {
+      map['metadata_json'] = Variable<String>(metadataJson.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FitnessEventsCompanion(')
+          ..write('id: $id, ')
+          ..write('type: $type, ')
+          ..write('occurredAt: $occurredAt, ')
+          ..write('sourceType: $sourceType, ')
+          ..write('sourceId: $sourceId, ')
+          ..write('metadataJson: $metadataJson, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $RewardEventsTable extends RewardEvents
+    with TableInfo<$RewardEventsTable, RewardEvent> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $RewardEventsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _fitnessEventIdMeta = const VerificationMeta(
+    'fitnessEventId',
+  );
+  @override
+  late final GeneratedColumn<String> fitnessEventId = GeneratedColumn<String>(
+    'fitness_event_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES fitness_events (id)',
+    ),
+  );
+  static const VerificationMeta _typeMeta = const VerificationMeta('type');
+  @override
+  late final GeneratedColumn<String> type = GeneratedColumn<String>(
+    'type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _xpAmountMeta = const VerificationMeta(
+    'xpAmount',
+  );
+  @override
+  late final GeneratedColumn<int> xpAmount = GeneratedColumn<int>(
+    'xp_amount',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _summaryMeta = const VerificationMeta(
+    'summary',
+  );
+  @override
+  late final GeneratedColumn<String> summary = GeneratedColumn<String>(
+    'summary',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    fitnessEventId,
+    type,
+    xpAmount,
+    summary,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'reward_events';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<RewardEvent> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('fitness_event_id')) {
+      context.handle(
+        _fitnessEventIdMeta,
+        fitnessEventId.isAcceptableOrUnknown(
+          data['fitness_event_id']!,
+          _fitnessEventIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_fitnessEventIdMeta);
+    }
+    if (data.containsKey('type')) {
+      context.handle(
+        _typeMeta,
+        type.isAcceptableOrUnknown(data['type']!, _typeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_typeMeta);
+    }
+    if (data.containsKey('xp_amount')) {
+      context.handle(
+        _xpAmountMeta,
+        xpAmount.isAcceptableOrUnknown(data['xp_amount']!, _xpAmountMeta),
+      );
+    }
+    if (data.containsKey('summary')) {
+      context.handle(
+        _summaryMeta,
+        summary.isAcceptableOrUnknown(data['summary']!, _summaryMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_summaryMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  RewardEvent map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RewardEvent(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      fitnessEventId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}fitness_event_id'],
+      )!,
+      type: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}type'],
+      )!,
+      xpAmount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}xp_amount'],
+      )!,
+      summary: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}summary'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $RewardEventsTable createAlias(String alias) {
+    return $RewardEventsTable(attachedDatabase, alias);
+  }
+}
+
+class RewardEvent extends DataClass implements Insertable<RewardEvent> {
+  final String id;
+  final String fitnessEventId;
+  final String type;
+  final int xpAmount;
+  final String summary;
+  final DateTime createdAt;
+  const RewardEvent({
+    required this.id,
+    required this.fitnessEventId,
+    required this.type,
+    required this.xpAmount,
+    required this.summary,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['fitness_event_id'] = Variable<String>(fitnessEventId);
+    map['type'] = Variable<String>(type);
+    map['xp_amount'] = Variable<int>(xpAmount);
+    map['summary'] = Variable<String>(summary);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  RewardEventsCompanion toCompanion(bool nullToAbsent) {
+    return RewardEventsCompanion(
+      id: Value(id),
+      fitnessEventId: Value(fitnessEventId),
+      type: Value(type),
+      xpAmount: Value(xpAmount),
+      summary: Value(summary),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory RewardEvent.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RewardEvent(
+      id: serializer.fromJson<String>(json['id']),
+      fitnessEventId: serializer.fromJson<String>(json['fitnessEventId']),
+      type: serializer.fromJson<String>(json['type']),
+      xpAmount: serializer.fromJson<int>(json['xpAmount']),
+      summary: serializer.fromJson<String>(json['summary']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'fitnessEventId': serializer.toJson<String>(fitnessEventId),
+      'type': serializer.toJson<String>(type),
+      'xpAmount': serializer.toJson<int>(xpAmount),
+      'summary': serializer.toJson<String>(summary),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  RewardEvent copyWith({
+    String? id,
+    String? fitnessEventId,
+    String? type,
+    int? xpAmount,
+    String? summary,
+    DateTime? createdAt,
+  }) => RewardEvent(
+    id: id ?? this.id,
+    fitnessEventId: fitnessEventId ?? this.fitnessEventId,
+    type: type ?? this.type,
+    xpAmount: xpAmount ?? this.xpAmount,
+    summary: summary ?? this.summary,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  RewardEvent copyWithCompanion(RewardEventsCompanion data) {
+    return RewardEvent(
+      id: data.id.present ? data.id.value : this.id,
+      fitnessEventId: data.fitnessEventId.present
+          ? data.fitnessEventId.value
+          : this.fitnessEventId,
+      type: data.type.present ? data.type.value : this.type,
+      xpAmount: data.xpAmount.present ? data.xpAmount.value : this.xpAmount,
+      summary: data.summary.present ? data.summary.value : this.summary,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RewardEvent(')
+          ..write('id: $id, ')
+          ..write('fitnessEventId: $fitnessEventId, ')
+          ..write('type: $type, ')
+          ..write('xpAmount: $xpAmount, ')
+          ..write('summary: $summary, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, fitnessEventId, type, xpAmount, summary, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RewardEvent &&
+          other.id == this.id &&
+          other.fitnessEventId == this.fitnessEventId &&
+          other.type == this.type &&
+          other.xpAmount == this.xpAmount &&
+          other.summary == this.summary &&
+          other.createdAt == this.createdAt);
+}
+
+class RewardEventsCompanion extends UpdateCompanion<RewardEvent> {
+  final Value<String> id;
+  final Value<String> fitnessEventId;
+  final Value<String> type;
+  final Value<int> xpAmount;
+  final Value<String> summary;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const RewardEventsCompanion({
+    this.id = const Value.absent(),
+    this.fitnessEventId = const Value.absent(),
+    this.type = const Value.absent(),
+    this.xpAmount = const Value.absent(),
+    this.summary = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  RewardEventsCompanion.insert({
+    required String id,
+    required String fitnessEventId,
+    required String type,
+    this.xpAmount = const Value.absent(),
+    required String summary,
+    required DateTime createdAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       fitnessEventId = Value(fitnessEventId),
+       type = Value(type),
+       summary = Value(summary),
+       createdAt = Value(createdAt);
+  static Insertable<RewardEvent> custom({
+    Expression<String>? id,
+    Expression<String>? fitnessEventId,
+    Expression<String>? type,
+    Expression<int>? xpAmount,
+    Expression<String>? summary,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (fitnessEventId != null) 'fitness_event_id': fitnessEventId,
+      if (type != null) 'type': type,
+      if (xpAmount != null) 'xp_amount': xpAmount,
+      if (summary != null) 'summary': summary,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  RewardEventsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? fitnessEventId,
+    Value<String>? type,
+    Value<int>? xpAmount,
+    Value<String>? summary,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return RewardEventsCompanion(
+      id: id ?? this.id,
+      fitnessEventId: fitnessEventId ?? this.fitnessEventId,
+      type: type ?? this.type,
+      xpAmount: xpAmount ?? this.xpAmount,
+      summary: summary ?? this.summary,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (fitnessEventId.present) {
+      map['fitness_event_id'] = Variable<String>(fitnessEventId.value);
+    }
+    if (type.present) {
+      map['type'] = Variable<String>(type.value);
+    }
+    if (xpAmount.present) {
+      map['xp_amount'] = Variable<int>(xpAmount.value);
+    }
+    if (summary.present) {
+      map['summary'] = Variable<String>(summary.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RewardEventsCompanion(')
+          ..write('id: $id, ')
+          ..write('fitnessEventId: $fitnessEventId, ')
+          ..write('type: $type, ')
+          ..write('xpAmount: $xpAmount, ')
+          ..write('summary: $summary, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $XpHistoryTable extends XpHistory
+    with TableInfo<$XpHistoryTable, XpHistoryData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $XpHistoryTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _rewardEventIdMeta = const VerificationMeta(
+    'rewardEventId',
+  );
+  @override
+  late final GeneratedColumn<String> rewardEventId = GeneratedColumn<String>(
+    'reward_event_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES reward_events (id)',
+    ),
+  );
+  static const VerificationMeta _adventurerIdMeta = const VerificationMeta(
+    'adventurerId',
+  );
+  @override
+  late final GeneratedColumn<String> adventurerId = GeneratedColumn<String>(
+    'adventurer_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES adventurers (id)',
+    ),
+  );
+  static const VerificationMeta _amountMeta = const VerificationMeta('amount');
+  @override
+  late final GeneratedColumn<int> amount = GeneratedColumn<int>(
+    'amount',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _levelBeforeMeta = const VerificationMeta(
+    'levelBefore',
+  );
+  @override
+  late final GeneratedColumn<int> levelBefore = GeneratedColumn<int>(
+    'level_before',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _levelAfterMeta = const VerificationMeta(
+    'levelAfter',
+  );
+  @override
+  late final GeneratedColumn<int> levelAfter = GeneratedColumn<int>(
+    'level_after',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _xpBeforeMeta = const VerificationMeta(
+    'xpBefore',
+  );
+  @override
+  late final GeneratedColumn<int> xpBefore = GeneratedColumn<int>(
+    'xp_before',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _xpAfterMeta = const VerificationMeta(
+    'xpAfter',
+  );
+  @override
+  late final GeneratedColumn<int> xpAfter = GeneratedColumn<int>(
+    'xp_after',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    rewardEventId,
+    adventurerId,
+    amount,
+    levelBefore,
+    levelAfter,
+    xpBefore,
+    xpAfter,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'xp_history';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<XpHistoryData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('reward_event_id')) {
+      context.handle(
+        _rewardEventIdMeta,
+        rewardEventId.isAcceptableOrUnknown(
+          data['reward_event_id']!,
+          _rewardEventIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_rewardEventIdMeta);
+    }
+    if (data.containsKey('adventurer_id')) {
+      context.handle(
+        _adventurerIdMeta,
+        adventurerId.isAcceptableOrUnknown(
+          data['adventurer_id']!,
+          _adventurerIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_adventurerIdMeta);
+    }
+    if (data.containsKey('amount')) {
+      context.handle(
+        _amountMeta,
+        amount.isAcceptableOrUnknown(data['amount']!, _amountMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_amountMeta);
+    }
+    if (data.containsKey('level_before')) {
+      context.handle(
+        _levelBeforeMeta,
+        levelBefore.isAcceptableOrUnknown(
+          data['level_before']!,
+          _levelBeforeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_levelBeforeMeta);
+    }
+    if (data.containsKey('level_after')) {
+      context.handle(
+        _levelAfterMeta,
+        levelAfter.isAcceptableOrUnknown(data['level_after']!, _levelAfterMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_levelAfterMeta);
+    }
+    if (data.containsKey('xp_before')) {
+      context.handle(
+        _xpBeforeMeta,
+        xpBefore.isAcceptableOrUnknown(data['xp_before']!, _xpBeforeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_xpBeforeMeta);
+    }
+    if (data.containsKey('xp_after')) {
+      context.handle(
+        _xpAfterMeta,
+        xpAfter.isAcceptableOrUnknown(data['xp_after']!, _xpAfterMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_xpAfterMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  XpHistoryData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return XpHistoryData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      rewardEventId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}reward_event_id'],
+      )!,
+      adventurerId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}adventurer_id'],
+      )!,
+      amount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}amount'],
+      )!,
+      levelBefore: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}level_before'],
+      )!,
+      levelAfter: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}level_after'],
+      )!,
+      xpBefore: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}xp_before'],
+      )!,
+      xpAfter: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}xp_after'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $XpHistoryTable createAlias(String alias) {
+    return $XpHistoryTable(attachedDatabase, alias);
+  }
+}
+
+class XpHistoryData extends DataClass implements Insertable<XpHistoryData> {
+  final String id;
+  final String rewardEventId;
+  final String adventurerId;
+  final int amount;
+  final int levelBefore;
+  final int levelAfter;
+  final int xpBefore;
+  final int xpAfter;
+  final DateTime createdAt;
+  const XpHistoryData({
+    required this.id,
+    required this.rewardEventId,
+    required this.adventurerId,
+    required this.amount,
+    required this.levelBefore,
+    required this.levelAfter,
+    required this.xpBefore,
+    required this.xpAfter,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['reward_event_id'] = Variable<String>(rewardEventId);
+    map['adventurer_id'] = Variable<String>(adventurerId);
+    map['amount'] = Variable<int>(amount);
+    map['level_before'] = Variable<int>(levelBefore);
+    map['level_after'] = Variable<int>(levelAfter);
+    map['xp_before'] = Variable<int>(xpBefore);
+    map['xp_after'] = Variable<int>(xpAfter);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  XpHistoryCompanion toCompanion(bool nullToAbsent) {
+    return XpHistoryCompanion(
+      id: Value(id),
+      rewardEventId: Value(rewardEventId),
+      adventurerId: Value(adventurerId),
+      amount: Value(amount),
+      levelBefore: Value(levelBefore),
+      levelAfter: Value(levelAfter),
+      xpBefore: Value(xpBefore),
+      xpAfter: Value(xpAfter),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory XpHistoryData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return XpHistoryData(
+      id: serializer.fromJson<String>(json['id']),
+      rewardEventId: serializer.fromJson<String>(json['rewardEventId']),
+      adventurerId: serializer.fromJson<String>(json['adventurerId']),
+      amount: serializer.fromJson<int>(json['amount']),
+      levelBefore: serializer.fromJson<int>(json['levelBefore']),
+      levelAfter: serializer.fromJson<int>(json['levelAfter']),
+      xpBefore: serializer.fromJson<int>(json['xpBefore']),
+      xpAfter: serializer.fromJson<int>(json['xpAfter']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'rewardEventId': serializer.toJson<String>(rewardEventId),
+      'adventurerId': serializer.toJson<String>(adventurerId),
+      'amount': serializer.toJson<int>(amount),
+      'levelBefore': serializer.toJson<int>(levelBefore),
+      'levelAfter': serializer.toJson<int>(levelAfter),
+      'xpBefore': serializer.toJson<int>(xpBefore),
+      'xpAfter': serializer.toJson<int>(xpAfter),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  XpHistoryData copyWith({
+    String? id,
+    String? rewardEventId,
+    String? adventurerId,
+    int? amount,
+    int? levelBefore,
+    int? levelAfter,
+    int? xpBefore,
+    int? xpAfter,
+    DateTime? createdAt,
+  }) => XpHistoryData(
+    id: id ?? this.id,
+    rewardEventId: rewardEventId ?? this.rewardEventId,
+    adventurerId: adventurerId ?? this.adventurerId,
+    amount: amount ?? this.amount,
+    levelBefore: levelBefore ?? this.levelBefore,
+    levelAfter: levelAfter ?? this.levelAfter,
+    xpBefore: xpBefore ?? this.xpBefore,
+    xpAfter: xpAfter ?? this.xpAfter,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  XpHistoryData copyWithCompanion(XpHistoryCompanion data) {
+    return XpHistoryData(
+      id: data.id.present ? data.id.value : this.id,
+      rewardEventId: data.rewardEventId.present
+          ? data.rewardEventId.value
+          : this.rewardEventId,
+      adventurerId: data.adventurerId.present
+          ? data.adventurerId.value
+          : this.adventurerId,
+      amount: data.amount.present ? data.amount.value : this.amount,
+      levelBefore: data.levelBefore.present
+          ? data.levelBefore.value
+          : this.levelBefore,
+      levelAfter: data.levelAfter.present
+          ? data.levelAfter.value
+          : this.levelAfter,
+      xpBefore: data.xpBefore.present ? data.xpBefore.value : this.xpBefore,
+      xpAfter: data.xpAfter.present ? data.xpAfter.value : this.xpAfter,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('XpHistoryData(')
+          ..write('id: $id, ')
+          ..write('rewardEventId: $rewardEventId, ')
+          ..write('adventurerId: $adventurerId, ')
+          ..write('amount: $amount, ')
+          ..write('levelBefore: $levelBefore, ')
+          ..write('levelAfter: $levelAfter, ')
+          ..write('xpBefore: $xpBefore, ')
+          ..write('xpAfter: $xpAfter, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    rewardEventId,
+    adventurerId,
+    amount,
+    levelBefore,
+    levelAfter,
+    xpBefore,
+    xpAfter,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is XpHistoryData &&
+          other.id == this.id &&
+          other.rewardEventId == this.rewardEventId &&
+          other.adventurerId == this.adventurerId &&
+          other.amount == this.amount &&
+          other.levelBefore == this.levelBefore &&
+          other.levelAfter == this.levelAfter &&
+          other.xpBefore == this.xpBefore &&
+          other.xpAfter == this.xpAfter &&
+          other.createdAt == this.createdAt);
+}
+
+class XpHistoryCompanion extends UpdateCompanion<XpHistoryData> {
+  final Value<String> id;
+  final Value<String> rewardEventId;
+  final Value<String> adventurerId;
+  final Value<int> amount;
+  final Value<int> levelBefore;
+  final Value<int> levelAfter;
+  final Value<int> xpBefore;
+  final Value<int> xpAfter;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const XpHistoryCompanion({
+    this.id = const Value.absent(),
+    this.rewardEventId = const Value.absent(),
+    this.adventurerId = const Value.absent(),
+    this.amount = const Value.absent(),
+    this.levelBefore = const Value.absent(),
+    this.levelAfter = const Value.absent(),
+    this.xpBefore = const Value.absent(),
+    this.xpAfter = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  XpHistoryCompanion.insert({
+    required String id,
+    required String rewardEventId,
+    required String adventurerId,
+    required int amount,
+    required int levelBefore,
+    required int levelAfter,
+    required int xpBefore,
+    required int xpAfter,
+    required DateTime createdAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       rewardEventId = Value(rewardEventId),
+       adventurerId = Value(adventurerId),
+       amount = Value(amount),
+       levelBefore = Value(levelBefore),
+       levelAfter = Value(levelAfter),
+       xpBefore = Value(xpBefore),
+       xpAfter = Value(xpAfter),
+       createdAt = Value(createdAt);
+  static Insertable<XpHistoryData> custom({
+    Expression<String>? id,
+    Expression<String>? rewardEventId,
+    Expression<String>? adventurerId,
+    Expression<int>? amount,
+    Expression<int>? levelBefore,
+    Expression<int>? levelAfter,
+    Expression<int>? xpBefore,
+    Expression<int>? xpAfter,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (rewardEventId != null) 'reward_event_id': rewardEventId,
+      if (adventurerId != null) 'adventurer_id': adventurerId,
+      if (amount != null) 'amount': amount,
+      if (levelBefore != null) 'level_before': levelBefore,
+      if (levelAfter != null) 'level_after': levelAfter,
+      if (xpBefore != null) 'xp_before': xpBefore,
+      if (xpAfter != null) 'xp_after': xpAfter,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  XpHistoryCompanion copyWith({
+    Value<String>? id,
+    Value<String>? rewardEventId,
+    Value<String>? adventurerId,
+    Value<int>? amount,
+    Value<int>? levelBefore,
+    Value<int>? levelAfter,
+    Value<int>? xpBefore,
+    Value<int>? xpAfter,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return XpHistoryCompanion(
+      id: id ?? this.id,
+      rewardEventId: rewardEventId ?? this.rewardEventId,
+      adventurerId: adventurerId ?? this.adventurerId,
+      amount: amount ?? this.amount,
+      levelBefore: levelBefore ?? this.levelBefore,
+      levelAfter: levelAfter ?? this.levelAfter,
+      xpBefore: xpBefore ?? this.xpBefore,
+      xpAfter: xpAfter ?? this.xpAfter,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (rewardEventId.present) {
+      map['reward_event_id'] = Variable<String>(rewardEventId.value);
+    }
+    if (adventurerId.present) {
+      map['adventurer_id'] = Variable<String>(adventurerId.value);
+    }
+    if (amount.present) {
+      map['amount'] = Variable<int>(amount.value);
+    }
+    if (levelBefore.present) {
+      map['level_before'] = Variable<int>(levelBefore.value);
+    }
+    if (levelAfter.present) {
+      map['level_after'] = Variable<int>(levelAfter.value);
+    }
+    if (xpBefore.present) {
+      map['xp_before'] = Variable<int>(xpBefore.value);
+    }
+    if (xpAfter.present) {
+      map['xp_after'] = Variable<int>(xpAfter.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('XpHistoryCompanion(')
+          ..write('id: $id, ')
+          ..write('rewardEventId: $rewardEventId, ')
+          ..write('adventurerId: $adventurerId, ')
+          ..write('amount: $amount, ')
+          ..write('levelBefore: $levelBefore, ')
+          ..write('levelAfter: $levelAfter, ')
+          ..write('xpBefore: $xpBefore, ')
+          ..write('xpAfter: $xpAfter, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $AchievementsTable extends Achievements
+    with TableInfo<$AchievementsTable, Achievement> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $AchievementsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _categoryMeta = const VerificationMeta(
+    'category',
+  );
+  @override
+  late final GeneratedColumn<String> category = GeneratedColumn<String>(
+    'category',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _targetValueMeta = const VerificationMeta(
+    'targetValue',
+  );
+  @override
+  late final GeneratedColumn<int> targetValue = GeneratedColumn<int>(
+    'target_value',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    name,
+    description,
+    category,
+    targetValue,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'achievements';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Achievement> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_descriptionMeta);
+    }
+    if (data.containsKey('category')) {
+      context.handle(
+        _categoryMeta,
+        category.isAcceptableOrUnknown(data['category']!, _categoryMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_categoryMeta);
+    }
+    if (data.containsKey('target_value')) {
+      context.handle(
+        _targetValueMeta,
+        targetValue.isAcceptableOrUnknown(
+          data['target_value']!,
+          _targetValueMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_targetValueMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Achievement map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Achievement(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      )!,
+      category: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category'],
+      )!,
+      targetValue: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}target_value'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $AchievementsTable createAlias(String alias) {
+    return $AchievementsTable(attachedDatabase, alias);
+  }
+}
+
+class Achievement extends DataClass implements Insertable<Achievement> {
+  final String id;
+  final String name;
+  final String description;
+  final String category;
+  final int targetValue;
+  final DateTime createdAt;
+  const Achievement({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.category,
+    required this.targetValue,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name'] = Variable<String>(name);
+    map['description'] = Variable<String>(description);
+    map['category'] = Variable<String>(category);
+    map['target_value'] = Variable<int>(targetValue);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  AchievementsCompanion toCompanion(bool nullToAbsent) {
+    return AchievementsCompanion(
+      id: Value(id),
+      name: Value(name),
+      description: Value(description),
+      category: Value(category),
+      targetValue: Value(targetValue),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory Achievement.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Achievement(
+      id: serializer.fromJson<String>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      description: serializer.fromJson<String>(json['description']),
+      category: serializer.fromJson<String>(json['category']),
+      targetValue: serializer.fromJson<int>(json['targetValue']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'name': serializer.toJson<String>(name),
+      'description': serializer.toJson<String>(description),
+      'category': serializer.toJson<String>(category),
+      'targetValue': serializer.toJson<int>(targetValue),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  Achievement copyWith({
+    String? id,
+    String? name,
+    String? description,
+    String? category,
+    int? targetValue,
+    DateTime? createdAt,
+  }) => Achievement(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    description: description ?? this.description,
+    category: category ?? this.category,
+    targetValue: targetValue ?? this.targetValue,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  Achievement copyWithCompanion(AchievementsCompanion data) {
+    return Achievement(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
+      category: data.category.present ? data.category.value : this.category,
+      targetValue: data.targetValue.present
+          ? data.targetValue.value
+          : this.targetValue,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Achievement(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('description: $description, ')
+          ..write('category: $category, ')
+          ..write('targetValue: $targetValue, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, name, description, category, targetValue, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Achievement &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.description == this.description &&
+          other.category == this.category &&
+          other.targetValue == this.targetValue &&
+          other.createdAt == this.createdAt);
+}
+
+class AchievementsCompanion extends UpdateCompanion<Achievement> {
+  final Value<String> id;
+  final Value<String> name;
+  final Value<String> description;
+  final Value<String> category;
+  final Value<int> targetValue;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const AchievementsCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.description = const Value.absent(),
+    this.category = const Value.absent(),
+    this.targetValue = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  AchievementsCompanion.insert({
+    required String id,
+    required String name,
+    required String description,
+    required String category,
+    required int targetValue,
+    required DateTime createdAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       name = Value(name),
+       description = Value(description),
+       category = Value(category),
+       targetValue = Value(targetValue),
+       createdAt = Value(createdAt);
+  static Insertable<Achievement> custom({
+    Expression<String>? id,
+    Expression<String>? name,
+    Expression<String>? description,
+    Expression<String>? category,
+    Expression<int>? targetValue,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (description != null) 'description': description,
+      if (category != null) 'category': category,
+      if (targetValue != null) 'target_value': targetValue,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  AchievementsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? name,
+    Value<String>? description,
+    Value<String>? category,
+    Value<int>? targetValue,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return AchievementsCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      category: category ?? this.category,
+      targetValue: targetValue ?? this.targetValue,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (category.present) {
+      map['category'] = Variable<String>(category.value);
+    }
+    if (targetValue.present) {
+      map['target_value'] = Variable<int>(targetValue.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AchievementsCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('description: $description, ')
+          ..write('category: $category, ')
+          ..write('targetValue: $targetValue, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $AchievementStatesTable extends AchievementStates
+    with TableInfo<$AchievementStatesTable, AchievementState> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $AchievementStatesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _achievementIdMeta = const VerificationMeta(
+    'achievementId',
+  );
+  @override
+  late final GeneratedColumn<String> achievementId = GeneratedColumn<String>(
+    'achievement_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES achievements (id)',
+    ),
+  );
+  static const VerificationMeta _currentValueMeta = const VerificationMeta(
+    'currentValue',
+  );
+  @override
+  late final GeneratedColumn<int> currentValue = GeneratedColumn<int>(
+    'current_value',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _isUnlockedMeta = const VerificationMeta(
+    'isUnlocked',
+  );
+  @override
+  late final GeneratedColumn<bool> isUnlocked = GeneratedColumn<bool>(
+    'is_unlocked',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_unlocked" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _unlockedAtMeta = const VerificationMeta(
+    'unlockedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> unlockedAt = GeneratedColumn<DateTime>(
+    'unlocked_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    achievementId,
+    currentValue,
+    isUnlocked,
+    unlockedAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'achievement_states';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<AchievementState> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('achievement_id')) {
+      context.handle(
+        _achievementIdMeta,
+        achievementId.isAcceptableOrUnknown(
+          data['achievement_id']!,
+          _achievementIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_achievementIdMeta);
+    }
+    if (data.containsKey('current_value')) {
+      context.handle(
+        _currentValueMeta,
+        currentValue.isAcceptableOrUnknown(
+          data['current_value']!,
+          _currentValueMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_unlocked')) {
+      context.handle(
+        _isUnlockedMeta,
+        isUnlocked.isAcceptableOrUnknown(data['is_unlocked']!, _isUnlockedMeta),
+      );
+    }
+    if (data.containsKey('unlocked_at')) {
+      context.handle(
+        _unlockedAtMeta,
+        unlockedAt.isAcceptableOrUnknown(data['unlocked_at']!, _unlockedAtMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {achievementId};
+  @override
+  AchievementState map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return AchievementState(
+      achievementId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}achievement_id'],
+      )!,
+      currentValue: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}current_value'],
+      )!,
+      isUnlocked: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_unlocked'],
+      )!,
+      unlockedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}unlocked_at'],
+      ),
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $AchievementStatesTable createAlias(String alias) {
+    return $AchievementStatesTable(attachedDatabase, alias);
+  }
+}
+
+class AchievementState extends DataClass
+    implements Insertable<AchievementState> {
+  final String achievementId;
+  final int currentValue;
+  final bool isUnlocked;
+  final DateTime? unlockedAt;
+  final DateTime updatedAt;
+  const AchievementState({
+    required this.achievementId,
+    required this.currentValue,
+    required this.isUnlocked,
+    this.unlockedAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['achievement_id'] = Variable<String>(achievementId);
+    map['current_value'] = Variable<int>(currentValue);
+    map['is_unlocked'] = Variable<bool>(isUnlocked);
+    if (!nullToAbsent || unlockedAt != null) {
+      map['unlocked_at'] = Variable<DateTime>(unlockedAt);
+    }
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  AchievementStatesCompanion toCompanion(bool nullToAbsent) {
+    return AchievementStatesCompanion(
+      achievementId: Value(achievementId),
+      currentValue: Value(currentValue),
+      isUnlocked: Value(isUnlocked),
+      unlockedAt: unlockedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(unlockedAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory AchievementState.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return AchievementState(
+      achievementId: serializer.fromJson<String>(json['achievementId']),
+      currentValue: serializer.fromJson<int>(json['currentValue']),
+      isUnlocked: serializer.fromJson<bool>(json['isUnlocked']),
+      unlockedAt: serializer.fromJson<DateTime?>(json['unlockedAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'achievementId': serializer.toJson<String>(achievementId),
+      'currentValue': serializer.toJson<int>(currentValue),
+      'isUnlocked': serializer.toJson<bool>(isUnlocked),
+      'unlockedAt': serializer.toJson<DateTime?>(unlockedAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  AchievementState copyWith({
+    String? achievementId,
+    int? currentValue,
+    bool? isUnlocked,
+    Value<DateTime?> unlockedAt = const Value.absent(),
+    DateTime? updatedAt,
+  }) => AchievementState(
+    achievementId: achievementId ?? this.achievementId,
+    currentValue: currentValue ?? this.currentValue,
+    isUnlocked: isUnlocked ?? this.isUnlocked,
+    unlockedAt: unlockedAt.present ? unlockedAt.value : this.unlockedAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  AchievementState copyWithCompanion(AchievementStatesCompanion data) {
+    return AchievementState(
+      achievementId: data.achievementId.present
+          ? data.achievementId.value
+          : this.achievementId,
+      currentValue: data.currentValue.present
+          ? data.currentValue.value
+          : this.currentValue,
+      isUnlocked: data.isUnlocked.present
+          ? data.isUnlocked.value
+          : this.isUnlocked,
+      unlockedAt: data.unlockedAt.present
+          ? data.unlockedAt.value
+          : this.unlockedAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AchievementState(')
+          ..write('achievementId: $achievementId, ')
+          ..write('currentValue: $currentValue, ')
+          ..write('isUnlocked: $isUnlocked, ')
+          ..write('unlockedAt: $unlockedAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    achievementId,
+    currentValue,
+    isUnlocked,
+    unlockedAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is AchievementState &&
+          other.achievementId == this.achievementId &&
+          other.currentValue == this.currentValue &&
+          other.isUnlocked == this.isUnlocked &&
+          other.unlockedAt == this.unlockedAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class AchievementStatesCompanion extends UpdateCompanion<AchievementState> {
+  final Value<String> achievementId;
+  final Value<int> currentValue;
+  final Value<bool> isUnlocked;
+  final Value<DateTime?> unlockedAt;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const AchievementStatesCompanion({
+    this.achievementId = const Value.absent(),
+    this.currentValue = const Value.absent(),
+    this.isUnlocked = const Value.absent(),
+    this.unlockedAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  AchievementStatesCompanion.insert({
+    required String achievementId,
+    this.currentValue = const Value.absent(),
+    this.isUnlocked = const Value.absent(),
+    this.unlockedAt = const Value.absent(),
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  }) : achievementId = Value(achievementId),
+       updatedAt = Value(updatedAt);
+  static Insertable<AchievementState> custom({
+    Expression<String>? achievementId,
+    Expression<int>? currentValue,
+    Expression<bool>? isUnlocked,
+    Expression<DateTime>? unlockedAt,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (achievementId != null) 'achievement_id': achievementId,
+      if (currentValue != null) 'current_value': currentValue,
+      if (isUnlocked != null) 'is_unlocked': isUnlocked,
+      if (unlockedAt != null) 'unlocked_at': unlockedAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  AchievementStatesCompanion copyWith({
+    Value<String>? achievementId,
+    Value<int>? currentValue,
+    Value<bool>? isUnlocked,
+    Value<DateTime?>? unlockedAt,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return AchievementStatesCompanion(
+      achievementId: achievementId ?? this.achievementId,
+      currentValue: currentValue ?? this.currentValue,
+      isUnlocked: isUnlocked ?? this.isUnlocked,
+      unlockedAt: unlockedAt ?? this.unlockedAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (achievementId.present) {
+      map['achievement_id'] = Variable<String>(achievementId.value);
+    }
+    if (currentValue.present) {
+      map['current_value'] = Variable<int>(currentValue.value);
+    }
+    if (isUnlocked.present) {
+      map['is_unlocked'] = Variable<bool>(isUnlocked.value);
+    }
+    if (unlockedAt.present) {
+      map['unlocked_at'] = Variable<DateTime>(unlockedAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AchievementStatesCompanion(')
+          ..write('achievementId: $achievementId, ')
+          ..write('currentValue: $currentValue, ')
+          ..write('isUnlocked: $isUnlocked, ')
+          ..write('unlockedAt: $unlockedAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $BodyweightLogsTable extends BodyweightLogs
     with TableInfo<$BodyweightLogsTable, BodyweightLog> {
   @override
@@ -9797,6 +12074,12 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $ProgressionSuggestionsTable progressionSuggestions =
       $ProgressionSuggestionsTable(this);
   late final $AdventurersTable adventurers = $AdventurersTable(this);
+  late final $FitnessEventsTable fitnessEvents = $FitnessEventsTable(this);
+  late final $RewardEventsTable rewardEvents = $RewardEventsTable(this);
+  late final $XpHistoryTable xpHistory = $XpHistoryTable(this);
+  late final $AchievementsTable achievements = $AchievementsTable(this);
+  late final $AchievementStatesTable achievementStates =
+      $AchievementStatesTable(this);
   late final $BodyweightLogsTable bodyweightLogs = $BodyweightLogsTable(this);
   late final $GoalsTable goals = $GoalsTable(this);
   late final $SeedRunsTable seedRuns = $SeedRunsTable(this);
@@ -9819,6 +12102,11 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     cardioLogs,
     progressionSuggestions,
     adventurers,
+    fitnessEvents,
+    rewardEvents,
+    xpHistory,
+    achievements,
+    achievementStates,
     bodyweightLogs,
     goals,
     seedRuns,
@@ -17095,6 +19383,32 @@ typedef $$AdventurersTableUpdateCompanionBuilder =
       Value<int> rowid,
     });
 
+final class $$AdventurersTableReferences
+    extends BaseReferences<_$AppDatabase, $AdventurersTable, Adventurer> {
+  $$AdventurersTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$XpHistoryTable, List<XpHistoryData>>
+  _xpHistoryRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.xpHistory,
+    aliasName: $_aliasNameGenerator(
+      db.adventurers.id,
+      db.xpHistory.adventurerId,
+    ),
+  );
+
+  $$XpHistoryTableProcessedTableManager get xpHistoryRefs {
+    final manager = $$XpHistoryTableTableManager(
+      $_db,
+      $_db.xpHistory,
+    ).filter((f) => f.adventurerId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_xpHistoryRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
 class $$AdventurersTableFilterComposer
     extends Composer<_$AppDatabase, $AdventurersTable> {
   $$AdventurersTableFilterComposer({
@@ -17173,6 +19487,31 @@ class $$AdventurersTableFilterComposer
     column: $table.updatedAt,
     builder: (column) => ColumnFilters(column),
   );
+
+  Expression<bool> xpHistoryRefs(
+    Expression<bool> Function($$XpHistoryTableFilterComposer f) f,
+  ) {
+    final $$XpHistoryTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.xpHistory,
+      getReferencedColumn: (t) => t.adventurerId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$XpHistoryTableFilterComposer(
+            $db: $db,
+            $table: $db.xpHistory,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$AdventurersTableOrderingComposer
@@ -17311,6 +19650,31 @@ class $$AdventurersTableAnnotationComposer
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  Expression<T> xpHistoryRefs<T extends Object>(
+    Expression<T> Function($$XpHistoryTableAnnotationComposer a) f,
+  ) {
+    final $$XpHistoryTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.xpHistory,
+      getReferencedColumn: (t) => t.adventurerId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$XpHistoryTableAnnotationComposer(
+            $db: $db,
+            $table: $db.xpHistory,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$AdventurersTableTableManager
@@ -17324,12 +19688,9 @@ class $$AdventurersTableTableManager
           $$AdventurersTableAnnotationComposer,
           $$AdventurersTableCreateCompanionBuilder,
           $$AdventurersTableUpdateCompanionBuilder,
-          (
-            Adventurer,
-            BaseReferences<_$AppDatabase, $AdventurersTable, Adventurer>,
-          ),
+          (Adventurer, $$AdventurersTableReferences),
           Adventurer,
-          PrefetchHooks Function()
+          PrefetchHooks Function({bool xpHistoryRefs})
         > {
   $$AdventurersTableTableManager(_$AppDatabase db, $AdventurersTable table)
     : super(
@@ -17411,9 +19772,45 @@ class $$AdventurersTableTableManager
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$AdventurersTableReferences(db, table, e),
+                ),
+              )
               .toList(),
-          prefetchHooksCallback: null,
+          prefetchHooksCallback: ({xpHistoryRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (xpHistoryRefs) db.xpHistory],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (xpHistoryRefs)
+                    await $_getPrefetchedData<
+                      Adventurer,
+                      $AdventurersTable,
+                      XpHistoryData
+                    >(
+                      currentTable: table,
+                      referencedTable: $$AdventurersTableReferences
+                          ._xpHistoryRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$AdventurersTableReferences(
+                            db,
+                            table,
+                            p0,
+                          ).xpHistoryRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where(
+                            (e) => e.adventurerId == item.id,
+                          ),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
         ),
       );
 }
@@ -17428,12 +19825,1967 @@ typedef $$AdventurersTableProcessedTableManager =
       $$AdventurersTableAnnotationComposer,
       $$AdventurersTableCreateCompanionBuilder,
       $$AdventurersTableUpdateCompanionBuilder,
-      (
-        Adventurer,
-        BaseReferences<_$AppDatabase, $AdventurersTable, Adventurer>,
-      ),
+      (Adventurer, $$AdventurersTableReferences),
       Adventurer,
-      PrefetchHooks Function()
+      PrefetchHooks Function({bool xpHistoryRefs})
+    >;
+typedef $$FitnessEventsTableCreateCompanionBuilder =
+    FitnessEventsCompanion Function({
+      required String id,
+      required String type,
+      required DateTime occurredAt,
+      required String sourceType,
+      Value<String?> sourceId,
+      Value<String?> metadataJson,
+      required DateTime createdAt,
+      Value<int> rowid,
+    });
+typedef $$FitnessEventsTableUpdateCompanionBuilder =
+    FitnessEventsCompanion Function({
+      Value<String> id,
+      Value<String> type,
+      Value<DateTime> occurredAt,
+      Value<String> sourceType,
+      Value<String?> sourceId,
+      Value<String?> metadataJson,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+final class $$FitnessEventsTableReferences
+    extends BaseReferences<_$AppDatabase, $FitnessEventsTable, FitnessEvent> {
+  $$FitnessEventsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static MultiTypedResultKey<$RewardEventsTable, List<RewardEvent>>
+  _rewardEventsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.rewardEvents,
+    aliasName: $_aliasNameGenerator(
+      db.fitnessEvents.id,
+      db.rewardEvents.fitnessEventId,
+    ),
+  );
+
+  $$RewardEventsTableProcessedTableManager get rewardEventsRefs {
+    final manager = $$RewardEventsTableTableManager(
+      $_db,
+      $_db.rewardEvents,
+    ).filter((f) => f.fitnessEventId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_rewardEventsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$FitnessEventsTableFilterComposer
+    extends Composer<_$AppDatabase, $FitnessEventsTable> {
+  $$FitnessEventsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get occurredAt => $composableBuilder(
+    column: $table.occurredAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sourceType => $composableBuilder(
+    column: $table.sourceType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sourceId => $composableBuilder(
+    column: $table.sourceId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get metadataJson => $composableBuilder(
+    column: $table.metadataJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> rewardEventsRefs(
+    Expression<bool> Function($$RewardEventsTableFilterComposer f) f,
+  ) {
+    final $$RewardEventsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.rewardEvents,
+      getReferencedColumn: (t) => t.fitnessEventId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RewardEventsTableFilterComposer(
+            $db: $db,
+            $table: $db.rewardEvents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$FitnessEventsTableOrderingComposer
+    extends Composer<_$AppDatabase, $FitnessEventsTable> {
+  $$FitnessEventsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get occurredAt => $composableBuilder(
+    column: $table.occurredAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sourceType => $composableBuilder(
+    column: $table.sourceType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sourceId => $composableBuilder(
+    column: $table.sourceId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get metadataJson => $composableBuilder(
+    column: $table.metadataJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$FitnessEventsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $FitnessEventsTable> {
+  $$FitnessEventsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get occurredAt => $composableBuilder(
+    column: $table.occurredAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get sourceType => $composableBuilder(
+    column: $table.sourceType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get sourceId =>
+      $composableBuilder(column: $table.sourceId, builder: (column) => column);
+
+  GeneratedColumn<String> get metadataJson => $composableBuilder(
+    column: $table.metadataJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  Expression<T> rewardEventsRefs<T extends Object>(
+    Expression<T> Function($$RewardEventsTableAnnotationComposer a) f,
+  ) {
+    final $$RewardEventsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.rewardEvents,
+      getReferencedColumn: (t) => t.fitnessEventId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RewardEventsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.rewardEvents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$FitnessEventsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $FitnessEventsTable,
+          FitnessEvent,
+          $$FitnessEventsTableFilterComposer,
+          $$FitnessEventsTableOrderingComposer,
+          $$FitnessEventsTableAnnotationComposer,
+          $$FitnessEventsTableCreateCompanionBuilder,
+          $$FitnessEventsTableUpdateCompanionBuilder,
+          (FitnessEvent, $$FitnessEventsTableReferences),
+          FitnessEvent,
+          PrefetchHooks Function({bool rewardEventsRefs})
+        > {
+  $$FitnessEventsTableTableManager(_$AppDatabase db, $FitnessEventsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$FitnessEventsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$FitnessEventsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$FitnessEventsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> type = const Value.absent(),
+                Value<DateTime> occurredAt = const Value.absent(),
+                Value<String> sourceType = const Value.absent(),
+                Value<String?> sourceId = const Value.absent(),
+                Value<String?> metadataJson = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => FitnessEventsCompanion(
+                id: id,
+                type: type,
+                occurredAt: occurredAt,
+                sourceType: sourceType,
+                sourceId: sourceId,
+                metadataJson: metadataJson,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String type,
+                required DateTime occurredAt,
+                required String sourceType,
+                Value<String?> sourceId = const Value.absent(),
+                Value<String?> metadataJson = const Value.absent(),
+                required DateTime createdAt,
+                Value<int> rowid = const Value.absent(),
+              }) => FitnessEventsCompanion.insert(
+                id: id,
+                type: type,
+                occurredAt: occurredAt,
+                sourceType: sourceType,
+                sourceId: sourceId,
+                metadataJson: metadataJson,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$FitnessEventsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({rewardEventsRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (rewardEventsRefs) db.rewardEvents],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (rewardEventsRefs)
+                    await $_getPrefetchedData<
+                      FitnessEvent,
+                      $FitnessEventsTable,
+                      RewardEvent
+                    >(
+                      currentTable: table,
+                      referencedTable: $$FitnessEventsTableReferences
+                          ._rewardEventsRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$FitnessEventsTableReferences(
+                            db,
+                            table,
+                            p0,
+                          ).rewardEventsRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where(
+                            (e) => e.fitnessEventId == item.id,
+                          ),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$FitnessEventsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $FitnessEventsTable,
+      FitnessEvent,
+      $$FitnessEventsTableFilterComposer,
+      $$FitnessEventsTableOrderingComposer,
+      $$FitnessEventsTableAnnotationComposer,
+      $$FitnessEventsTableCreateCompanionBuilder,
+      $$FitnessEventsTableUpdateCompanionBuilder,
+      (FitnessEvent, $$FitnessEventsTableReferences),
+      FitnessEvent,
+      PrefetchHooks Function({bool rewardEventsRefs})
+    >;
+typedef $$RewardEventsTableCreateCompanionBuilder =
+    RewardEventsCompanion Function({
+      required String id,
+      required String fitnessEventId,
+      required String type,
+      Value<int> xpAmount,
+      required String summary,
+      required DateTime createdAt,
+      Value<int> rowid,
+    });
+typedef $$RewardEventsTableUpdateCompanionBuilder =
+    RewardEventsCompanion Function({
+      Value<String> id,
+      Value<String> fitnessEventId,
+      Value<String> type,
+      Value<int> xpAmount,
+      Value<String> summary,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+final class $$RewardEventsTableReferences
+    extends BaseReferences<_$AppDatabase, $RewardEventsTable, RewardEvent> {
+  $$RewardEventsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $FitnessEventsTable _fitnessEventIdTable(_$AppDatabase db) =>
+      db.fitnessEvents.createAlias(
+        $_aliasNameGenerator(
+          db.rewardEvents.fitnessEventId,
+          db.fitnessEvents.id,
+        ),
+      );
+
+  $$FitnessEventsTableProcessedTableManager get fitnessEventId {
+    final $_column = $_itemColumn<String>('fitness_event_id')!;
+
+    final manager = $$FitnessEventsTableTableManager(
+      $_db,
+      $_db.fitnessEvents,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_fitnessEventIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<$XpHistoryTable, List<XpHistoryData>>
+  _xpHistoryRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.xpHistory,
+    aliasName: $_aliasNameGenerator(
+      db.rewardEvents.id,
+      db.xpHistory.rewardEventId,
+    ),
+  );
+
+  $$XpHistoryTableProcessedTableManager get xpHistoryRefs {
+    final manager = $$XpHistoryTableTableManager(
+      $_db,
+      $_db.xpHistory,
+    ).filter((f) => f.rewardEventId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_xpHistoryRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$RewardEventsTableFilterComposer
+    extends Composer<_$AppDatabase, $RewardEventsTable> {
+  $$RewardEventsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get xpAmount => $composableBuilder(
+    column: $table.xpAmount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get summary => $composableBuilder(
+    column: $table.summary,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$FitnessEventsTableFilterComposer get fitnessEventId {
+    final $$FitnessEventsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.fitnessEventId,
+      referencedTable: $db.fitnessEvents,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FitnessEventsTableFilterComposer(
+            $db: $db,
+            $table: $db.fitnessEvents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<bool> xpHistoryRefs(
+    Expression<bool> Function($$XpHistoryTableFilterComposer f) f,
+  ) {
+    final $$XpHistoryTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.xpHistory,
+      getReferencedColumn: (t) => t.rewardEventId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$XpHistoryTableFilterComposer(
+            $db: $db,
+            $table: $db.xpHistory,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$RewardEventsTableOrderingComposer
+    extends Composer<_$AppDatabase, $RewardEventsTable> {
+  $$RewardEventsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get xpAmount => $composableBuilder(
+    column: $table.xpAmount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get summary => $composableBuilder(
+    column: $table.summary,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$FitnessEventsTableOrderingComposer get fitnessEventId {
+    final $$FitnessEventsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.fitnessEventId,
+      referencedTable: $db.fitnessEvents,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FitnessEventsTableOrderingComposer(
+            $db: $db,
+            $table: $db.fitnessEvents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$RewardEventsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $RewardEventsTable> {
+  $$RewardEventsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<int> get xpAmount =>
+      $composableBuilder(column: $table.xpAmount, builder: (column) => column);
+
+  GeneratedColumn<String> get summary =>
+      $composableBuilder(column: $table.summary, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  $$FitnessEventsTableAnnotationComposer get fitnessEventId {
+    final $$FitnessEventsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.fitnessEventId,
+      referencedTable: $db.fitnessEvents,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FitnessEventsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.fitnessEvents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<T> xpHistoryRefs<T extends Object>(
+    Expression<T> Function($$XpHistoryTableAnnotationComposer a) f,
+  ) {
+    final $$XpHistoryTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.xpHistory,
+      getReferencedColumn: (t) => t.rewardEventId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$XpHistoryTableAnnotationComposer(
+            $db: $db,
+            $table: $db.xpHistory,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$RewardEventsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $RewardEventsTable,
+          RewardEvent,
+          $$RewardEventsTableFilterComposer,
+          $$RewardEventsTableOrderingComposer,
+          $$RewardEventsTableAnnotationComposer,
+          $$RewardEventsTableCreateCompanionBuilder,
+          $$RewardEventsTableUpdateCompanionBuilder,
+          (RewardEvent, $$RewardEventsTableReferences),
+          RewardEvent,
+          PrefetchHooks Function({bool fitnessEventId, bool xpHistoryRefs})
+        > {
+  $$RewardEventsTableTableManager(_$AppDatabase db, $RewardEventsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$RewardEventsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$RewardEventsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$RewardEventsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> fitnessEventId = const Value.absent(),
+                Value<String> type = const Value.absent(),
+                Value<int> xpAmount = const Value.absent(),
+                Value<String> summary = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => RewardEventsCompanion(
+                id: id,
+                fitnessEventId: fitnessEventId,
+                type: type,
+                xpAmount: xpAmount,
+                summary: summary,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String fitnessEventId,
+                required String type,
+                Value<int> xpAmount = const Value.absent(),
+                required String summary,
+                required DateTime createdAt,
+                Value<int> rowid = const Value.absent(),
+              }) => RewardEventsCompanion.insert(
+                id: id,
+                fitnessEventId: fitnessEventId,
+                type: type,
+                xpAmount: xpAmount,
+                summary: summary,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$RewardEventsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({fitnessEventId = false, xpHistoryRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [if (xpHistoryRefs) db.xpHistory],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (fitnessEventId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.fitnessEventId,
+                                    referencedTable:
+                                        $$RewardEventsTableReferences
+                                            ._fitnessEventIdTable(db),
+                                    referencedColumn:
+                                        $$RewardEventsTableReferences
+                                            ._fitnessEventIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (xpHistoryRefs)
+                        await $_getPrefetchedData<
+                          RewardEvent,
+                          $RewardEventsTable,
+                          XpHistoryData
+                        >(
+                          currentTable: table,
+                          referencedTable: $$RewardEventsTableReferences
+                              ._xpHistoryRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$RewardEventsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).xpHistoryRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.rewardEventId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$RewardEventsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $RewardEventsTable,
+      RewardEvent,
+      $$RewardEventsTableFilterComposer,
+      $$RewardEventsTableOrderingComposer,
+      $$RewardEventsTableAnnotationComposer,
+      $$RewardEventsTableCreateCompanionBuilder,
+      $$RewardEventsTableUpdateCompanionBuilder,
+      (RewardEvent, $$RewardEventsTableReferences),
+      RewardEvent,
+      PrefetchHooks Function({bool fitnessEventId, bool xpHistoryRefs})
+    >;
+typedef $$XpHistoryTableCreateCompanionBuilder =
+    XpHistoryCompanion Function({
+      required String id,
+      required String rewardEventId,
+      required String adventurerId,
+      required int amount,
+      required int levelBefore,
+      required int levelAfter,
+      required int xpBefore,
+      required int xpAfter,
+      required DateTime createdAt,
+      Value<int> rowid,
+    });
+typedef $$XpHistoryTableUpdateCompanionBuilder =
+    XpHistoryCompanion Function({
+      Value<String> id,
+      Value<String> rewardEventId,
+      Value<String> adventurerId,
+      Value<int> amount,
+      Value<int> levelBefore,
+      Value<int> levelAfter,
+      Value<int> xpBefore,
+      Value<int> xpAfter,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+final class $$XpHistoryTableReferences
+    extends BaseReferences<_$AppDatabase, $XpHistoryTable, XpHistoryData> {
+  $$XpHistoryTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $RewardEventsTable _rewardEventIdTable(_$AppDatabase db) =>
+      db.rewardEvents.createAlias(
+        $_aliasNameGenerator(db.xpHistory.rewardEventId, db.rewardEvents.id),
+      );
+
+  $$RewardEventsTableProcessedTableManager get rewardEventId {
+    final $_column = $_itemColumn<String>('reward_event_id')!;
+
+    final manager = $$RewardEventsTableTableManager(
+      $_db,
+      $_db.rewardEvents,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_rewardEventIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $AdventurersTable _adventurerIdTable(_$AppDatabase db) =>
+      db.adventurers.createAlias(
+        $_aliasNameGenerator(db.xpHistory.adventurerId, db.adventurers.id),
+      );
+
+  $$AdventurersTableProcessedTableManager get adventurerId {
+    final $_column = $_itemColumn<String>('adventurer_id')!;
+
+    final manager = $$AdventurersTableTableManager(
+      $_db,
+      $_db.adventurers,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_adventurerIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$XpHistoryTableFilterComposer
+    extends Composer<_$AppDatabase, $XpHistoryTable> {
+  $$XpHistoryTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get amount => $composableBuilder(
+    column: $table.amount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get levelBefore => $composableBuilder(
+    column: $table.levelBefore,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get levelAfter => $composableBuilder(
+    column: $table.levelAfter,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get xpBefore => $composableBuilder(
+    column: $table.xpBefore,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get xpAfter => $composableBuilder(
+    column: $table.xpAfter,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$RewardEventsTableFilterComposer get rewardEventId {
+    final $$RewardEventsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.rewardEventId,
+      referencedTable: $db.rewardEvents,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RewardEventsTableFilterComposer(
+            $db: $db,
+            $table: $db.rewardEvents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$AdventurersTableFilterComposer get adventurerId {
+    final $$AdventurersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.adventurerId,
+      referencedTable: $db.adventurers,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$AdventurersTableFilterComposer(
+            $db: $db,
+            $table: $db.adventurers,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$XpHistoryTableOrderingComposer
+    extends Composer<_$AppDatabase, $XpHistoryTable> {
+  $$XpHistoryTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get amount => $composableBuilder(
+    column: $table.amount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get levelBefore => $composableBuilder(
+    column: $table.levelBefore,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get levelAfter => $composableBuilder(
+    column: $table.levelAfter,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get xpBefore => $composableBuilder(
+    column: $table.xpBefore,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get xpAfter => $composableBuilder(
+    column: $table.xpAfter,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$RewardEventsTableOrderingComposer get rewardEventId {
+    final $$RewardEventsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.rewardEventId,
+      referencedTable: $db.rewardEvents,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RewardEventsTableOrderingComposer(
+            $db: $db,
+            $table: $db.rewardEvents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$AdventurersTableOrderingComposer get adventurerId {
+    final $$AdventurersTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.adventurerId,
+      referencedTable: $db.adventurers,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$AdventurersTableOrderingComposer(
+            $db: $db,
+            $table: $db.adventurers,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$XpHistoryTableAnnotationComposer
+    extends Composer<_$AppDatabase, $XpHistoryTable> {
+  $$XpHistoryTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get amount =>
+      $composableBuilder(column: $table.amount, builder: (column) => column);
+
+  GeneratedColumn<int> get levelBefore => $composableBuilder(
+    column: $table.levelBefore,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get levelAfter => $composableBuilder(
+    column: $table.levelAfter,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get xpBefore =>
+      $composableBuilder(column: $table.xpBefore, builder: (column) => column);
+
+  GeneratedColumn<int> get xpAfter =>
+      $composableBuilder(column: $table.xpAfter, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  $$RewardEventsTableAnnotationComposer get rewardEventId {
+    final $$RewardEventsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.rewardEventId,
+      referencedTable: $db.rewardEvents,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RewardEventsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.rewardEvents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$AdventurersTableAnnotationComposer get adventurerId {
+    final $$AdventurersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.adventurerId,
+      referencedTable: $db.adventurers,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$AdventurersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.adventurers,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$XpHistoryTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $XpHistoryTable,
+          XpHistoryData,
+          $$XpHistoryTableFilterComposer,
+          $$XpHistoryTableOrderingComposer,
+          $$XpHistoryTableAnnotationComposer,
+          $$XpHistoryTableCreateCompanionBuilder,
+          $$XpHistoryTableUpdateCompanionBuilder,
+          (XpHistoryData, $$XpHistoryTableReferences),
+          XpHistoryData,
+          PrefetchHooks Function({bool rewardEventId, bool adventurerId})
+        > {
+  $$XpHistoryTableTableManager(_$AppDatabase db, $XpHistoryTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$XpHistoryTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$XpHistoryTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$XpHistoryTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> rewardEventId = const Value.absent(),
+                Value<String> adventurerId = const Value.absent(),
+                Value<int> amount = const Value.absent(),
+                Value<int> levelBefore = const Value.absent(),
+                Value<int> levelAfter = const Value.absent(),
+                Value<int> xpBefore = const Value.absent(),
+                Value<int> xpAfter = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => XpHistoryCompanion(
+                id: id,
+                rewardEventId: rewardEventId,
+                adventurerId: adventurerId,
+                amount: amount,
+                levelBefore: levelBefore,
+                levelAfter: levelAfter,
+                xpBefore: xpBefore,
+                xpAfter: xpAfter,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String rewardEventId,
+                required String adventurerId,
+                required int amount,
+                required int levelBefore,
+                required int levelAfter,
+                required int xpBefore,
+                required int xpAfter,
+                required DateTime createdAt,
+                Value<int> rowid = const Value.absent(),
+              }) => XpHistoryCompanion.insert(
+                id: id,
+                rewardEventId: rewardEventId,
+                adventurerId: adventurerId,
+                amount: amount,
+                levelBefore: levelBefore,
+                levelAfter: levelAfter,
+                xpBefore: xpBefore,
+                xpAfter: xpAfter,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$XpHistoryTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({rewardEventId = false, adventurerId = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (rewardEventId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.rewardEventId,
+                                    referencedTable: $$XpHistoryTableReferences
+                                        ._rewardEventIdTable(db),
+                                    referencedColumn: $$XpHistoryTableReferences
+                                        ._rewardEventIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (adventurerId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.adventurerId,
+                                    referencedTable: $$XpHistoryTableReferences
+                                        ._adventurerIdTable(db),
+                                    referencedColumn: $$XpHistoryTableReferences
+                                        ._adventurerIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$XpHistoryTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $XpHistoryTable,
+      XpHistoryData,
+      $$XpHistoryTableFilterComposer,
+      $$XpHistoryTableOrderingComposer,
+      $$XpHistoryTableAnnotationComposer,
+      $$XpHistoryTableCreateCompanionBuilder,
+      $$XpHistoryTableUpdateCompanionBuilder,
+      (XpHistoryData, $$XpHistoryTableReferences),
+      XpHistoryData,
+      PrefetchHooks Function({bool rewardEventId, bool adventurerId})
+    >;
+typedef $$AchievementsTableCreateCompanionBuilder =
+    AchievementsCompanion Function({
+      required String id,
+      required String name,
+      required String description,
+      required String category,
+      required int targetValue,
+      required DateTime createdAt,
+      Value<int> rowid,
+    });
+typedef $$AchievementsTableUpdateCompanionBuilder =
+    AchievementsCompanion Function({
+      Value<String> id,
+      Value<String> name,
+      Value<String> description,
+      Value<String> category,
+      Value<int> targetValue,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+final class $$AchievementsTableReferences
+    extends BaseReferences<_$AppDatabase, $AchievementsTable, Achievement> {
+  $$AchievementsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$AchievementStatesTable, List<AchievementState>>
+  _achievementStatesRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.achievementStates,
+        aliasName: $_aliasNameGenerator(
+          db.achievements.id,
+          db.achievementStates.achievementId,
+        ),
+      );
+
+  $$AchievementStatesTableProcessedTableManager get achievementStatesRefs {
+    final manager = $$AchievementStatesTableTableManager(
+      $_db,
+      $_db.achievementStates,
+    ).filter((f) => f.achievementId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _achievementStatesRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$AchievementsTableFilterComposer
+    extends Composer<_$AppDatabase, $AchievementsTable> {
+  $$AchievementsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get targetValue => $composableBuilder(
+    column: $table.targetValue,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> achievementStatesRefs(
+    Expression<bool> Function($$AchievementStatesTableFilterComposer f) f,
+  ) {
+    final $$AchievementStatesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.achievementStates,
+      getReferencedColumn: (t) => t.achievementId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$AchievementStatesTableFilterComposer(
+            $db: $db,
+            $table: $db.achievementStates,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$AchievementsTableOrderingComposer
+    extends Composer<_$AppDatabase, $AchievementsTable> {
+  $$AchievementsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get targetValue => $composableBuilder(
+    column: $table.targetValue,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$AchievementsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $AchievementsTable> {
+  $$AchievementsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => column);
+
+  GeneratedColumn<int> get targetValue => $composableBuilder(
+    column: $table.targetValue,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  Expression<T> achievementStatesRefs<T extends Object>(
+    Expression<T> Function($$AchievementStatesTableAnnotationComposer a) f,
+  ) {
+    final $$AchievementStatesTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.achievementStates,
+          getReferencedColumn: (t) => t.achievementId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$AchievementStatesTableAnnotationComposer(
+                $db: $db,
+                $table: $db.achievementStates,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+}
+
+class $$AchievementsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $AchievementsTable,
+          Achievement,
+          $$AchievementsTableFilterComposer,
+          $$AchievementsTableOrderingComposer,
+          $$AchievementsTableAnnotationComposer,
+          $$AchievementsTableCreateCompanionBuilder,
+          $$AchievementsTableUpdateCompanionBuilder,
+          (Achievement, $$AchievementsTableReferences),
+          Achievement,
+          PrefetchHooks Function({bool achievementStatesRefs})
+        > {
+  $$AchievementsTableTableManager(_$AppDatabase db, $AchievementsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$AchievementsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$AchievementsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$AchievementsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> description = const Value.absent(),
+                Value<String> category = const Value.absent(),
+                Value<int> targetValue = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => AchievementsCompanion(
+                id: id,
+                name: name,
+                description: description,
+                category: category,
+                targetValue: targetValue,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String name,
+                required String description,
+                required String category,
+                required int targetValue,
+                required DateTime createdAt,
+                Value<int> rowid = const Value.absent(),
+              }) => AchievementsCompanion.insert(
+                id: id,
+                name: name,
+                description: description,
+                category: category,
+                targetValue: targetValue,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$AchievementsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({achievementStatesRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (achievementStatesRefs) db.achievementStates,
+              ],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (achievementStatesRefs)
+                    await $_getPrefetchedData<
+                      Achievement,
+                      $AchievementsTable,
+                      AchievementState
+                    >(
+                      currentTable: table,
+                      referencedTable: $$AchievementsTableReferences
+                          ._achievementStatesRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$AchievementsTableReferences(
+                            db,
+                            table,
+                            p0,
+                          ).achievementStatesRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where(
+                            (e) => e.achievementId == item.id,
+                          ),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$AchievementsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $AchievementsTable,
+      Achievement,
+      $$AchievementsTableFilterComposer,
+      $$AchievementsTableOrderingComposer,
+      $$AchievementsTableAnnotationComposer,
+      $$AchievementsTableCreateCompanionBuilder,
+      $$AchievementsTableUpdateCompanionBuilder,
+      (Achievement, $$AchievementsTableReferences),
+      Achievement,
+      PrefetchHooks Function({bool achievementStatesRefs})
+    >;
+typedef $$AchievementStatesTableCreateCompanionBuilder =
+    AchievementStatesCompanion Function({
+      required String achievementId,
+      Value<int> currentValue,
+      Value<bool> isUnlocked,
+      Value<DateTime?> unlockedAt,
+      required DateTime updatedAt,
+      Value<int> rowid,
+    });
+typedef $$AchievementStatesTableUpdateCompanionBuilder =
+    AchievementStatesCompanion Function({
+      Value<String> achievementId,
+      Value<int> currentValue,
+      Value<bool> isUnlocked,
+      Value<DateTime?> unlockedAt,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+final class $$AchievementStatesTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $AchievementStatesTable,
+          AchievementState
+        > {
+  $$AchievementStatesTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $AchievementsTable _achievementIdTable(_$AppDatabase db) =>
+      db.achievements.createAlias(
+        $_aliasNameGenerator(
+          db.achievementStates.achievementId,
+          db.achievements.id,
+        ),
+      );
+
+  $$AchievementsTableProcessedTableManager get achievementId {
+    final $_column = $_itemColumn<String>('achievement_id')!;
+
+    final manager = $$AchievementsTableTableManager(
+      $_db,
+      $_db.achievements,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_achievementIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$AchievementStatesTableFilterComposer
+    extends Composer<_$AppDatabase, $AchievementStatesTable> {
+  $$AchievementStatesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get currentValue => $composableBuilder(
+    column: $table.currentValue,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isUnlocked => $composableBuilder(
+    column: $table.isUnlocked,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get unlockedAt => $composableBuilder(
+    column: $table.unlockedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$AchievementsTableFilterComposer get achievementId {
+    final $$AchievementsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.achievementId,
+      referencedTable: $db.achievements,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$AchievementsTableFilterComposer(
+            $db: $db,
+            $table: $db.achievements,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$AchievementStatesTableOrderingComposer
+    extends Composer<_$AppDatabase, $AchievementStatesTable> {
+  $$AchievementStatesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get currentValue => $composableBuilder(
+    column: $table.currentValue,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isUnlocked => $composableBuilder(
+    column: $table.isUnlocked,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get unlockedAt => $composableBuilder(
+    column: $table.unlockedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$AchievementsTableOrderingComposer get achievementId {
+    final $$AchievementsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.achievementId,
+      referencedTable: $db.achievements,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$AchievementsTableOrderingComposer(
+            $db: $db,
+            $table: $db.achievements,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$AchievementStatesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $AchievementStatesTable> {
+  $$AchievementStatesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get currentValue => $composableBuilder(
+    column: $table.currentValue,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isUnlocked => $composableBuilder(
+    column: $table.isUnlocked,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get unlockedAt => $composableBuilder(
+    column: $table.unlockedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  $$AchievementsTableAnnotationComposer get achievementId {
+    final $$AchievementsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.achievementId,
+      referencedTable: $db.achievements,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$AchievementsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.achievements,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$AchievementStatesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $AchievementStatesTable,
+          AchievementState,
+          $$AchievementStatesTableFilterComposer,
+          $$AchievementStatesTableOrderingComposer,
+          $$AchievementStatesTableAnnotationComposer,
+          $$AchievementStatesTableCreateCompanionBuilder,
+          $$AchievementStatesTableUpdateCompanionBuilder,
+          (AchievementState, $$AchievementStatesTableReferences),
+          AchievementState,
+          PrefetchHooks Function({bool achievementId})
+        > {
+  $$AchievementStatesTableTableManager(
+    _$AppDatabase db,
+    $AchievementStatesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$AchievementStatesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$AchievementStatesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$AchievementStatesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> achievementId = const Value.absent(),
+                Value<int> currentValue = const Value.absent(),
+                Value<bool> isUnlocked = const Value.absent(),
+                Value<DateTime?> unlockedAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => AchievementStatesCompanion(
+                achievementId: achievementId,
+                currentValue: currentValue,
+                isUnlocked: isUnlocked,
+                unlockedAt: unlockedAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String achievementId,
+                Value<int> currentValue = const Value.absent(),
+                Value<bool> isUnlocked = const Value.absent(),
+                Value<DateTime?> unlockedAt = const Value.absent(),
+                required DateTime updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => AchievementStatesCompanion.insert(
+                achievementId: achievementId,
+                currentValue: currentValue,
+                isUnlocked: isUnlocked,
+                unlockedAt: unlockedAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$AchievementStatesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({achievementId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (achievementId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.achievementId,
+                                referencedTable:
+                                    $$AchievementStatesTableReferences
+                                        ._achievementIdTable(db),
+                                referencedColumn:
+                                    $$AchievementStatesTableReferences
+                                        ._achievementIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$AchievementStatesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $AchievementStatesTable,
+      AchievementState,
+      $$AchievementStatesTableFilterComposer,
+      $$AchievementStatesTableOrderingComposer,
+      $$AchievementStatesTableAnnotationComposer,
+      $$AchievementStatesTableCreateCompanionBuilder,
+      $$AchievementStatesTableUpdateCompanionBuilder,
+      (AchievementState, $$AchievementStatesTableReferences),
+      AchievementState,
+      PrefetchHooks Function({bool achievementId})
     >;
 typedef $$BodyweightLogsTableCreateCompanionBuilder =
     BodyweightLogsCompanion Function({
@@ -18370,6 +22722,16 @@ class $AppDatabaseManager {
       );
   $$AdventurersTableTableManager get adventurers =>
       $$AdventurersTableTableManager(_db, _db.adventurers);
+  $$FitnessEventsTableTableManager get fitnessEvents =>
+      $$FitnessEventsTableTableManager(_db, _db.fitnessEvents);
+  $$RewardEventsTableTableManager get rewardEvents =>
+      $$RewardEventsTableTableManager(_db, _db.rewardEvents);
+  $$XpHistoryTableTableManager get xpHistory =>
+      $$XpHistoryTableTableManager(_db, _db.xpHistory);
+  $$AchievementsTableTableManager get achievements =>
+      $$AchievementsTableTableManager(_db, _db.achievements);
+  $$AchievementStatesTableTableManager get achievementStates =>
+      $$AchievementStatesTableTableManager(_db, _db.achievementStates);
   $$BodyweightLogsTableTableManager get bodyweightLogs =>
       $$BodyweightLogsTableTableManager(_db, _db.bodyweightLogs);
   $$GoalsTableTableManager get goals =>
