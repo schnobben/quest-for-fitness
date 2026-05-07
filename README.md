@@ -8,16 +8,29 @@ The product direction is documented in:
 - `technical_architecture.md`
 - `development_roadmap.md`
 
-The May–September 2026 personal training block is treated as seed/sample campaign content, not as the full app scope.
+The May-September 2026 personal training block is treated as seed/sample campaign content, not as the full app scope.
 
 ## Current Status
 
-- Milestone 1 Fitness Core MVP is implemented.
-- Fresh installs load the May–September 2026 sample campaign.
-- Today shows campaign guidance and can launch planned workout execution when a workout is scheduled.
-- Planned workouts can be completed and reviewed in session history.
-- Bodyweight can be logged from Progress and updates the linked bodyweight goal.
-- Sprint 2.0 is planned as a polish bridge to make fresh installs clearer and easier to test immediately.
+- Milestones 1 and 2 are implemented.
+- Milestone 3 Quest Engine V1 is in progress through Sprint 3.3.
+- Fresh installs load the May-September 2026 sample campaign.
+- Today shows campaign guidance and can launch the next planned workout immediately.
+- Planned workouts can be completed, reviewed in session history, and converted into XP/reward progress.
+- Progress supports bodyweight logging, editable goals, analytics, working weights, cardio/run logging, and progression suggestions.
+- Quest now has a persisted Adventurer profile, XP/level progression, reward history, and Achievements V1.
+- Current database schema version: 7.
+
+## Next Sprint
+
+Next planned roadmap item: **Sprint 3.4 - Equipment and titles v1**.
+
+Expected starting points:
+
+- Reuse the existing fitness/reward event pipeline instead of adding direct UI-to-RPG writes.
+- Achievements already store unlock reward events; Sprint 3.4 can attach cosmetic equipment/title unlocks to those events.
+- Keep equipment/titles cosmetic for now and avoid coupling them to workout save reliability.
+- Update `development_roadmap.md` completion notes after the sprint is finished.
 
 ## Verification
 
