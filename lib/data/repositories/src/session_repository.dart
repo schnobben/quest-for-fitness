@@ -289,6 +289,9 @@ class SessionRepository {
     );
     return WorkoutCompletionResult(
       sessionId: sessionId,
+      workoutName: workoutTemplate.name,
+      durationSeconds: durationSeconds,
+      completedSetCount: completedSetCount,
       workoutReward: workoutReward,
       prCount: prSetIds.length,
     );
@@ -413,11 +416,17 @@ class SessionAnalyticsSnapshot {
 class WorkoutCompletionResult {
   const WorkoutCompletionResult({
     required this.sessionId,
+    required this.workoutName,
+    required this.durationSeconds,
+    required this.completedSetCount,
     required this.workoutReward,
     required this.prCount,
   });
 
   final String sessionId;
+  final String workoutName;
+  final int durationSeconds;
+  final int completedSetCount;
   final RewardGrant workoutReward;
   final int prCount;
 }

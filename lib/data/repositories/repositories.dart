@@ -1,6 +1,7 @@
 export 'src/achievement_repository.dart';
 export 'src/adventurer_repository.dart';
 export 'src/app_repositories.dart';
+export 'src/equipment_repository.dart';
 export 'src/xp_event_service.dart';
 export 'src/bodyweight_repository.dart';
 export 'src/campaign_repository.dart';

@@ -574,6 +574,7 @@ Tooling rules for AI coding agents on the Windows development host:
 - It is fine to parallelize read-only source inspection commands such as `rg`, `Get-Content`, and `git diff`.
 - Use sandboxed execution for source inspection and ordinary project-local commands.
 - If a Flutter/Dart tool command fails with cache, native asset, file-lock, network, or timeout symptoms, rerun that specific command outside the sandbox using the approved prefix path rather than repeatedly retrying sandboxed execution.
+- Before rerunning after a timeout, inspect for stale `dart`, `dartvm`, `flutter`, `java`, or Gradle processes from the failed command. Use `tooling/verify.ps1` modes to run targeted checks before full verification.
 - If Android debug builds fail with a missing `libsqlite3.so` under `.dart_tool/hooks_runner`, treat it as stale native-asset state: run `flutter clean`, then `flutter pub get`, then rerun the needed verification.
 
 ---

@@ -14,6 +14,7 @@ import '../../quest/application/achievement_controller.dart';
 import '../../quest/application/adventurer_profile_controller.dart';
 import '../../../shared/presentation/design_system/design_system.dart';
 import '../application/workout_execution_controller.dart';
+import 'workout_completion_screen.dart';
 
 class WorkoutExecutionScreen extends ConsumerStatefulWidget {
   const WorkoutExecutionScreen({required this.scheduledWorkoutId, super.key});
@@ -225,18 +226,7 @@ class _WorkoutExecutionScreenState
     ref.invalidate(achievementGalleryProvider);
 
     if (!mounted) return;
-    final levelText = result.workoutReward.leveledUp
-        ? ' Level ${result.workoutReward.levelAfter} reached.'
-        : '';
-    final prText = result.prCount > 0 ? ' ${result.prCount} PR reward(s).' : '';
-    final achievementText = result.workoutReward.unlockedAchievements.isNotEmpty
-        ? ' ${result.workoutReward.unlockedAchievements.length} achievement unlocked.'
-        : '';
-    QfNotification.show(
-      context,
-      'Session saved. +${result.workoutReward.xpAmount} XP.$levelText$prText$achievementText',
-    );
-    router.go('/today');
+    router.go(WorkoutCompletionScreen.routePath, extra: result);
   }
 }
 

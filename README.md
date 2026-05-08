@@ -13,23 +13,24 @@ The May-September 2026 personal training block is treated as seed/sample campaig
 ## Current Status
 
 - Milestones 1 and 2 are implemented.
-- Milestone 3 Quest Engine V1 is in progress through Sprint 3.3.
+- Milestone 3 Quest Engine V1 is in progress through Sprint 3.5.
 - Fresh installs load the May-September 2026 sample campaign.
 - Today shows campaign guidance and can launch the next planned workout immediately.
 - Planned workouts can be completed, reviewed in session history, and converted into XP/reward progress.
 - Progress supports bodyweight logging, editable goals, analytics, working weights, cardio/run logging, and progression suggestions.
-- Quest now has a persisted Adventurer profile, XP/level progression, reward history, and Achievements V1.
-- Current database schema version: 7.
+- Quest now has a persisted Adventurer profile, XP/level progression, reward history, Achievements V1, cosmetic equipment, and selectable titles.
+- Planned workout completion now routes through a skippable reward summary screen with XP, unlock, PR, goal, and pet-bond feedback.
+- Current database schema version: 8.
 
 ## Next Sprint
 
-Next planned roadmap item: **Sprint 3.4 - Equipment and titles v1**.
+Next planned roadmap item: **Sprint 4.1 - Pet model and stats**.
 
 Expected starting points:
 
 - Reuse the existing fitness/reward event pipeline instead of adding direct UI-to-RPG writes.
-- Achievements already store unlock reward events; Sprint 3.4 can attach cosmetic equipment/title unlocks to those events.
 - Keep equipment/titles cosmetic for now and avoid coupling them to workout save reliability.
+- Pet-bond rows on the completion screen are placeholders until Milestone 4 adds the pet model.
 - Update `development_roadmap.md` completion notes after the sprint is finished.
 
 ## Verification
@@ -57,5 +58,9 @@ Operational rules:
 
 - Do not run Flutter/Dart toolchain commands in parallel. Run `dart format`, `dart run build_runner ...`, `flutter analyze`, `flutter test`, `flutter clean`, and `flutter build apk --debug` sequentially.
 - Prefer sandboxed commands for source inspection and normal file reads.
-- If Flutter/Dart tooling fails with cache, native asset, file-lock, or timeout symptoms, use the already approved outside-sandbox command path for the specific command instead of retrying repeatedly inside the sandbox.
+- If Flutter/Dart tooling fails with cache, native asset, file-lock, or timeout symptoms, use the already approved outside-sandbox command path for the specific command instead of retrying repeatedly inside the sandbox. Do not spend multiple attempts on the same sandbox failure.
+- Before rerunning after a timeout, inspect for stale `dart`, `dartvm`, `flutter`, `java`, or Gradle processes from the failed command.
+- Prefer `.\tooling\verify.ps1 -Mode targeted-db` or `.\tooling\verify.ps1 -Mode targeted-widget` before the full suite when the changed area is narrow.
 - If `flutter build apk --debug` reports a missing native SQLite artifact under `.dart_tool/hooks_runner`, run `flutter clean`, then `flutter pub get`, then rerun verification.
+
+See `tooling/verification_policy.md` for the full failure-classification policy.

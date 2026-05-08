@@ -4,6 +4,7 @@ import 'adventurer_repository.dart';
 import 'bodyweight_repository.dart';
 import 'campaign_repository.dart';
 import 'cardio_repository.dart';
+import 'equipment_repository.dart';
 import 'exercise_repository.dart';
 import 'goal_repository.dart';
 import 'session_repository.dart';
@@ -22,12 +23,19 @@ class AppRepositories {
     required this.cardio,
     required this.bodyweight,
     required this.goals,
+    required this.equipment,
   });
 
   factory AppRepositories(AppDatabase database) {
     final adventurer = AdventurerRepository(database);
     final achievements = AchievementRepository(database);
-    final xpEvents = XpEventService(database, adventurer, achievements);
+    final equipment = EquipmentRepository(database);
+    final xpEvents = XpEventService(
+      database,
+      adventurer,
+      achievements,
+      equipment,
+    );
     return AppRepositories._(
       adventurer: adventurer,
       achievements: achievements,
@@ -39,6 +47,7 @@ class AppRepositories {
       cardio: CardioRepository(database, xpEvents),
       bodyweight: BodyweightRepository(database, xpEvents),
       goals: GoalRepository(database, xpEvents),
+      equipment: equipment,
     );
   }
 
@@ -52,4 +61,5 @@ class AppRepositories {
   final CardioRepository cardio;
   final BodyweightRepository bodyweight;
   final GoalRepository goals;
+  final EquipmentRepository equipment;
 }

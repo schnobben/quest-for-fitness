@@ -5,6 +5,7 @@ import 'package:drift/drift.dart';
 import '../../local_database/local_database.dart';
 import 'achievement_repository.dart';
 import 'adventurer_repository.dart';
+import 'equipment_repository.dart';
 
 const int xpWorkoutBase = 50;
 const int xpWorkoutPerSet = 5;
@@ -15,13 +16,19 @@ const int xpGoalUpdated = 10;
 const int xpPrAchieved = 35;
 
 class XpEventService {
-  const XpEventService(this._database, this._adventurer, this._achievements);
+  const XpEventService(
+    this._database,
+    this._adventurer,
+    this._achievements,
+    this._equipment,
+  );
 
   static int _idSequence = 0;
 
   final AppDatabase _database;
   final AdventurerRepository _adventurer;
   final AchievementRepository _achievements;
+  final EquipmentRepository _equipment;
 
   Future<RewardGrant> onWorkoutCompleted({
     required String sessionId,
@@ -188,6 +195,12 @@ class XpEventService {
         );
 
     final after = await _adventurer.grantXp(xpAmount);
+    final titleUnlocks = await _equipment.unlockTitlesForLevelRange(
+      fitnessEventId: eventId,
+      levelBefore: before.level,
+      levelAfter: after.level,
+      occurredAt: occurredAt,
+    );
     await _database
         .into(_database.xpHistory)
         .insert(
@@ -208,6 +221,11 @@ class XpEventService {
       fitnessEventType: fitnessType,
       occurredAt: occurredAt,
     );
+    final equipmentUnlocks = await _equipment.unlockEquipmentForAchievements(
+      fitnessEventId: eventId,
+      achievements: unlockedAchievements,
+      occurredAt: occurredAt,
+    );
 
     return RewardGrant(
       fitnessEventId: eventId,
@@ -219,6 +237,8 @@ class XpEventService {
       xpAfter: after.xp,
       summary: summary,
       unlockedAchievements: unlockedAchievements,
+      equipmentUnlocks: equipmentUnlocks,
+      titleUnlocks: titleUnlocks,
     );
   }
 
@@ -241,6 +261,8 @@ abstract final class FitnessEventType {
 abstract final class RewardEventType {
   static const xpGranted = 'xp_granted';
   static const achievementUnlocked = 'achievement_unlocked';
+  static const equipmentUnlocked = 'equipment_unlocked';
+  static const titleUnlocked = 'title_unlocked';
 }
 
 class RewardGrant {
@@ -254,6 +276,8 @@ class RewardGrant {
     required this.xpAfter,
     required this.summary,
     this.unlockedAchievements = const [],
+    this.equipmentUnlocks = const [],
+    this.titleUnlocks = const [],
   });
 
   final String fitnessEventId;
@@ -265,6 +289,8 @@ class RewardGrant {
   final int xpAfter;
   final String summary;
   final List<AchievementStateView> unlockedAchievements;
+  final List<CosmeticUnlockView> equipmentUnlocks;
+  final List<CosmeticUnlockView> titleUnlocks;
 
   bool get leveledUp => levelAfter > levelBefore;
 }

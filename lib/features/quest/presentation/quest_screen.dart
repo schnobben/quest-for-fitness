@@ -5,6 +5,7 @@ import '../../../app/theme/app_theme.dart';
 import '../../../data/repositories/repositories.dart';
 import '../application/achievement_controller.dart';
 import '../application/adventurer_profile_controller.dart';
+import '../application/equipment_controller.dart';
 import '../../../shared/presentation/design_system/design_system.dart';
 
 class QuestScreen extends StatefulWidget {
@@ -40,6 +41,11 @@ class _QuestScreenState extends State<QuestScreen> {
                 selectedTab: _selectedTab,
                 onTabChanged: (i) => setState(() => _selectedTab = i),
               )
+            : _selectedTab == 4
+            ? _EquipmentView(
+                selectedTab: _selectedTab,
+                onTabChanged: (i) => setState(() => _selectedTab = i),
+              )
             : _ExpeditionsView(
                 selectedTab: _selectedTab,
                 onTabChanged: (i) => setState(() => _selectedTab = i),
@@ -48,6 +54,15 @@ class _QuestScreenState extends State<QuestScreen> {
     );
   }
 }
+
+const _questTabs = [
+  'Hero',
+  'Pet',
+  'Quests',
+  'Achievements',
+  'Equipment',
+  'Expeditions',
+];
 
 // ─── Sub-tab bar ──────────────────────────────────────────────────────────────
 
@@ -214,7 +229,7 @@ class _AdventurerContent extends StatelessWidget {
           ),
         ),
         _QuestTabBar(
-          tabs: const ['Hero', 'Pet', 'Quests', 'Achievements', 'Expeditions'],
+          tabs: _questTabs,
           selectedIndex: 0,
           onTabChanged: onTabChanged,
         ),
@@ -319,51 +334,7 @@ class _AdventurerContent extends StatelessWidget {
         ),
 
         QfSectionHeader(title: 'Equipped', moreLabel: 'Inventory'),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18),
-          child: GridView.count(
-            crossAxisCount: 4,
-            crossAxisSpacing: 8,
-            mainAxisSpacing: 8,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            children: [
-              _EquipSlot(
-                icon: Icons.fitness_center,
-                tone: AppColors.ember,
-                tag: 'wpn',
-                unlocked: true,
-              ),
-              _EquipSlot(
-                icon: Icons.shield,
-                tone: AppColors.forest,
-                tag: 'off',
-                unlocked: true,
-              ),
-              _EquipSlot(
-                icon: Icons.workspace_premium,
-                tone: AppColors.rune,
-                tag: 'hlm',
-                unlocked: true,
-              ),
-              _EquipSlot(icon: null, tag: 'cht', unlocked: false),
-              _EquipSlot(icon: null, tag: 'glv', unlocked: false),
-              _EquipSlot(
-                icon: Icons.terrain,
-                tone: AppColors.forest,
-                tag: 'bts',
-                unlocked: true,
-              ),
-              _EquipSlot(
-                icon: Icons.local_fire_department,
-                tone: AppColors.ember,
-                tag: 'trk',
-                unlocked: true,
-              ),
-              _EquipSlot(icon: null, tag: 'clk', unlocked: false, locked: true),
-            ],
-          ),
-        ),
+        _EquippedGearGrid(onOpenInventory: () => onTabChanged(4)),
 
         _RecentAchievementsStrip(onSeeAll: () => onTabChanged(3)),
 
@@ -446,6 +417,391 @@ class _RecentAchievementsStrip extends ConsumerWidget {
   }
 }
 
+class _EquippedGearGrid extends ConsumerWidget {
+  const _EquippedGearGrid({required this.onOpenInventory});
+
+  final VoidCallback onOpenInventory;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final inventory = ref.watch(equipmentInventoryProvider);
+
+    return inventory.when(
+      loading: () => const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 18),
+        child: LinearProgressIndicator(color: AppColors.rune),
+      ),
+      error: (error, stackTrace) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18),
+        child: Text(
+          'Unable to load equipment: $error',
+          style: const TextStyle(color: AppColors.inkMute),
+        ),
+      ),
+      data: (view) {
+        final slots = [
+          EquipmentSlotId.weapon,
+          EquipmentSlotId.offHand,
+          EquipmentSlotId.helmet,
+          EquipmentSlotId.chest,
+          EquipmentSlotId.gloves,
+          EquipmentSlotId.boots,
+          EquipmentSlotId.trinket,
+          EquipmentSlotId.cloak,
+        ];
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 18),
+          child: GridView.count(
+            crossAxisCount: 4,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            children: [
+              for (final slot in slots)
+                GestureDetector(
+                  onTap: onOpenInventory,
+                  child: _EquipSlot(
+                    icon: _equippedIcon(view, slot),
+                    tone: AppColors.rune,
+                    tag: _slotTag(slot),
+                    unlocked: view.equippedSlots.containsKey(slot),
+                    locked: !view.equipment.any(
+                      (item) => item.definition.slot == slot && item.isUnlocked,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  IconData? _equippedIcon(EquipmentInventoryView view, String slot) {
+    final equipped = view.equippedSlots[slot];
+    if (equipped == null) return null;
+    EquipmentItemView? item;
+    for (final candidate in view.equipment) {
+      if (candidate.definition.id == equipped.equipmentId) {
+        item = candidate;
+        break;
+      }
+    }
+    return item == null ? null : _equipmentIcon(item.definition.iconKey);
+  }
+}
+
+class _EquipmentView extends ConsumerWidget {
+  const _EquipmentView({required this.selectedTab, required this.onTabChanged});
+
+  final int selectedTab;
+  final ValueChanged<int> onTabChanged;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final inventory = ref.watch(equipmentInventoryProvider);
+
+    return ListView(
+      padding: EdgeInsets.zero,
+      children: [
+        const QfScreenHeader(
+          salutation: 'The Armory',
+          title: 'Equipment',
+          trailing: Icon(Icons.shield_outlined, color: AppColors.rune),
+        ),
+        _QuestTabBar(
+          tabs: _questTabs,
+          selectedIndex: selectedTab,
+          onTabChanged: onTabChanged,
+        ),
+        const SizedBox(height: 12),
+        inventory.when(
+          loading: () => const Padding(
+            padding: EdgeInsets.all(18),
+            child: LinearProgressIndicator(color: AppColors.rune),
+          ),
+          error: (error, stackTrace) => Padding(
+            padding: const EdgeInsets.all(18),
+            child: QfCard(
+              padding: const EdgeInsets.all(14),
+              child: Text(
+                'Equipment could not be loaded: $error',
+                style: const TextStyle(color: AppColors.inkMute),
+              ),
+            ),
+          ),
+          data: (view) => _EquipmentContent(view: view),
+        ),
+        const SizedBox(height: 24),
+      ],
+    );
+  }
+}
+
+class _EquipmentContent extends ConsumerWidget {
+  const _EquipmentContent({required this.view});
+
+  final EquipmentInventoryView view;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final unlockedGear = view.equipment.where((item) => item.isUnlocked).length;
+    final unlockedTitles = view.titles.where((item) => item.isUnlocked).length;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 18),
+          child: QfCard(
+            variant: QfCardVariant.embossed,
+            ornamentCorners: true,
+            padding: const EdgeInsets.all(14),
+            child: Row(
+              children: [
+                const Icon(Icons.inventory_2_outlined, color: AppColors.gold),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    '$unlockedGear / ${view.equipment.length} gear pieces  ·  '
+                    '$unlockedTitles / ${view.titles.length} titles',
+                    style: AppTheme.fantasyStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.ink,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const QfSectionHeader(title: 'Gear'),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 18),
+          child: Column(
+            children: [
+              for (final item in view.equipment) ...[
+                _EquipmentListTile(item: item),
+                const SizedBox(height: 10),
+              ],
+            ],
+          ),
+        ),
+        const QfSectionHeader(title: 'Titles'),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 18),
+          child: Column(
+            children: [
+              for (final title in view.titles) ...[
+                _TitleListTile(item: title),
+                const SizedBox(height: 10),
+              ],
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _EquipmentListTile extends ConsumerWidget {
+  const _EquipmentListTile({required this.item});
+
+  final EquipmentItemView item;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final locked = !item.isUnlocked;
+    return Opacity(
+      opacity: locked ? 0.55 : 1,
+      child: QfCard(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          children: [
+            _RewardIcon(
+              icon: locked
+                  ? Icons.lock_outline
+                  : _equipmentIcon(item.definition.iconKey),
+              tone: locked ? AppColors.inkFaint : AppColors.rune,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.definition.name,
+                    style: AppTheme.fantasyStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Text(
+                    locked
+                        ? 'Locked · ${_slotLabel(item.definition.slot)}'
+                        : '${_slotLabel(item.definition.slot)} · ${item.definition.description}',
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: AppColors.inkMute,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (item.isEquipped)
+              const QfPill(tone: QfPillTone.gold, child: Text('EQUIPPED'))
+            else if (!locked)
+              TextButton(
+                key: ValueKey('equip-${item.definition.id}'),
+                onPressed: () async {
+                  await ref
+                      .read(equipmentControllerProvider)
+                      .equip(item.definition.id);
+                  if (context.mounted) {
+                    QfNotification.show(
+                      context,
+                      'Equipped ${item.definition.name}',
+                    );
+                  }
+                },
+                child: const Text('Equip'),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _TitleListTile extends ConsumerWidget {
+  const _TitleListTile({required this.item});
+
+  final TitleItemView item;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final locked = !item.isUnlocked;
+    return Opacity(
+      opacity: locked ? 0.55 : 1,
+      child: QfCard(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          children: [
+            _RewardIcon(
+              icon: locked
+                  ? Icons.lock_outline
+                  : Icons.workspace_premium_outlined,
+              tone: locked ? AppColors.inkFaint : AppColors.gold,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.definition.name,
+                    style: AppTheme.fantasyStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Text(
+                    locked
+                        ? 'Unlocks at level ${item.definition.requiredLevel}'
+                        : item.definition.description,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: AppColors.inkMute,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (item.isSelected)
+              const QfPill(tone: QfPillTone.gold, child: Text('ACTIVE'))
+            else if (!locked)
+              TextButton(
+                key: ValueKey('select-title-${item.definition.id}'),
+                onPressed: () async {
+                  await ref
+                      .read(equipmentControllerProvider)
+                      .selectTitle(item.definition.id);
+                  if (context.mounted) {
+                    QfNotification.show(context, 'Title selected');
+                  }
+                },
+                child: const Text('Select'),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _RewardIcon extends StatelessWidget {
+  const _RewardIcon({required this.icon, required this.tone});
+
+  final IconData icon;
+  final Color tone;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 42,
+      height: 42,
+      decoration: BoxDecoration(
+        color: AppColors.surface3,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: AppColors.outline),
+      ),
+      child: Icon(icon, color: tone, size: 20),
+    );
+  }
+}
+
+IconData _equipmentIcon(String iconKey) {
+  return switch (iconKey) {
+    'directions_run' => Icons.directions_run,
+    'monitor_weight' => Icons.monitor_weight_outlined,
+    'back_hand' => Icons.back_hand_outlined,
+    'shield_moon' => Icons.shield_moon_outlined,
+    'security' => Icons.security,
+    'workspace_premium' => Icons.workspace_premium,
+    _ => Icons.fitness_center,
+  };
+}
+
+String _slotLabel(String slot) {
+  return switch (slot) {
+    EquipmentSlotId.weapon => 'Weapon',
+    EquipmentSlotId.offHand => 'Off-hand',
+    EquipmentSlotId.helmet => 'Helmet',
+    EquipmentSlotId.chest => 'Chest',
+    EquipmentSlotId.gloves => 'Gloves',
+    EquipmentSlotId.boots => 'Boots',
+    EquipmentSlotId.trinket => 'Trinket',
+    EquipmentSlotId.cloak => 'Cloak',
+    _ => slot,
+  };
+}
+
+String _slotTag(String slot) {
+  return switch (slot) {
+    EquipmentSlotId.weapon => 'wpn',
+    EquipmentSlotId.offHand => 'off',
+    EquipmentSlotId.helmet => 'hlm',
+    EquipmentSlotId.chest => 'cht',
+    EquipmentSlotId.gloves => 'glv',
+    EquipmentSlotId.boots => 'bts',
+    EquipmentSlotId.trinket => 'trk',
+    EquipmentSlotId.cloak => 'clk',
+    _ => slot,
+  };
+}
+
 class _AchievementsView extends ConsumerWidget {
   const _AchievementsView({
     required this.selectedTab,
@@ -468,7 +824,7 @@ class _AchievementsView extends ConsumerWidget {
           trailing: Icon(Icons.workspace_premium, color: AppColors.gold),
         ),
         _QuestTabBar(
-          tabs: const ['Hero', 'Pet', 'Quests', 'Achievements', 'Expeditions'],
+          tabs: _questTabs,
           selectedIndex: selectedTab,
           onTabChanged: onTabChanged,
         ),
@@ -666,7 +1022,7 @@ class _PetView extends StatelessWidget {
           ),
         ),
         _QuestTabBar(
-          tabs: const ['Hero', 'Pet', 'Quests', 'Achievements', 'Expeditions'],
+          tabs: _questTabs,
           selectedIndex: 1,
           onTabChanged: onTabChanged,
         ),
@@ -1006,8 +1362,8 @@ class _ExpeditionsView extends StatelessWidget {
           ),
         ),
         _QuestTabBar(
-          tabs: const ['Hero', 'Pet', 'Quests', 'Achievements', 'Expeditions'],
-          selectedIndex: 2,
+          tabs: _questTabs,
+          selectedIndex: selectedTab,
           onTabChanged: onTabChanged,
         ),
         const SizedBox(height: 12),

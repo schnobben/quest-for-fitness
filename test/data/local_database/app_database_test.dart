@@ -35,6 +35,10 @@ void main() {
         'campaign_phases',
         'campaigns',
         'cardio_logs',
+        'adventurer_titles',
+        'equipment_definitions',
+        'equipment_inventory',
+        'equipped_equipment',
         'exercise_logs',
         'exercises',
         'goals',
@@ -46,6 +50,7 @@ void main() {
         'seed_runs',
         'session_logs',
         'set_logs',
+        'title_definitions',
         'working_weights',
         'workout_template_exercises',
         'workout_templates',
@@ -262,8 +267,57 @@ void main() {
         (item) => item.achievement.id == AchievementId.firstWorkout,
       );
       expect(firstWorkout.state.isUnlocked, isTrue);
+      final inventory = await repositories.equipment.getInventoryView();
+      final trainingBlade = inventory.equipment.singleWhere(
+        (item) => item.definition.id == EquipmentId.trainingBlade,
+      );
+      expect(trainingBlade.isUnlocked, isTrue);
+      expect(trainingBlade.isEquipped, isTrue);
     },
   );
+
+  test('equipment and title unlocks can be equipped and selected', () async {
+    final database = AppDatabase.inMemory();
+    addTearDown(database.close);
+    final repositories = AppRepositories(database);
+
+    await repositories.xpEvents.onDebugXpGranted(xpAmount: 125);
+    final afterLevel = await repositories.equipment.getInventoryView();
+    final trailInitiate = afterLevel.titles.singleWhere(
+      (item) => item.definition.id == TitleId.trailInitiate,
+    );
+    expect(trailInitiate.isUnlocked, isTrue);
+    expect(trailInitiate.isSelected, isTrue);
+
+    await repositories.xpEvents.onWorkoutCompleted(
+      sessionId: 'manual-session',
+      setCount: 1,
+      occurredAt: DateTime.utc(2026, 5, 5, 7),
+    );
+    await repositories.equipment.equip(EquipmentId.trainingBlade);
+    await repositories.equipment.selectTitle(TitleId.noviceAdventurer);
+
+    final inventory = await repositories.equipment.getInventoryView();
+    final blade = inventory.equipment.singleWhere(
+      (item) => item.definition.id == EquipmentId.trainingBlade,
+    );
+    final novice = inventory.titles.singleWhere(
+      (item) => item.definition.id == TitleId.noviceAdventurer,
+    );
+    final rewards = await database.select(database.rewardEvents).get();
+
+    expect(blade.isUnlocked, isTrue);
+    expect(blade.isEquipped, isTrue);
+    expect(novice.isSelected, isTrue);
+    expect(
+      rewards.any((reward) => reward.type == RewardEventType.equipmentUnlocked),
+      isTrue,
+    );
+    expect(
+      rewards.any((reward) => reward.type == RewardEventType.titleUnlocked),
+      isTrue,
+    );
+  });
 
   test(
     'session history returns details and delete removes a test session',
