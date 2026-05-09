@@ -809,6 +809,8 @@ Completion notes:
 
 ## 7. Milestone 4 — Pet System V1
 
+Completed 2026-05-09
+
 ### Goal
 
 Add the Tamagotchi-like companion system.
@@ -816,6 +818,8 @@ Add the Tamagotchi-like companion system.
 ---
 
 ### Sprint 4.1 — Pet foundation
+
+Completed 2026-05-09
 
 Tasks:
 
@@ -837,6 +841,8 @@ Exit criteria:
 
 ### Sprint 4.2 — Pet reactions to fitness events
 
+Completed 2026-05-09
+
 Tasks:
 
 - Connect pet to reward event system.
@@ -854,6 +860,8 @@ Exit criteria:
 ---
 
 ### Sprint 4.3 — Pet care actions
+
+Completed 2026-05-09
 
 Tasks:
 
@@ -874,6 +882,8 @@ Exit criteria:
 ---
 
 ### Sprint 4.4 — Pet evolution v1
+
+Completed 2026-05-09
 
 Tasks:
 
