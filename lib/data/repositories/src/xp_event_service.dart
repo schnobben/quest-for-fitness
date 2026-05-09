@@ -7,6 +7,7 @@ import '../../local_database/local_database.dart';
 import 'achievement_repository.dart';
 import 'adventurer_repository.dart';
 import 'equipment_repository.dart';
+import 'pet_repository.dart';
 
 const int xpWorkoutBase = 50;
 const int xpWorkoutPerSet = 5;
@@ -22,6 +23,7 @@ class XpEventService {
     this._adventurer,
     this._achievements,
     this._equipment,
+    this._pet,
     this._ids,
   );
 
@@ -29,6 +31,7 @@ class XpEventService {
   final AdventurerRepository _adventurer;
   final AchievementRepository _achievements;
   final EquipmentRepository _equipment;
+  final PetRepository _pet;
   final IdGenerator _ids;
 
   Future<RewardGrant> onWorkoutCompleted({
@@ -229,6 +232,11 @@ class XpEventService {
           );
 
       final after = await _adventurer.grantXp(xpAmount);
+      final petBondChange = await _pet.processFitnessEvent(
+        fitnessType: fitnessType,
+        occurredAt: occurredAt,
+        adventurerLevel: after.level,
+      );
       final titleUnlocks = await _equipment.unlockTitlesForLevelRange(
         fitnessEventId: eventId,
         levelBefore: before.level,
@@ -273,6 +281,7 @@ class XpEventService {
         unlockedAchievements: unlockedAchievements,
         equipmentUnlocks: equipmentUnlocks,
         titleUnlocks: titleUnlocks,
+        petBondChange: petBondChange,
       );
     });
 
@@ -310,6 +319,7 @@ class RewardGrant {
     this.unlockedAchievements = const [],
     this.equipmentUnlocks = const [],
     this.titleUnlocks = const [],
+    this.petBondChange = PetBondChange.noChange,
   });
 
   final String fitnessEventId;
@@ -323,6 +333,7 @@ class RewardGrant {
   final List<AchievementStateView> unlockedAchievements;
   final List<CosmeticUnlockView> equipmentUnlocks;
   final List<CosmeticUnlockView> titleUnlocks;
+  final PetBondChange petBondChange;
 
   bool get leveledUp => levelAfter > levelBefore;
 }

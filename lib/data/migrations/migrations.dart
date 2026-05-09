@@ -8,6 +8,8 @@ class DatabaseDevTools {
   Future<void> resetAllData() async {
     await _database.transaction(() async {
       await _database.delete(_database.seedRuns).go();
+      await _database.delete(_database.petEvolutionHistory).go();
+      await _database.delete(_database.pets).go();
       await _database.delete(_database.equippedEquipment).go();
       await _database.delete(_database.equipmentInventory).go();
       await _database.delete(_database.adventurerTitles).go();

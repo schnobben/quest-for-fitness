@@ -13847,6 +13847,1135 @@ class SeedRunsCompanion extends UpdateCompanion<SeedRun> {
   }
 }
 
+class $PetsTable extends Pets with TableInfo<$PetsTable, Pet> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PetsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('Ember'),
+  );
+  static const VerificationMeta _speciesKeyMeta = const VerificationMeta(
+    'speciesKey',
+  );
+  @override
+  late final GeneratedColumn<String> speciesKey = GeneratedColumn<String>(
+    'species_key',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('ember-fox'),
+  );
+  static const VerificationMeta _evolutionStageMeta = const VerificationMeta(
+    'evolutionStage',
+  );
+  @override
+  late final GeneratedColumn<int> evolutionStage = GeneratedColumn<int>(
+    'evolution_stage',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _bondLevelMeta = const VerificationMeta(
+    'bondLevel',
+  );
+  @override
+  late final GeneratedColumn<int> bondLevel = GeneratedColumn<int>(
+    'bond_level',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _bondXpMeta = const VerificationMeta('bondXp');
+  @override
+  late final GeneratedColumn<int> bondXp = GeneratedColumn<int>(
+    'bond_xp',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _moodMeta = const VerificationMeta('mood');
+  @override
+  late final GeneratedColumn<String> mood = GeneratedColumn<String>(
+    'mood',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('content'),
+  );
+  static const VerificationMeta _energyPercentMeta = const VerificationMeta(
+    'energyPercent',
+  );
+  @override
+  late final GeneratedColumn<double> energyPercent = GeneratedColumn<double>(
+    'energy_percent',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1.0),
+  );
+  static const VerificationMeta _lastTreatAtMeta = const VerificationMeta(
+    'lastTreatAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastTreatAt = GeneratedColumn<DateTime>(
+    'last_treat_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastPlayAtMeta = const VerificationMeta(
+    'lastPlayAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastPlayAt = GeneratedColumn<DateTime>(
+    'last_play_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastRestAtMeta = const VerificationMeta(
+    'lastRestAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastRestAt = GeneratedColumn<DateTime>(
+    'last_rest_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    name,
+    speciesKey,
+    evolutionStage,
+    bondLevel,
+    bondXp,
+    mood,
+    energyPercent,
+    lastTreatAt,
+    lastPlayAt,
+    lastRestAt,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'pets';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Pet> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    }
+    if (data.containsKey('species_key')) {
+      context.handle(
+        _speciesKeyMeta,
+        speciesKey.isAcceptableOrUnknown(data['species_key']!, _speciesKeyMeta),
+      );
+    }
+    if (data.containsKey('evolution_stage')) {
+      context.handle(
+        _evolutionStageMeta,
+        evolutionStage.isAcceptableOrUnknown(
+          data['evolution_stage']!,
+          _evolutionStageMeta,
+        ),
+      );
+    }
+    if (data.containsKey('bond_level')) {
+      context.handle(
+        _bondLevelMeta,
+        bondLevel.isAcceptableOrUnknown(data['bond_level']!, _bondLevelMeta),
+      );
+    }
+    if (data.containsKey('bond_xp')) {
+      context.handle(
+        _bondXpMeta,
+        bondXp.isAcceptableOrUnknown(data['bond_xp']!, _bondXpMeta),
+      );
+    }
+    if (data.containsKey('mood')) {
+      context.handle(
+        _moodMeta,
+        mood.isAcceptableOrUnknown(data['mood']!, _moodMeta),
+      );
+    }
+    if (data.containsKey('energy_percent')) {
+      context.handle(
+        _energyPercentMeta,
+        energyPercent.isAcceptableOrUnknown(
+          data['energy_percent']!,
+          _energyPercentMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_treat_at')) {
+      context.handle(
+        _lastTreatAtMeta,
+        lastTreatAt.isAcceptableOrUnknown(
+          data['last_treat_at']!,
+          _lastTreatAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_play_at')) {
+      context.handle(
+        _lastPlayAtMeta,
+        lastPlayAt.isAcceptableOrUnknown(
+          data['last_play_at']!,
+          _lastPlayAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_rest_at')) {
+      context.handle(
+        _lastRestAtMeta,
+        lastRestAt.isAcceptableOrUnknown(
+          data['last_rest_at']!,
+          _lastRestAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Pet map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Pet(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      speciesKey: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}species_key'],
+      )!,
+      evolutionStage: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}evolution_stage'],
+      )!,
+      bondLevel: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}bond_level'],
+      )!,
+      bondXp: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}bond_xp'],
+      )!,
+      mood: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}mood'],
+      )!,
+      energyPercent: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}energy_percent'],
+      )!,
+      lastTreatAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_treat_at'],
+      ),
+      lastPlayAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_play_at'],
+      ),
+      lastRestAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_rest_at'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $PetsTable createAlias(String alias) {
+    return $PetsTable(attachedDatabase, alias);
+  }
+}
+
+class Pet extends DataClass implements Insertable<Pet> {
+  final String id;
+  final String name;
+  final String speciesKey;
+  final int evolutionStage;
+  final int bondLevel;
+  final int bondXp;
+  final String mood;
+  final double energyPercent;
+  final DateTime? lastTreatAt;
+  final DateTime? lastPlayAt;
+  final DateTime? lastRestAt;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  const Pet({
+    required this.id,
+    required this.name,
+    required this.speciesKey,
+    required this.evolutionStage,
+    required this.bondLevel,
+    required this.bondXp,
+    required this.mood,
+    required this.energyPercent,
+    this.lastTreatAt,
+    this.lastPlayAt,
+    this.lastRestAt,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name'] = Variable<String>(name);
+    map['species_key'] = Variable<String>(speciesKey);
+    map['evolution_stage'] = Variable<int>(evolutionStage);
+    map['bond_level'] = Variable<int>(bondLevel);
+    map['bond_xp'] = Variable<int>(bondXp);
+    map['mood'] = Variable<String>(mood);
+    map['energy_percent'] = Variable<double>(energyPercent);
+    if (!nullToAbsent || lastTreatAt != null) {
+      map['last_treat_at'] = Variable<DateTime>(lastTreatAt);
+    }
+    if (!nullToAbsent || lastPlayAt != null) {
+      map['last_play_at'] = Variable<DateTime>(lastPlayAt);
+    }
+    if (!nullToAbsent || lastRestAt != null) {
+      map['last_rest_at'] = Variable<DateTime>(lastRestAt);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  PetsCompanion toCompanion(bool nullToAbsent) {
+    return PetsCompanion(
+      id: Value(id),
+      name: Value(name),
+      speciesKey: Value(speciesKey),
+      evolutionStage: Value(evolutionStage),
+      bondLevel: Value(bondLevel),
+      bondXp: Value(bondXp),
+      mood: Value(mood),
+      energyPercent: Value(energyPercent),
+      lastTreatAt: lastTreatAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastTreatAt),
+      lastPlayAt: lastPlayAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastPlayAt),
+      lastRestAt: lastRestAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastRestAt),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory Pet.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Pet(
+      id: serializer.fromJson<String>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      speciesKey: serializer.fromJson<String>(json['speciesKey']),
+      evolutionStage: serializer.fromJson<int>(json['evolutionStage']),
+      bondLevel: serializer.fromJson<int>(json['bondLevel']),
+      bondXp: serializer.fromJson<int>(json['bondXp']),
+      mood: serializer.fromJson<String>(json['mood']),
+      energyPercent: serializer.fromJson<double>(json['energyPercent']),
+      lastTreatAt: serializer.fromJson<DateTime?>(json['lastTreatAt']),
+      lastPlayAt: serializer.fromJson<DateTime?>(json['lastPlayAt']),
+      lastRestAt: serializer.fromJson<DateTime?>(json['lastRestAt']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'name': serializer.toJson<String>(name),
+      'speciesKey': serializer.toJson<String>(speciesKey),
+      'evolutionStage': serializer.toJson<int>(evolutionStage),
+      'bondLevel': serializer.toJson<int>(bondLevel),
+      'bondXp': serializer.toJson<int>(bondXp),
+      'mood': serializer.toJson<String>(mood),
+      'energyPercent': serializer.toJson<double>(energyPercent),
+      'lastTreatAt': serializer.toJson<DateTime?>(lastTreatAt),
+      'lastPlayAt': serializer.toJson<DateTime?>(lastPlayAt),
+      'lastRestAt': serializer.toJson<DateTime?>(lastRestAt),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  Pet copyWith({
+    String? id,
+    String? name,
+    String? speciesKey,
+    int? evolutionStage,
+    int? bondLevel,
+    int? bondXp,
+    String? mood,
+    double? energyPercent,
+    Value<DateTime?> lastTreatAt = const Value.absent(),
+    Value<DateTime?> lastPlayAt = const Value.absent(),
+    Value<DateTime?> lastRestAt = const Value.absent(),
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) => Pet(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    speciesKey: speciesKey ?? this.speciesKey,
+    evolutionStage: evolutionStage ?? this.evolutionStage,
+    bondLevel: bondLevel ?? this.bondLevel,
+    bondXp: bondXp ?? this.bondXp,
+    mood: mood ?? this.mood,
+    energyPercent: energyPercent ?? this.energyPercent,
+    lastTreatAt: lastTreatAt.present ? lastTreatAt.value : this.lastTreatAt,
+    lastPlayAt: lastPlayAt.present ? lastPlayAt.value : this.lastPlayAt,
+    lastRestAt: lastRestAt.present ? lastRestAt.value : this.lastRestAt,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  Pet copyWithCompanion(PetsCompanion data) {
+    return Pet(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      speciesKey: data.speciesKey.present
+          ? data.speciesKey.value
+          : this.speciesKey,
+      evolutionStage: data.evolutionStage.present
+          ? data.evolutionStage.value
+          : this.evolutionStage,
+      bondLevel: data.bondLevel.present ? data.bondLevel.value : this.bondLevel,
+      bondXp: data.bondXp.present ? data.bondXp.value : this.bondXp,
+      mood: data.mood.present ? data.mood.value : this.mood,
+      energyPercent: data.energyPercent.present
+          ? data.energyPercent.value
+          : this.energyPercent,
+      lastTreatAt: data.lastTreatAt.present
+          ? data.lastTreatAt.value
+          : this.lastTreatAt,
+      lastPlayAt: data.lastPlayAt.present
+          ? data.lastPlayAt.value
+          : this.lastPlayAt,
+      lastRestAt: data.lastRestAt.present
+          ? data.lastRestAt.value
+          : this.lastRestAt,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Pet(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('speciesKey: $speciesKey, ')
+          ..write('evolutionStage: $evolutionStage, ')
+          ..write('bondLevel: $bondLevel, ')
+          ..write('bondXp: $bondXp, ')
+          ..write('mood: $mood, ')
+          ..write('energyPercent: $energyPercent, ')
+          ..write('lastTreatAt: $lastTreatAt, ')
+          ..write('lastPlayAt: $lastPlayAt, ')
+          ..write('lastRestAt: $lastRestAt, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    name,
+    speciesKey,
+    evolutionStage,
+    bondLevel,
+    bondXp,
+    mood,
+    energyPercent,
+    lastTreatAt,
+    lastPlayAt,
+    lastRestAt,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Pet &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.speciesKey == this.speciesKey &&
+          other.evolutionStage == this.evolutionStage &&
+          other.bondLevel == this.bondLevel &&
+          other.bondXp == this.bondXp &&
+          other.mood == this.mood &&
+          other.energyPercent == this.energyPercent &&
+          other.lastTreatAt == this.lastTreatAt &&
+          other.lastPlayAt == this.lastPlayAt &&
+          other.lastRestAt == this.lastRestAt &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class PetsCompanion extends UpdateCompanion<Pet> {
+  final Value<String> id;
+  final Value<String> name;
+  final Value<String> speciesKey;
+  final Value<int> evolutionStage;
+  final Value<int> bondLevel;
+  final Value<int> bondXp;
+  final Value<String> mood;
+  final Value<double> energyPercent;
+  final Value<DateTime?> lastTreatAt;
+  final Value<DateTime?> lastPlayAt;
+  final Value<DateTime?> lastRestAt;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const PetsCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.speciesKey = const Value.absent(),
+    this.evolutionStage = const Value.absent(),
+    this.bondLevel = const Value.absent(),
+    this.bondXp = const Value.absent(),
+    this.mood = const Value.absent(),
+    this.energyPercent = const Value.absent(),
+    this.lastTreatAt = const Value.absent(),
+    this.lastPlayAt = const Value.absent(),
+    this.lastRestAt = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PetsCompanion.insert({
+    required String id,
+    this.name = const Value.absent(),
+    this.speciesKey = const Value.absent(),
+    this.evolutionStage = const Value.absent(),
+    this.bondLevel = const Value.absent(),
+    this.bondXp = const Value.absent(),
+    this.mood = const Value.absent(),
+    this.energyPercent = const Value.absent(),
+    this.lastTreatAt = const Value.absent(),
+    this.lastPlayAt = const Value.absent(),
+    this.lastRestAt = const Value.absent(),
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<Pet> custom({
+    Expression<String>? id,
+    Expression<String>? name,
+    Expression<String>? speciesKey,
+    Expression<int>? evolutionStage,
+    Expression<int>? bondLevel,
+    Expression<int>? bondXp,
+    Expression<String>? mood,
+    Expression<double>? energyPercent,
+    Expression<DateTime>? lastTreatAt,
+    Expression<DateTime>? lastPlayAt,
+    Expression<DateTime>? lastRestAt,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (speciesKey != null) 'species_key': speciesKey,
+      if (evolutionStage != null) 'evolution_stage': evolutionStage,
+      if (bondLevel != null) 'bond_level': bondLevel,
+      if (bondXp != null) 'bond_xp': bondXp,
+      if (mood != null) 'mood': mood,
+      if (energyPercent != null) 'energy_percent': energyPercent,
+      if (lastTreatAt != null) 'last_treat_at': lastTreatAt,
+      if (lastPlayAt != null) 'last_play_at': lastPlayAt,
+      if (lastRestAt != null) 'last_rest_at': lastRestAt,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PetsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? name,
+    Value<String>? speciesKey,
+    Value<int>? evolutionStage,
+    Value<int>? bondLevel,
+    Value<int>? bondXp,
+    Value<String>? mood,
+    Value<double>? energyPercent,
+    Value<DateTime?>? lastTreatAt,
+    Value<DateTime?>? lastPlayAt,
+    Value<DateTime?>? lastRestAt,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return PetsCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      speciesKey: speciesKey ?? this.speciesKey,
+      evolutionStage: evolutionStage ?? this.evolutionStage,
+      bondLevel: bondLevel ?? this.bondLevel,
+      bondXp: bondXp ?? this.bondXp,
+      mood: mood ?? this.mood,
+      energyPercent: energyPercent ?? this.energyPercent,
+      lastTreatAt: lastTreatAt ?? this.lastTreatAt,
+      lastPlayAt: lastPlayAt ?? this.lastPlayAt,
+      lastRestAt: lastRestAt ?? this.lastRestAt,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (speciesKey.present) {
+      map['species_key'] = Variable<String>(speciesKey.value);
+    }
+    if (evolutionStage.present) {
+      map['evolution_stage'] = Variable<int>(evolutionStage.value);
+    }
+    if (bondLevel.present) {
+      map['bond_level'] = Variable<int>(bondLevel.value);
+    }
+    if (bondXp.present) {
+      map['bond_xp'] = Variable<int>(bondXp.value);
+    }
+    if (mood.present) {
+      map['mood'] = Variable<String>(mood.value);
+    }
+    if (energyPercent.present) {
+      map['energy_percent'] = Variable<double>(energyPercent.value);
+    }
+    if (lastTreatAt.present) {
+      map['last_treat_at'] = Variable<DateTime>(lastTreatAt.value);
+    }
+    if (lastPlayAt.present) {
+      map['last_play_at'] = Variable<DateTime>(lastPlayAt.value);
+    }
+    if (lastRestAt.present) {
+      map['last_rest_at'] = Variable<DateTime>(lastRestAt.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PetsCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('speciesKey: $speciesKey, ')
+          ..write('evolutionStage: $evolutionStage, ')
+          ..write('bondLevel: $bondLevel, ')
+          ..write('bondXp: $bondXp, ')
+          ..write('mood: $mood, ')
+          ..write('energyPercent: $energyPercent, ')
+          ..write('lastTreatAt: $lastTreatAt, ')
+          ..write('lastPlayAt: $lastPlayAt, ')
+          ..write('lastRestAt: $lastRestAt, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $PetEvolutionHistoryTable extends PetEvolutionHistory
+    with TableInfo<$PetEvolutionHistoryTable, PetEvolutionHistoryData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PetEvolutionHistoryTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _petIdMeta = const VerificationMeta('petId');
+  @override
+  late final GeneratedColumn<String> petId = GeneratedColumn<String>(
+    'pet_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES pets (id)',
+    ),
+  );
+  static const VerificationMeta _fromStageMeta = const VerificationMeta(
+    'fromStage',
+  );
+  @override
+  late final GeneratedColumn<int> fromStage = GeneratedColumn<int>(
+    'from_stage',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _toStageMeta = const VerificationMeta(
+    'toStage',
+  );
+  @override
+  late final GeneratedColumn<int> toStage = GeneratedColumn<int>(
+    'to_stage',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _evolvedAtMeta = const VerificationMeta(
+    'evolvedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> evolvedAt = GeneratedColumn<DateTime>(
+    'evolved_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    petId,
+    fromStage,
+    toStage,
+    evolvedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'pet_evolution_history';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PetEvolutionHistoryData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('pet_id')) {
+      context.handle(
+        _petIdMeta,
+        petId.isAcceptableOrUnknown(data['pet_id']!, _petIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_petIdMeta);
+    }
+    if (data.containsKey('from_stage')) {
+      context.handle(
+        _fromStageMeta,
+        fromStage.isAcceptableOrUnknown(data['from_stage']!, _fromStageMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_fromStageMeta);
+    }
+    if (data.containsKey('to_stage')) {
+      context.handle(
+        _toStageMeta,
+        toStage.isAcceptableOrUnknown(data['to_stage']!, _toStageMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_toStageMeta);
+    }
+    if (data.containsKey('evolved_at')) {
+      context.handle(
+        _evolvedAtMeta,
+        evolvedAt.isAcceptableOrUnknown(data['evolved_at']!, _evolvedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_evolvedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  PetEvolutionHistoryData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PetEvolutionHistoryData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      petId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}pet_id'],
+      )!,
+      fromStage: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}from_stage'],
+      )!,
+      toStage: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}to_stage'],
+      )!,
+      evolvedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}evolved_at'],
+      )!,
+    );
+  }
+
+  @override
+  $PetEvolutionHistoryTable createAlias(String alias) {
+    return $PetEvolutionHistoryTable(attachedDatabase, alias);
+  }
+}
+
+class PetEvolutionHistoryData extends DataClass
+    implements Insertable<PetEvolutionHistoryData> {
+  final String id;
+  final String petId;
+  final int fromStage;
+  final int toStage;
+  final DateTime evolvedAt;
+  const PetEvolutionHistoryData({
+    required this.id,
+    required this.petId,
+    required this.fromStage,
+    required this.toStage,
+    required this.evolvedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['pet_id'] = Variable<String>(petId);
+    map['from_stage'] = Variable<int>(fromStage);
+    map['to_stage'] = Variable<int>(toStage);
+    map['evolved_at'] = Variable<DateTime>(evolvedAt);
+    return map;
+  }
+
+  PetEvolutionHistoryCompanion toCompanion(bool nullToAbsent) {
+    return PetEvolutionHistoryCompanion(
+      id: Value(id),
+      petId: Value(petId),
+      fromStage: Value(fromStage),
+      toStage: Value(toStage),
+      evolvedAt: Value(evolvedAt),
+    );
+  }
+
+  factory PetEvolutionHistoryData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PetEvolutionHistoryData(
+      id: serializer.fromJson<String>(json['id']),
+      petId: serializer.fromJson<String>(json['petId']),
+      fromStage: serializer.fromJson<int>(json['fromStage']),
+      toStage: serializer.fromJson<int>(json['toStage']),
+      evolvedAt: serializer.fromJson<DateTime>(json['evolvedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'petId': serializer.toJson<String>(petId),
+      'fromStage': serializer.toJson<int>(fromStage),
+      'toStage': serializer.toJson<int>(toStage),
+      'evolvedAt': serializer.toJson<DateTime>(evolvedAt),
+    };
+  }
+
+  PetEvolutionHistoryData copyWith({
+    String? id,
+    String? petId,
+    int? fromStage,
+    int? toStage,
+    DateTime? evolvedAt,
+  }) => PetEvolutionHistoryData(
+    id: id ?? this.id,
+    petId: petId ?? this.petId,
+    fromStage: fromStage ?? this.fromStage,
+    toStage: toStage ?? this.toStage,
+    evolvedAt: evolvedAt ?? this.evolvedAt,
+  );
+  PetEvolutionHistoryData copyWithCompanion(PetEvolutionHistoryCompanion data) {
+    return PetEvolutionHistoryData(
+      id: data.id.present ? data.id.value : this.id,
+      petId: data.petId.present ? data.petId.value : this.petId,
+      fromStage: data.fromStage.present ? data.fromStage.value : this.fromStage,
+      toStage: data.toStage.present ? data.toStage.value : this.toStage,
+      evolvedAt: data.evolvedAt.present ? data.evolvedAt.value : this.evolvedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PetEvolutionHistoryData(')
+          ..write('id: $id, ')
+          ..write('petId: $petId, ')
+          ..write('fromStage: $fromStage, ')
+          ..write('toStage: $toStage, ')
+          ..write('evolvedAt: $evolvedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, petId, fromStage, toStage, evolvedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PetEvolutionHistoryData &&
+          other.id == this.id &&
+          other.petId == this.petId &&
+          other.fromStage == this.fromStage &&
+          other.toStage == this.toStage &&
+          other.evolvedAt == this.evolvedAt);
+}
+
+class PetEvolutionHistoryCompanion
+    extends UpdateCompanion<PetEvolutionHistoryData> {
+  final Value<String> id;
+  final Value<String> petId;
+  final Value<int> fromStage;
+  final Value<int> toStage;
+  final Value<DateTime> evolvedAt;
+  final Value<int> rowid;
+  const PetEvolutionHistoryCompanion({
+    this.id = const Value.absent(),
+    this.petId = const Value.absent(),
+    this.fromStage = const Value.absent(),
+    this.toStage = const Value.absent(),
+    this.evolvedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PetEvolutionHistoryCompanion.insert({
+    required String id,
+    required String petId,
+    required int fromStage,
+    required int toStage,
+    required DateTime evolvedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       petId = Value(petId),
+       fromStage = Value(fromStage),
+       toStage = Value(toStage),
+       evolvedAt = Value(evolvedAt);
+  static Insertable<PetEvolutionHistoryData> custom({
+    Expression<String>? id,
+    Expression<String>? petId,
+    Expression<int>? fromStage,
+    Expression<int>? toStage,
+    Expression<DateTime>? evolvedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (petId != null) 'pet_id': petId,
+      if (fromStage != null) 'from_stage': fromStage,
+      if (toStage != null) 'to_stage': toStage,
+      if (evolvedAt != null) 'evolved_at': evolvedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PetEvolutionHistoryCompanion copyWith({
+    Value<String>? id,
+    Value<String>? petId,
+    Value<int>? fromStage,
+    Value<int>? toStage,
+    Value<DateTime>? evolvedAt,
+    Value<int>? rowid,
+  }) {
+    return PetEvolutionHistoryCompanion(
+      id: id ?? this.id,
+      petId: petId ?? this.petId,
+      fromStage: fromStage ?? this.fromStage,
+      toStage: toStage ?? this.toStage,
+      evolvedAt: evolvedAt ?? this.evolvedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (petId.present) {
+      map['pet_id'] = Variable<String>(petId.value);
+    }
+    if (fromStage.present) {
+      map['from_stage'] = Variable<int>(fromStage.value);
+    }
+    if (toStage.present) {
+      map['to_stage'] = Variable<int>(toStage.value);
+    }
+    if (evolvedAt.present) {
+      map['evolved_at'] = Variable<DateTime>(evolvedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PetEvolutionHistoryCompanion(')
+          ..write('id: $id, ')
+          ..write('petId: $petId, ')
+          ..write('fromStage: $fromStage, ')
+          ..write('toStage: $toStage, ')
+          ..write('evolvedAt: $evolvedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -13892,6 +15021,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $BodyweightLogsTable bodyweightLogs = $BodyweightLogsTable(this);
   late final $GoalsTable goals = $GoalsTable(this);
   late final $SeedRunsTable seedRuns = $SeedRunsTable(this);
+  late final $PetsTable pets = $PetsTable(this);
+  late final $PetEvolutionHistoryTable petEvolutionHistory =
+      $PetEvolutionHistoryTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -13924,6 +15056,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     bodyweightLogs,
     goals,
     seedRuns,
+    pets,
+    petEvolutionHistory,
   ];
 }
 
@@ -26645,6 +27779,815 @@ typedef $$SeedRunsTableProcessedTableManager =
       SeedRun,
       PrefetchHooks Function()
     >;
+typedef $$PetsTableCreateCompanionBuilder =
+    PetsCompanion Function({
+      required String id,
+      Value<String> name,
+      Value<String> speciesKey,
+      Value<int> evolutionStage,
+      Value<int> bondLevel,
+      Value<int> bondXp,
+      Value<String> mood,
+      Value<double> energyPercent,
+      Value<DateTime?> lastTreatAt,
+      Value<DateTime?> lastPlayAt,
+      Value<DateTime?> lastRestAt,
+      required DateTime createdAt,
+      required DateTime updatedAt,
+      Value<int> rowid,
+    });
+typedef $$PetsTableUpdateCompanionBuilder =
+    PetsCompanion Function({
+      Value<String> id,
+      Value<String> name,
+      Value<String> speciesKey,
+      Value<int> evolutionStage,
+      Value<int> bondLevel,
+      Value<int> bondXp,
+      Value<String> mood,
+      Value<double> energyPercent,
+      Value<DateTime?> lastTreatAt,
+      Value<DateTime?> lastPlayAt,
+      Value<DateTime?> lastRestAt,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+final class $$PetsTableReferences
+    extends BaseReferences<_$AppDatabase, $PetsTable, Pet> {
+  $$PetsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<
+    $PetEvolutionHistoryTable,
+    List<PetEvolutionHistoryData>
+  >
+  _petEvolutionHistoryRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.petEvolutionHistory,
+        aliasName: $_aliasNameGenerator(
+          db.pets.id,
+          db.petEvolutionHistory.petId,
+        ),
+      );
+
+  $$PetEvolutionHistoryTableProcessedTableManager get petEvolutionHistoryRefs {
+    final manager = $$PetEvolutionHistoryTableTableManager(
+      $_db,
+      $_db.petEvolutionHistory,
+    ).filter((f) => f.petId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _petEvolutionHistoryRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$PetsTableFilterComposer extends Composer<_$AppDatabase, $PetsTable> {
+  $$PetsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get speciesKey => $composableBuilder(
+    column: $table.speciesKey,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get evolutionStage => $composableBuilder(
+    column: $table.evolutionStage,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get bondLevel => $composableBuilder(
+    column: $table.bondLevel,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get bondXp => $composableBuilder(
+    column: $table.bondXp,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get mood => $composableBuilder(
+    column: $table.mood,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get energyPercent => $composableBuilder(
+    column: $table.energyPercent,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastTreatAt => $composableBuilder(
+    column: $table.lastTreatAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastPlayAt => $composableBuilder(
+    column: $table.lastPlayAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastRestAt => $composableBuilder(
+    column: $table.lastRestAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> petEvolutionHistoryRefs(
+    Expression<bool> Function($$PetEvolutionHistoryTableFilterComposer f) f,
+  ) {
+    final $$PetEvolutionHistoryTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.petEvolutionHistory,
+      getReferencedColumn: (t) => t.petId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PetEvolutionHistoryTableFilterComposer(
+            $db: $db,
+            $table: $db.petEvolutionHistory,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$PetsTableOrderingComposer extends Composer<_$AppDatabase, $PetsTable> {
+  $$PetsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get speciesKey => $composableBuilder(
+    column: $table.speciesKey,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get evolutionStage => $composableBuilder(
+    column: $table.evolutionStage,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get bondLevel => $composableBuilder(
+    column: $table.bondLevel,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get bondXp => $composableBuilder(
+    column: $table.bondXp,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get mood => $composableBuilder(
+    column: $table.mood,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get energyPercent => $composableBuilder(
+    column: $table.energyPercent,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastTreatAt => $composableBuilder(
+    column: $table.lastTreatAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastPlayAt => $composableBuilder(
+    column: $table.lastPlayAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastRestAt => $composableBuilder(
+    column: $table.lastRestAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$PetsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PetsTable> {
+  $$PetsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get speciesKey => $composableBuilder(
+    column: $table.speciesKey,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get evolutionStage => $composableBuilder(
+    column: $table.evolutionStage,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get bondLevel =>
+      $composableBuilder(column: $table.bondLevel, builder: (column) => column);
+
+  GeneratedColumn<int> get bondXp =>
+      $composableBuilder(column: $table.bondXp, builder: (column) => column);
+
+  GeneratedColumn<String> get mood =>
+      $composableBuilder(column: $table.mood, builder: (column) => column);
+
+  GeneratedColumn<double> get energyPercent => $composableBuilder(
+    column: $table.energyPercent,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get lastTreatAt => $composableBuilder(
+    column: $table.lastTreatAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get lastPlayAt => $composableBuilder(
+    column: $table.lastPlayAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get lastRestAt => $composableBuilder(
+    column: $table.lastRestAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  Expression<T> petEvolutionHistoryRefs<T extends Object>(
+    Expression<T> Function($$PetEvolutionHistoryTableAnnotationComposer a) f,
+  ) {
+    final $$PetEvolutionHistoryTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.petEvolutionHistory,
+          getReferencedColumn: (t) => t.petId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$PetEvolutionHistoryTableAnnotationComposer(
+                $db: $db,
+                $table: $db.petEvolutionHistory,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+}
+
+class $$PetsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $PetsTable,
+          Pet,
+          $$PetsTableFilterComposer,
+          $$PetsTableOrderingComposer,
+          $$PetsTableAnnotationComposer,
+          $$PetsTableCreateCompanionBuilder,
+          $$PetsTableUpdateCompanionBuilder,
+          (Pet, $$PetsTableReferences),
+          Pet,
+          PrefetchHooks Function({bool petEvolutionHistoryRefs})
+        > {
+  $$PetsTableTableManager(_$AppDatabase db, $PetsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PetsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PetsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PetsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> speciesKey = const Value.absent(),
+                Value<int> evolutionStage = const Value.absent(),
+                Value<int> bondLevel = const Value.absent(),
+                Value<int> bondXp = const Value.absent(),
+                Value<String> mood = const Value.absent(),
+                Value<double> energyPercent = const Value.absent(),
+                Value<DateTime?> lastTreatAt = const Value.absent(),
+                Value<DateTime?> lastPlayAt = const Value.absent(),
+                Value<DateTime?> lastRestAt = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PetsCompanion(
+                id: id,
+                name: name,
+                speciesKey: speciesKey,
+                evolutionStage: evolutionStage,
+                bondLevel: bondLevel,
+                bondXp: bondXp,
+                mood: mood,
+                energyPercent: energyPercent,
+                lastTreatAt: lastTreatAt,
+                lastPlayAt: lastPlayAt,
+                lastRestAt: lastRestAt,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                Value<String> name = const Value.absent(),
+                Value<String> speciesKey = const Value.absent(),
+                Value<int> evolutionStage = const Value.absent(),
+                Value<int> bondLevel = const Value.absent(),
+                Value<int> bondXp = const Value.absent(),
+                Value<String> mood = const Value.absent(),
+                Value<double> energyPercent = const Value.absent(),
+                Value<DateTime?> lastTreatAt = const Value.absent(),
+                Value<DateTime?> lastPlayAt = const Value.absent(),
+                Value<DateTime?> lastRestAt = const Value.absent(),
+                required DateTime createdAt,
+                required DateTime updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => PetsCompanion.insert(
+                id: id,
+                name: name,
+                speciesKey: speciesKey,
+                evolutionStage: evolutionStage,
+                bondLevel: bondLevel,
+                bondXp: bondXp,
+                mood: mood,
+                energyPercent: energyPercent,
+                lastTreatAt: lastTreatAt,
+                lastPlayAt: lastPlayAt,
+                lastRestAt: lastRestAt,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) =>
+                    (e.readTable(table), $$PetsTableReferences(db, table, e)),
+              )
+              .toList(),
+          prefetchHooksCallback: ({petEvolutionHistoryRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (petEvolutionHistoryRefs) db.petEvolutionHistory,
+              ],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (petEvolutionHistoryRefs)
+                    await $_getPrefetchedData<
+                      Pet,
+                      $PetsTable,
+                      PetEvolutionHistoryData
+                    >(
+                      currentTable: table,
+                      referencedTable: $$PetsTableReferences
+                          ._petEvolutionHistoryRefsTable(db),
+                      managerFromTypedResult: (p0) => $$PetsTableReferences(
+                        db,
+                        table,
+                        p0,
+                      ).petEvolutionHistoryRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where((e) => e.petId == item.id),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$PetsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $PetsTable,
+      Pet,
+      $$PetsTableFilterComposer,
+      $$PetsTableOrderingComposer,
+      $$PetsTableAnnotationComposer,
+      $$PetsTableCreateCompanionBuilder,
+      $$PetsTableUpdateCompanionBuilder,
+      (Pet, $$PetsTableReferences),
+      Pet,
+      PrefetchHooks Function({bool petEvolutionHistoryRefs})
+    >;
+typedef $$PetEvolutionHistoryTableCreateCompanionBuilder =
+    PetEvolutionHistoryCompanion Function({
+      required String id,
+      required String petId,
+      required int fromStage,
+      required int toStage,
+      required DateTime evolvedAt,
+      Value<int> rowid,
+    });
+typedef $$PetEvolutionHistoryTableUpdateCompanionBuilder =
+    PetEvolutionHistoryCompanion Function({
+      Value<String> id,
+      Value<String> petId,
+      Value<int> fromStage,
+      Value<int> toStage,
+      Value<DateTime> evolvedAt,
+      Value<int> rowid,
+    });
+
+final class $$PetEvolutionHistoryTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $PetEvolutionHistoryTable,
+          PetEvolutionHistoryData
+        > {
+  $$PetEvolutionHistoryTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $PetsTable _petIdTable(_$AppDatabase db) => db.pets.createAlias(
+    $_aliasNameGenerator(db.petEvolutionHistory.petId, db.pets.id),
+  );
+
+  $$PetsTableProcessedTableManager get petId {
+    final $_column = $_itemColumn<String>('pet_id')!;
+
+    final manager = $$PetsTableTableManager(
+      $_db,
+      $_db.pets,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_petIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$PetEvolutionHistoryTableFilterComposer
+    extends Composer<_$AppDatabase, $PetEvolutionHistoryTable> {
+  $$PetEvolutionHistoryTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get fromStage => $composableBuilder(
+    column: $table.fromStage,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get toStage => $composableBuilder(
+    column: $table.toStage,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get evolvedAt => $composableBuilder(
+    column: $table.evolvedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$PetsTableFilterComposer get petId {
+    final $$PetsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.petId,
+      referencedTable: $db.pets,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PetsTableFilterComposer(
+            $db: $db,
+            $table: $db.pets,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$PetEvolutionHistoryTableOrderingComposer
+    extends Composer<_$AppDatabase, $PetEvolutionHistoryTable> {
+  $$PetEvolutionHistoryTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get fromStage => $composableBuilder(
+    column: $table.fromStage,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get toStage => $composableBuilder(
+    column: $table.toStage,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get evolvedAt => $composableBuilder(
+    column: $table.evolvedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$PetsTableOrderingComposer get petId {
+    final $$PetsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.petId,
+      referencedTable: $db.pets,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PetsTableOrderingComposer(
+            $db: $db,
+            $table: $db.pets,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$PetEvolutionHistoryTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PetEvolutionHistoryTable> {
+  $$PetEvolutionHistoryTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get fromStage =>
+      $composableBuilder(column: $table.fromStage, builder: (column) => column);
+
+  GeneratedColumn<int> get toStage =>
+      $composableBuilder(column: $table.toStage, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get evolvedAt =>
+      $composableBuilder(column: $table.evolvedAt, builder: (column) => column);
+
+  $$PetsTableAnnotationComposer get petId {
+    final $$PetsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.petId,
+      referencedTable: $db.pets,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PetsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.pets,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$PetEvolutionHistoryTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $PetEvolutionHistoryTable,
+          PetEvolutionHistoryData,
+          $$PetEvolutionHistoryTableFilterComposer,
+          $$PetEvolutionHistoryTableOrderingComposer,
+          $$PetEvolutionHistoryTableAnnotationComposer,
+          $$PetEvolutionHistoryTableCreateCompanionBuilder,
+          $$PetEvolutionHistoryTableUpdateCompanionBuilder,
+          (PetEvolutionHistoryData, $$PetEvolutionHistoryTableReferences),
+          PetEvolutionHistoryData,
+          PrefetchHooks Function({bool petId})
+        > {
+  $$PetEvolutionHistoryTableTableManager(
+    _$AppDatabase db,
+    $PetEvolutionHistoryTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PetEvolutionHistoryTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PetEvolutionHistoryTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$PetEvolutionHistoryTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> petId = const Value.absent(),
+                Value<int> fromStage = const Value.absent(),
+                Value<int> toStage = const Value.absent(),
+                Value<DateTime> evolvedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PetEvolutionHistoryCompanion(
+                id: id,
+                petId: petId,
+                fromStage: fromStage,
+                toStage: toStage,
+                evolvedAt: evolvedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String petId,
+                required int fromStage,
+                required int toStage,
+                required DateTime evolvedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => PetEvolutionHistoryCompanion.insert(
+                id: id,
+                petId: petId,
+                fromStage: fromStage,
+                toStage: toStage,
+                evolvedAt: evolvedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$PetEvolutionHistoryTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({petId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (petId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.petId,
+                                referencedTable:
+                                    $$PetEvolutionHistoryTableReferences
+                                        ._petIdTable(db),
+                                referencedColumn:
+                                    $$PetEvolutionHistoryTableReferences
+                                        ._petIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$PetEvolutionHistoryTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $PetEvolutionHistoryTable,
+      PetEvolutionHistoryData,
+      $$PetEvolutionHistoryTableFilterComposer,
+      $$PetEvolutionHistoryTableOrderingComposer,
+      $$PetEvolutionHistoryTableAnnotationComposer,
+      $$PetEvolutionHistoryTableCreateCompanionBuilder,
+      $$PetEvolutionHistoryTableUpdateCompanionBuilder,
+      (PetEvolutionHistoryData, $$PetEvolutionHistoryTableReferences),
+      PetEvolutionHistoryData,
+      PrefetchHooks Function({bool petId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -26709,4 +28652,7 @@ class $AppDatabaseManager {
       $$GoalsTableTableManager(_db, _db.goals);
   $$SeedRunsTableTableManager get seedRuns =>
       $$SeedRunsTableTableManager(_db, _db.seedRuns);
+  $$PetsTableTableManager get pets => $$PetsTableTableManager(_db, _db.pets);
+  $$PetEvolutionHistoryTableTableManager get petEvolutionHistory =>
+      $$PetEvolutionHistoryTableTableManager(_db, _db.petEvolutionHistory);
 }

@@ -36,6 +36,8 @@ part 'app_database.g.dart';
     BodyweightLogs,
     Goals,
     SeedRuns,
+    Pets,
+    PetEvolutionHistory,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -48,7 +50,7 @@ class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 9;
+  int get schemaVersion => 10;
 
   @override
   MigrationStrategy get migration {
@@ -104,6 +106,10 @@ class AppDatabase extends _$AppDatabase {
             'CREATE UNIQUE INDEX fitness_events_source_unique '
             'ON fitness_events (type, source_type, source_id)',
           );
+        }
+        if (from < 10) {
+          await migrator.createTable(pets);
+          await migrator.createTable(petEvolutionHistory);
         }
       },
       beforeOpen: (details) async {
@@ -504,6 +510,37 @@ class SeedRuns extends Table {
   TextColumn get seedName => text().unique()();
   IntColumn get seedVersion => integer()();
   DateTimeColumn get appliedAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+class Pets extends Table {
+  TextColumn get id => text()();
+  TextColumn get name => text().withDefault(const Constant('Ember'))();
+  TextColumn get speciesKey =>
+      text().withDefault(const Constant('ember-fox'))();
+  IntColumn get evolutionStage => integer().withDefault(const Constant(0))();
+  IntColumn get bondLevel => integer().withDefault(const Constant(0))();
+  IntColumn get bondXp => integer().withDefault(const Constant(0))();
+  TextColumn get mood => text().withDefault(const Constant('content'))();
+  RealColumn get energyPercent => real().withDefault(const Constant(1.0))();
+  DateTimeColumn get lastTreatAt => dateTime().nullable()();
+  DateTimeColumn get lastPlayAt => dateTime().nullable()();
+  DateTimeColumn get lastRestAt => dateTime().nullable()();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+class PetEvolutionHistory extends Table {
+  TextColumn get id => text()();
+  TextColumn get petId => text().references(Pets, #id)();
+  IntColumn get fromStage => integer()();
+  IntColumn get toStage => integer()();
+  DateTimeColumn get evolvedAt => dateTime()();
 
   @override
   Set<Column<Object>> get primaryKey => {id};

@@ -6,6 +6,7 @@ import '../../../data/repositories/repositories.dart';
 import '../application/achievement_controller.dart';
 import '../application/adventurer_profile_controller.dart';
 import '../application/equipment_controller.dart';
+import '../application/pet_controller.dart';
 import '../../../shared/presentation/design_system/design_system.dart';
 
 class QuestScreen extends StatefulWidget {
@@ -1004,23 +1005,106 @@ Color _achievementTone(String category) {
   };
 }
 
-class _PetView extends StatelessWidget {
+class _PetView extends ConsumerWidget {
   const _PetView({required this.selectedTab, required this.onTabChanged});
 
   final int selectedTab;
   final ValueChanged<int> onTabChanged;
 
   @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final petAsync = ref.watch(petProvider);
+
+    return petAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stackTrace) => Center(
+        child: Padding(
+          padding: const EdgeInsets.all(18),
+          child: QfCard(
+            padding: const EdgeInsets.all(16),
+            child: Text(
+              'Unable to load pet: $error',
+              style: const TextStyle(color: AppColors.inkMute),
+            ),
+          ),
+        ),
+      ),
+      data: (pv) => _PetContent(
+        pv: pv,
+        selectedTab: selectedTab,
+        onTabChanged: onTabChanged,
+        onFeedTreat: () => _onCareAction(
+          context,
+          ref,
+          () => ref.read(petControllerProvider).feedTreat(),
+          'Treat given! +$bondXpTreat bond XP',
+        ),
+        onPlay: () => _onCareAction(
+          context,
+          ref,
+          () => ref.read(petControllerProvider).play(),
+          'Played with Ember! +$bondXpPlay bond XP',
+        ),
+        onRest: () => _onCareAction(
+          context,
+          ref,
+          () => ref.read(petControllerProvider).rest(),
+          'Ember is resting…',
+        ),
+      ),
+    );
+  }
+
+  Future<void> _onCareAction(
+    BuildContext context,
+    WidgetRef ref,
+    Future<void> Function() action,
+    String successMsg,
+  ) async {
+    try {
+      await action();
+      if (context.mounted) QfNotification.show(context, successMsg);
+    } on CooldownException catch (e) {
+      if (context.mounted) {
+        QfNotification.show(
+          context,
+          '${e.action} on cooldown — ${e.timeLabel} remaining',
+        );
+      }
+    }
+  }
+}
+
+class _PetContent extends StatelessWidget {
+  const _PetContent({
+    required this.pv,
+    required this.selectedTab,
+    required this.onTabChanged,
+    required this.onFeedTreat,
+    required this.onPlay,
+    required this.onRest,
+  });
+
+  final PetView pv;
+  final int selectedTab;
+  final ValueChanged<int> onTabChanged;
+  final VoidCallback onFeedTreat;
+  final VoidCallback onPlay;
+  final VoidCallback onRest;
+
+  @override
   Widget build(BuildContext context) {
+    final now = DateTime.now();
+
     return ListView(
       padding: EdgeInsets.zero,
       children: [
         QfScreenHeader(
           salutation: 'The Companion',
-          title: 'Ember',
-          trailing: const QfPill(
+          title: pv.pet.name,
+          trailing: QfPill(
             tone: QfPillTone.ember,
-            child: Text('Trailmate · L4'),
+            child: Text('${pv.stageName} · Bond ${pv.pet.bondLevel}'),
           ),
         ),
         _QuestTabBar(
@@ -1030,15 +1114,13 @@ class _PetView extends StatelessWidget {
         ),
         const SizedBox(height: 12),
 
-        // Habitat scene
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18),
-          child: _HabitatScene(),
+          child: _HabitatScene(name: pv.pet.name, mood: pv.pet.mood),
         ),
 
         const SizedBox(height: 14),
 
-        // Stats grid
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18),
           child: GridView.count(
@@ -1048,28 +1130,24 @@ class _PetView extends StatelessWidget {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             childAspectRatio: 1.3,
-            children: const [
-              _PetStatCard(label: 'BOND', stars: 4),
-              _PetStatMoodCard(label: 'MOOD', mood: 'Proud'),
+            children: [
+              _PetStatCard(label: 'BOND', stars: pv.pet.bondLevel),
+              _PetStatMoodCard(
+                label: 'MOOD',
+                mood: _capitalize(pv.pet.mood),
+              ),
               _PetStatBarCard(
                 label: 'ENERGY',
-                value: 0.78,
-                display: '78%',
+                value: pv.pet.energyPercent,
+                display: '${(pv.pet.energyPercent * 100).round()}%',
                 tone: AppColors.sky,
               ),
               _PetStatBarCard(
                 label: 'GROWTH',
-                value: 0.4,
-                display: 'Stage 3/5',
+                value: pv.bondProgress,
+                display: 'Stage ${pv.pet.evolutionStage + 1}/5',
                 tone: AppColors.gold,
               ),
-              _PetStatBarCard(
-                label: 'CURIOSITY',
-                value: 0.62,
-                display: '62%',
-                tone: AppColors.rune,
-              ),
-              _PetStatCard(label: 'EXPED PWR', text: '184'),
             ],
           ),
         ),
@@ -1079,46 +1157,41 @@ class _PetView extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 18),
           child: Row(
             children: [
-              for (final action in [
-                (Icons.coffee, 'Treat'),
-                (Icons.pets, 'Play'),
-                (Icons.explore, 'Send'),
-                (Icons.home_outlined, 'Habitat'),
-              ]) ...[
-                Expanded(
-                  child: QfCard(
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 36,
-                          height: 36,
-                          decoration: BoxDecoration(
-                            color: AppColors.surface3,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: AppColors.outline),
-                          ),
-                          child: Icon(
-                            action.$1,
-                            size: 16,
-                            color: AppColors.inkMute,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          action.$2,
-                          style: const TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.ink,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+              Expanded(
+                child: _CareButton(
+                  icon: Icons.coffee,
+                  label: 'Treat',
+                  onCooldown: pv.isTreatOnCooldown(now),
+                  onTap: onFeedTreat,
                 ),
-                const SizedBox(width: 8),
-              ],
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _CareButton(
+                  icon: Icons.pets,
+                  label: 'Play',
+                  onCooldown: pv.isPlayOnCooldown(now),
+                  onTap: onPlay,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _CareButton(
+                  icon: Icons.bedtime_outlined,
+                  label: 'Rest',
+                  onCooldown: pv.isRestOnCooldown(now),
+                  onTap: onRest,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _CareButton(
+                  icon: Icons.home_outlined,
+                  label: 'Habitat',
+                  onCooldown: false,
+                  onTap: () {},
+                ),
+              ),
             ],
           ),
         ),
@@ -1130,10 +1203,10 @@ class _PetView extends StatelessWidget {
             padding: const EdgeInsets.all(14),
             child: Column(
               children: [
-                _EvolutionPath(),
+                _EvolutionPath(currentStage: pv.pet.evolutionStage),
                 const SizedBox(height: 12),
                 Text(
-                  'Reach Bond 5 + Adventurer Lv 10 to evolve into Guardian.',
+                  _nextEvolutionHint(pv.pet.evolutionStage),
                   textAlign: TextAlign.center,
                   style: AppTheme.fantasyStyle(
                     fontSize: 11,
@@ -1150,9 +1223,74 @@ class _PetView extends StatelessWidget {
       ],
     );
   }
+
+  String _nextEvolutionHint(int stage) {
+    if (stage >= 4) return 'Ember has reached the pinnacle of evolution.';
+    final t = evolutionThresholds[stage];
+    final nextName = stageNames[stage + 1];
+    return 'Reach Bond ${t.$1} + Adventurer Lv ${t.$2} to evolve into $nextName.';
+  }
+}
+
+String _capitalize(String s) =>
+    s.isEmpty ? s : '${s[0].toUpperCase()}${s.substring(1)}';
+
+class _CareButton extends StatelessWidget {
+  const _CareButton({
+    required this.icon,
+    required this.label,
+    required this.onCooldown,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final bool onCooldown;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Opacity(
+      opacity: onCooldown ? 0.5 : 1.0,
+      child: GestureDetector(
+        onTap: onTap,
+        child: QfCard(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: AppColors.surface3,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: AppColors.outline),
+                ),
+                child: Icon(icon, size: 16, color: AppColors.inkMute),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.ink,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class _HabitatScene extends StatelessWidget {
+  const _HabitatScene({this.name = 'Ember', this.mood = 'content'});
+
+  final String name;
+  final String mood;
+
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
@@ -1244,7 +1382,7 @@ class _HabitatScene extends StatelessWidget {
               bottom: 8,
               right: 12,
               child: Text(
-                '"…ember looks proud."',
+                '"…$name looks $mood."',
                 style: AppTheme.fantasyStyle(
                   fontSize: 10,
                   color: AppColors.inkDim,
@@ -1260,19 +1398,15 @@ class _HabitatScene extends StatelessWidget {
 }
 
 class _EvolutionPath extends StatelessWidget {
-  static const _stages = [
-    'Hatchling',
-    'Companion',
-    'Trailmate',
-    'Guardian',
-    'Mythic',
-  ];
+  const _EvolutionPath({this.currentStage = 0});
+
+  final int currentStage;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        for (var i = 0; i < _stages.length; i++) ...[
+        for (var i = 0; i < stageNames.length; i++) ...[
           Column(
             children: [
               Container(
@@ -1280,15 +1414,15 @@ class _EvolutionPath extends StatelessWidget {
                 height: 28,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: i == 2
+                  color: i == currentStage
                       ? AppColors.ember
-                      : i < 2
+                      : i < currentStage
                       ? AppColors.surface3
                       : AppColors.bgDeep,
                   border: Border.all(
-                    color: i == 2
+                    color: i == currentStage
                         ? AppColors.ember
-                        : i < 2
+                        : i < currentStage
                         ? AppColors.outline
                         : AppColors.outlineSoft,
                   ),
@@ -1299,9 +1433,9 @@ class _EvolutionPath extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.w700,
-                      color: i == 2
+                      color: i == currentStage
                           ? AppColors.bgDeep
-                          : i < 2
+                          : i < currentStage
                           ? AppColors.inkMute
                           : AppColors.inkFaint,
                       fontFamily: 'monospace',
@@ -1311,25 +1445,28 @@ class _EvolutionPath extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                _stages[i],
+                stageNames[i],
                 style: TextStyle(
                   fontSize: 9,
-                  color: i == 2
+                  color: i == currentStage
                       ? AppColors.ember
-                      : i < 2
+                      : i < currentStage
                       ? AppColors.inkMute
                       : AppColors.inkFaint,
-                  fontWeight: i == 2 ? FontWeight.w700 : FontWeight.w500,
+                  fontWeight:
+                      i == currentStage ? FontWeight.w700 : FontWeight.w500,
                 ),
               ),
             ],
           ),
-          if (i < _stages.length - 1)
+          if (i < stageNames.length - 1)
             Expanded(
               child: Container(
                 height: 1,
                 margin: const EdgeInsets.only(bottom: 22),
-                color: i < 2 ? AppColors.ember : AppColors.outlineSoft,
+                color: i < currentStage
+                    ? AppColors.ember
+                    : AppColors.outlineSoft,
               ),
             ),
         ],
@@ -1893,11 +2030,10 @@ class _PortraitPlaceholder extends StatelessWidget {
 }
 
 class _PetStatCard extends StatelessWidget {
-  const _PetStatCard({required this.label, this.stars, this.text});
+  const _PetStatCard({required this.label, required this.stars});
 
   final String label;
-  final int? stars;
-  final String? text;
+  final int stars;
 
   @override
   Widget build(BuildContext context) {
@@ -1916,20 +2052,10 @@ class _PetStatCard extends StatelessWidget {
               fontWeight: FontWeight.w700,
             ),
           ),
-          if (stars != null)
-            Text(
-              '★' * stars! + '☆' * (5 - stars!),
-              style: const TextStyle(fontSize: 14, color: AppColors.ember),
-            )
-          else if (text != null)
-            Text(
-              text!,
-              style: AppTheme.fantasyStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppColors.ember,
-              ),
-            ),
+          Text(
+            '★' * stars + '☆' * (5 - stars),
+            style: const TextStyle(fontSize: 14, color: AppColors.ember),
+          ),
         ],
       ),
     );

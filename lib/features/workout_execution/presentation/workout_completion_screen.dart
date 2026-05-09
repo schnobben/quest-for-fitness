@@ -5,8 +5,9 @@ import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../data/repositories/repositories.dart';
 import '../../../shared/presentation/design_system/design_system.dart';
+import '../../quest/presentation/pet_evolution_dialog.dart';
 
-class WorkoutCompletionScreen extends StatelessWidget {
+class WorkoutCompletionScreen extends StatefulWidget {
   const WorkoutCompletionScreen({required this.result, super.key});
 
   static const routeName = 'workoutCompletion';
@@ -15,8 +16,32 @@ class WorkoutCompletionScreen extends StatelessWidget {
   final WorkoutCompletionResult? result;
 
   @override
+  State<WorkoutCompletionScreen> createState() =>
+      _WorkoutCompletionScreenState();
+}
+
+class _WorkoutCompletionScreenState extends State<WorkoutCompletionScreen> {
+  @override
+  void initState() {
+    super.initState();
+    final reward = widget.result?.workoutReward;
+    if (reward != null && reward.petBondChange.evolved) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          PetEvolutionDialog.show(
+            context,
+            fromStage:
+                reward.petBondChange.evolutionStageAfter - 1,
+            toStage: reward.petBondChange.evolutionStageAfter,
+          );
+        }
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final result = this.result;
+    final result = widget.result;
 
     return Scaffold(
       backgroundColor: AppColors.bg,
@@ -261,12 +286,22 @@ class _ProgressRows extends StatelessWidget {
           title: 'Goal progress',
           subtitle: 'Updated where linked goals changed',
         ),
-        const _RewardRow(
+        _RewardRow(
           icon: Icons.pets_outlined,
           tone: AppColors.rose,
           title: 'Pet bond',
-          subtitle: 'Coming in Milestone 4',
+          subtitle: result.workoutReward.petBondChange.bondXpGained > 0
+              ? '+${result.workoutReward.petBondChange.bondXpGained} bond XP'
+              : 'Pet is resting',
         ),
+        if (result.workoutReward.petBondChange.evolved)
+          _RewardRow(
+            icon: Icons.auto_awesome,
+            tone: AppColors.gold,
+            title: 'Evolution!',
+            subtitle:
+                'Ember evolved into ${stageNames[result.workoutReward.petBondChange.evolutionStageAfter]}',
+          ),
       ],
     );
   }
