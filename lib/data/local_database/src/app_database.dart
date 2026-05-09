@@ -48,12 +48,18 @@ class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration {
     return MigrationStrategy(
-      onCreate: (migrator) => migrator.createAll(),
+      onCreate: (migrator) async {
+        await migrator.createAll();
+        await customStatement(
+          'CREATE UNIQUE INDEX fitness_events_source_unique '
+          'ON fitness_events (type, source_type, source_id)',
+        );
+      },
       onUpgrade: (migrator, from, to) async {
         if (from < 2) {
           await migrator.createTable(workingWeights);
@@ -82,6 +88,22 @@ class AppDatabase extends _$AppDatabase {
           await migrator.createTable(equippedEquipment);
           await migrator.createTable(titleDefinitions);
           await migrator.createTable(adventurerTitles);
+        }
+        if (from < 9) {
+          // Remove duplicate fitness events (same type+source) before indexing.
+          // Keeps the earliest row (lowest rowid) for each non-null source.
+          await customStatement(
+            'DELETE FROM fitness_events '
+            'WHERE rowid NOT IN ('
+            '  SELECT MIN(rowid) FROM fitness_events '
+            '  WHERE source_id IS NOT NULL '
+            '  GROUP BY type, source_type, source_id'
+            ') AND source_id IS NOT NULL',
+          );
+          await customStatement(
+            'CREATE UNIQUE INDEX fitness_events_source_unique '
+            'ON fitness_events (type, source_type, source_id)',
+          );
         }
       },
       beforeOpen: (details) async {

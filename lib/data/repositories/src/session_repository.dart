@@ -150,10 +150,26 @@ class SessionRepository {
       )..where((table) => table.sessionLogId.equals(sessionId))).get();
 
       for (final exercise in exercises) {
-        await (_database.delete(_database.workingWeights)
-              ..where((table) => table.exerciseId.equals(exercise.exerciseId))
-              ..where((table) => table.isManualOverride.equals(false)))
-            .go();
+        final setIds =
+            await (_database.select(_database.setLogs)
+                  ..where(
+                    (table) => table.exerciseLogId.equals(exercise.id),
+                  ))
+                .map((row) => row.id)
+                .get();
+
+        // Only clear a working weight if it was sourced from a set in this
+        // session. Weights sourced from other sessions (or manually set) are
+        // left intact.
+        if (setIds.isNotEmpty) {
+          await (_database.delete(_database.workingWeights)
+                ..where(
+                  (table) => table.sourceSetLogId.isIn(setIds) &
+                      table.isManualOverride.equals(false),
+                ))
+              .go();
+        }
+
         await (_database.delete(
           _database.setLogs,
         )..where((table) => table.exerciseLogId.equals(exercise.id))).go();
@@ -195,7 +211,10 @@ class SessionRepository {
       (count, exercise) =>
           count + exercise.sets.where((set) => set.isComplete).length,
     );
-    final prSetIds = <String>[];
+
+    // (exerciseId, setLogId) pairs — populated inside the DB transaction so XP
+    // events can fire after the session is fully committed.
+    final prRecords = <({String exerciseId, String setLogId})>[];
 
     await _database.transaction(() async {
       await _database
@@ -253,7 +272,7 @@ class SessionRepository {
           completedAt: completedAt,
         );
         if (prSetId != null) {
-          prSetIds.add(prSetId);
+          prRecords.add((exerciseId: exercise.exerciseId, setLogId: prSetId));
         }
       }
 
@@ -265,22 +284,17 @@ class SessionRepository {
           updatedAt: Value(completedAt),
         ),
       );
-
-      for (final prSetId in prSetIds) {
-        final exerciseLogId = prSetId.substring(
-          0,
-          prSetId.lastIndexOf('-set-'),
-        );
-        final exercise = exercises.firstWhere(
-          (item) => '$sessionId-${item.exerciseId}' == exerciseLogId,
-        );
-        await _xpEvents.onPrAchieved(
-          exerciseId: exercise.exerciseId,
-          setLogId: prSetId,
-          occurredAt: completedAt,
-        );
-      }
     });
+
+    // XP events fire after the session transaction commits so a failure here
+    // does not roll back the persisted workout data.
+    for (final pr in prRecords) {
+      await _xpEvents.onPrAchieved(
+        exerciseId: pr.exerciseId,
+        setLogId: pr.setLogId,
+        occurredAt: completedAt,
+      );
+    }
 
     final workoutReward = await _xpEvents.onWorkoutCompleted(
       sessionId: sessionId,
@@ -293,7 +307,7 @@ class SessionRepository {
       durationSeconds: durationSeconds,
       completedSetCount: completedSetCount,
       workoutReward: workoutReward,
-      prCount: prSetIds.length,
+      prCount: prRecords.length,
     );
   }
 

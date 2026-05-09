@@ -531,7 +531,7 @@ const _destinations = [
   _DestinationCopy(label: 'Progress', placeholderText: 'LOG BODYWEIGHT'),
   _DestinationCopy(
     label: 'Quest',
-    placeholderText: 'Adventurer profile is live.',
+    placeholderText: 'Adventurer, Achievements, and Equipment are live.',
   ),
   _DestinationCopy(label: 'Library', placeholderText: 'Sample codex content.'),
   _DestinationCopy(

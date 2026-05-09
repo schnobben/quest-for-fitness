@@ -26,30 +26,32 @@ class _QuestScreenState extends State<QuestScreen> {
     return Scaffold(
       backgroundColor: AppColors.bg,
       body: SafeArea(
-        child: _selectedTab == 0
-            ? _AdventurerView(
-                selectedTab: _selectedTab,
-                onTabChanged: (i) => setState(() => _selectedTab = i),
-              )
-            : _selectedTab == 1
-            ? _PetView(
-                selectedTab: _selectedTab,
-                onTabChanged: (i) => setState(() => _selectedTab = i),
-              )
-            : _selectedTab == 3
-            ? _AchievementsView(
-                selectedTab: _selectedTab,
-                onTabChanged: (i) => setState(() => _selectedTab = i),
-              )
-            : _selectedTab == 4
-            ? _EquipmentView(
-                selectedTab: _selectedTab,
-                onTabChanged: (i) => setState(() => _selectedTab = i),
-              )
-            : _ExpeditionsView(
-                selectedTab: _selectedTab,
-                onTabChanged: (i) => setState(() => _selectedTab = i),
-              ),
+        child: switch (_selectedTab) {
+          0 => _AdventurerView(
+            selectedTab: _selectedTab,
+            onTabChanged: (i) => setState(() => _selectedTab = i),
+          ),
+          1 => _PetView(
+            selectedTab: _selectedTab,
+            onTabChanged: (i) => setState(() => _selectedTab = i),
+          ),
+          2 => _QuestsView(
+            selectedTab: _selectedTab,
+            onTabChanged: (i) => setState(() => _selectedTab = i),
+          ),
+          3 => _AchievementsView(
+            selectedTab: _selectedTab,
+            onTabChanged: (i) => setState(() => _selectedTab = i),
+          ),
+          4 => _EquipmentView(
+            selectedTab: _selectedTab,
+            onTabChanged: (i) => setState(() => _selectedTab = i),
+          ),
+          _ => _ExpeditionsView(
+            selectedTab: _selectedTab,
+            onTabChanged: (i) => setState(() => _selectedTab = i),
+          ),
+        },
       ),
     );
   }
@@ -225,7 +227,7 @@ class _AdventurerContent extends StatelessWidget {
           padding: EdgeInsets.fromLTRB(18, 0, 18, 12),
           child: _PreviewNotice(
             text:
-                'Adventurer profile is live. Pet, achievements, and expeditions remain preview content until later Milestone 3+ sprints.',
+                'Adventurer, Achievements, and Equipment are live. Pet, Quests, and Expeditions arrive in later milestones.',
           ),
         ),
         _QuestTabBar(
@@ -251,9 +253,9 @@ class _AdventurerContent extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'CLASS · WARRIOR',
-                        style: TextStyle(
+                      Text(
+                        'CLASS · ${adventurer.selectedClass.toUpperCase()}',
+                        style: const TextStyle(
                           fontSize: 10,
                           color: AppColors.rune,
                           letterSpacing: 0.16 * 10,
@@ -1331,6 +1333,62 @@ class _EvolutionPath extends StatelessWidget {
               ),
             ),
         ],
+      ],
+    );
+  }
+}
+
+// ─── Quests view (placeholder — Milestone 5+) ─────────────────────────────────
+
+class _QuestsView extends StatelessWidget {
+  const _QuestsView({required this.selectedTab, required this.onTabChanged});
+
+  final int selectedTab;
+  final ValueChanged<int> onTabChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: EdgeInsets.zero,
+      children: [
+        const QfScreenHeader(
+          salutation: 'The Board',
+          title: 'Quests',
+          trailing: Icon(Icons.flag_outlined, color: AppColors.rune),
+        ),
+        _QuestTabBar(
+          tabs: _questTabs,
+          selectedIndex: selectedTab,
+          onTabChanged: onTabChanged,
+        ),
+        const SizedBox(height: 24),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 18),
+          child: QfCard(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                const Icon(Icons.flag_outlined, size: 40, color: AppColors.rune),
+                const SizedBox(height: 12),
+                const Text(
+                  'Quest Board',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.ink,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Story quests, daily challenges, and campaign objectives arrive in a later milestone.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 13, color: AppColors.inkMute),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 24),
       ],
     );
   }

@@ -1,3 +1,4 @@
+import '../../../core/ids/ids.dart';
 import '../../local_database/local_database.dart';
 import 'achievement_repository.dart';
 import 'adventurer_repository.dart';
@@ -35,6 +36,7 @@ class AppRepositories {
       adventurer,
       achievements,
       equipment,
+      UuidV4Generator(),
     );
     return AppRepositories._(
       adventurer: adventurer,

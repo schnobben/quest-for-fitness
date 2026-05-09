@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:drift/drift.dart';
 
+import '../../../core/ids/ids.dart';
 import '../../local_database/local_database.dart';
 import 'achievement_repository.dart';
 import 'adventurer_repository.dart';
@@ -16,19 +17,19 @@ const int xpGoalUpdated = 10;
 const int xpPrAchieved = 35;
 
 class XpEventService {
-  const XpEventService(
+  XpEventService(
     this._database,
     this._adventurer,
     this._achievements,
     this._equipment,
+    this._ids,
   );
-
-  static int _idSequence = 0;
 
   final AppDatabase _database;
   final AdventurerRepository _adventurer;
   final AchievementRepository _achievements;
   final EquipmentRepository _equipment;
+  final IdGenerator _ids;
 
   Future<RewardGrant> onWorkoutCompleted({
     required String sessionId,
@@ -161,90 +162,121 @@ class XpEventService {
     Map<String, Object?> metadata = const {},
   }) async {
     final now = DateTime.now();
-    final eventId = _id('fitness', now);
-    final rewardId = _id('reward', now);
-    final historyId = _id('xp', now);
-    final before = await _adventurer.getOrCreatePrimary();
+    final eventId = _ids.nextId();
+    final rewardId = _ids.nextId();
+    final historyId = _ids.nextId();
 
-    await _database
-        .into(_database.fitnessEvents)
-        .insert(
-          FitnessEventsCompanion.insert(
-            id: eventId,
-            type: fitnessType,
-            occurredAt: occurredAt,
-            sourceType: sourceType,
-            sourceId: Value(sourceId),
-            metadataJson: metadata.isEmpty
-                ? const Value(null)
-                : Value(jsonEncode(metadata)),
-            createdAt: now,
-          ),
-        );
-    await _database
-        .into(_database.rewardEvents)
-        .insert(
-          RewardEventsCompanion.insert(
-            id: rewardId,
-            fitnessEventId: eventId,
-            type: RewardEventType.xpGranted,
-            xpAmount: Value(xpAmount),
-            summary: summary,
-            createdAt: now,
-          ),
-        );
+    late RewardGrant grant;
 
-    final after = await _adventurer.grantXp(xpAmount);
-    final titleUnlocks = await _equipment.unlockTitlesForLevelRange(
-      fitnessEventId: eventId,
-      levelBefore: before.level,
-      levelAfter: after.level,
-      occurredAt: occurredAt,
-    );
-    await _database
-        .into(_database.xpHistory)
-        .insert(
-          XpHistoryCompanion.insert(
-            id: historyId,
-            rewardEventId: rewardId,
-            adventurerId: after.id,
-            amount: xpAmount,
+    await _database.transaction(() async {
+      final before = await _adventurer.getOrCreatePrimary();
+
+      // Idempotency guard: if a fitness event for this exact source already
+      // exists (e.g. after a crash-then-retry), return a zero-XP grant rather
+      // than re-applying the reward. The unique index on
+      // (type, source_type, source_id) enforces this at the DB level as well.
+      if (sourceId != null) {
+        final existing =
+            await (_database.select(_database.fitnessEvents)
+                  ..where(
+                    (t) =>
+                        t.type.equals(fitnessType) &
+                        t.sourceType.equals(sourceType) &
+                        t.sourceId.equals(sourceId),
+                  ))
+                .getSingleOrNull();
+        if (existing != null) {
+          grant = RewardGrant(
+            fitnessEventId: existing.id,
+            rewardEventId: '',
+            xpAmount: 0,
             levelBefore: before.level,
-            levelAfter: after.level,
+            levelAfter: before.level,
             xpBefore: before.xp,
-            xpAfter: after.xp,
-            createdAt: now,
-          ),
-        );
-    final unlockedAchievements = await _achievements.processFitnessEvent(
-      fitnessEventId: eventId,
-      fitnessEventType: fitnessType,
-      occurredAt: occurredAt,
-    );
-    final equipmentUnlocks = await _equipment.unlockEquipmentForAchievements(
-      fitnessEventId: eventId,
-      achievements: unlockedAchievements,
-      occurredAt: occurredAt,
-    );
+            xpAfter: before.xp,
+            summary: 'Already processed',
+          );
+          return;
+        }
+      }
 
-    return RewardGrant(
-      fitnessEventId: eventId,
-      rewardEventId: rewardId,
-      xpAmount: xpAmount,
-      levelBefore: before.level,
-      levelAfter: after.level,
-      xpBefore: before.xp,
-      xpAfter: after.xp,
-      summary: summary,
-      unlockedAchievements: unlockedAchievements,
-      equipmentUnlocks: equipmentUnlocks,
-      titleUnlocks: titleUnlocks,
-    );
-  }
+      await _database
+          .into(_database.fitnessEvents)
+          .insert(
+            FitnessEventsCompanion.insert(
+              id: eventId,
+              type: fitnessType,
+              occurredAt: occurredAt,
+              sourceType: sourceType,
+              sourceId: Value(sourceId),
+              metadataJson: metadata.isEmpty
+                  ? const Value(null)
+                  : Value(jsonEncode(metadata)),
+              createdAt: now,
+            ),
+          );
+      await _database
+          .into(_database.rewardEvents)
+          .insert(
+            RewardEventsCompanion.insert(
+              id: rewardId,
+              fitnessEventId: eventId,
+              type: RewardEventType.xpGranted,
+              xpAmount: Value(xpAmount),
+              summary: summary,
+              createdAt: now,
+            ),
+          );
 
-  String _id(String prefix, DateTime now) {
-    _idSequence += 1;
-    return '$prefix-${now.toUtc().microsecondsSinceEpoch}-$_idSequence';
+      final after = await _adventurer.grantXp(xpAmount);
+      final titleUnlocks = await _equipment.unlockTitlesForLevelRange(
+        fitnessEventId: eventId,
+        levelBefore: before.level,
+        levelAfter: after.level,
+        occurredAt: occurredAt,
+      );
+      await _database
+          .into(_database.xpHistory)
+          .insert(
+            XpHistoryCompanion.insert(
+              id: historyId,
+              rewardEventId: rewardId,
+              adventurerId: after.id,
+              amount: xpAmount,
+              levelBefore: before.level,
+              levelAfter: after.level,
+              xpBefore: before.xp,
+              xpAfter: after.xp,
+              createdAt: now,
+            ),
+          );
+      final unlockedAchievements = await _achievements.processFitnessEvent(
+        fitnessEventId: eventId,
+        fitnessEventType: fitnessType,
+        occurredAt: occurredAt,
+      );
+      final equipmentUnlocks = await _equipment.unlockEquipmentForAchievements(
+        fitnessEventId: eventId,
+        achievements: unlockedAchievements,
+        occurredAt: occurredAt,
+      );
+
+      grant = RewardGrant(
+        fitnessEventId: eventId,
+        rewardEventId: rewardId,
+        xpAmount: xpAmount,
+        levelBefore: before.level,
+        levelAfter: after.level,
+        xpBefore: before.xp,
+        xpAfter: after.xp,
+        summary: summary,
+        unlockedAchievements: unlockedAchievements,
+        equipmentUnlocks: equipmentUnlocks,
+        titleUnlocks: titleUnlocks,
+      );
+    });
+
+    return grant;
   }
 }
 
