@@ -751,6 +751,8 @@ Completion notes:
 
 ### Sprint 3.4 — Equipment and titles v1
 
+**Status:** Completed May 8, 2026.
+
 Tasks:
 
 - Add equipment model.
@@ -765,9 +767,19 @@ Exit criteria:
 
 - User can unlock and equip basic gear/titles.
 
+Completion notes:
+
+- Added Drift-backed equipment definition, inventory, equipped-slot, title definition, and unlocked-title tables at schema version 8.
+- Added `EquipmentRepository` with built-in cosmetic gear mapped to existing achievement unlocks and persisted level title unlocks.
+- Quest now has a live Equipment tab for equipping unlocked gear and selecting unlocked titles, and the Hero tab renders equipped cosmetic slots from the database.
+- Cosmetic equipment and title unlocks are stored as reward events and included in workout reward results.
+- Repository and widget coverage verify equipment/title seeding, unlocks, equipping, title selection, and Quest inventory UI.
+
 ---
 
 ### Sprint 3.5 — Quest completion screen
+
+**Status:** Completed May 8, 2026.
 
 Tasks:
 
@@ -786,9 +798,18 @@ Exit criteria:
 - Finishing a workout feels rewarding.
 - Reward flow does not get annoying.
 
+Completion notes:
+
+- Added a dedicated skippable workout completion route after planned workout save.
+- Completion summaries show workout name, completed set count, duration, XP gained, level-up state, PR count, achievement unlocks, equipment unlocks, title unlocks, goal-progress feedback, and a pet-bond placeholder for Milestone 4.
+- Planned workout completion now navigates to the reward screen instead of relying on a transient notification.
+- Widget coverage verifies the completion flow can continue back to Today and that unlock rewards appear in the Quest inventory afterward.
+
 ---
 
 ## 7. Milestone 4 — Pet System V1
+
+Completed 2026-05-09
 
 ### Goal
 
@@ -797,6 +818,8 @@ Add the Tamagotchi-like companion system.
 ---
 
 ### Sprint 4.1 — Pet foundation
+
+Completed 2026-05-09
 
 Tasks:
 
@@ -818,6 +841,8 @@ Exit criteria:
 
 ### Sprint 4.2 — Pet reactions to fitness events
 
+Completed 2026-05-09
+
 Tasks:
 
 - Connect pet to reward event system.
@@ -835,6 +860,8 @@ Exit criteria:
 ---
 
 ### Sprint 4.3 — Pet care actions
+
+Completed 2026-05-09
 
 Tasks:
 
@@ -855,6 +882,8 @@ Exit criteria:
 ---
 
 ### Sprint 4.4 — Pet evolution v1
+
+Completed 2026-05-09
 
 Tasks:
 

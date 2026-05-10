@@ -7,13 +7,24 @@ import '../../features/progress/presentation/progress_screen.dart';
 import '../../features/quest/presentation/quest_screen.dart';
 import '../../features/settings/presentation/settings_screen.dart';
 import '../../features/today/presentation/today_screen.dart';
+import '../../features/workout_execution/presentation/workout_completion_screen.dart';
 import '../../features/workout_execution/presentation/workout_execution_screen.dart';
+import '../../data/repositories/repositories.dart';
 import '../shell/app_shell.dart';
 
 GoRouter createAppRouter() {
   return GoRouter(
     initialLocation: TodayScreen.routePath,
     routes: [
+      GoRoute(
+        path: WorkoutCompletionScreen.routePath,
+        name: WorkoutCompletionScreen.routeName,
+        builder: (context, state) => WorkoutCompletionScreen(
+          result: state.extra is WorkoutCompletionResult
+              ? state.extra! as WorkoutCompletionResult
+              : null,
+        ),
+      ),
       GoRoute(
         path: '/${WorkoutExecutionScreen.routePath}',
         name: WorkoutExecutionScreen.routeName,

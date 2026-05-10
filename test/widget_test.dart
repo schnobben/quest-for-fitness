@@ -88,10 +88,13 @@ void main() {
     expect(setLogs, isNotEmpty);
     expect(rewardEvents, isNotEmpty);
     expect(xpHistory, isNotEmpty);
-    expect(find.textContaining('Session saved. +'), findsOneWidget);
+    expect(find.text('QUEST COMPLETE'), findsOneWidget);
+    expect(find.textContaining('XP'), findsWidgets);
+    expect(find.text('Training Blade'), findsOneWidget);
 
     expect(sessions.single.workoutTemplateId, isNotNull);
 
+    await _continueFromCompletion(tester);
     await _unmountApp(tester);
   });
 
@@ -148,6 +151,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('complete-session-button')));
     await tester.pumpAndSettle();
+    await _continueFromCompletion(tester);
 
     await database
         .into(database.progressionSuggestions)
@@ -251,6 +255,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(await database.select(database.sessionLogs).get(), hasLength(1));
+    await _continueFromCompletion(tester);
 
     await _unmountApp(tester);
   });
@@ -315,6 +320,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(await database.select(database.sessionLogs).get(), hasLength(1));
+      await _continueFromCompletion(tester);
 
       await _unmountApp(tester);
     },
@@ -486,6 +492,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('complete-session-button')));
     await tester.pumpAndSettle();
+    await _continueFromCompletion(tester);
 
     await tester.tap(find.text('Quest').last);
     await tester.pumpAndSettle();
@@ -497,6 +504,25 @@ void main() {
     expect(find.text('1 / 7 unlocked'), findsOneWidget);
     expect(find.text('First Quest'), findsWidgets);
     expect(find.text('DONE'), findsOneWidget);
+
+    await tester.tap(find.text('Equipment').last);
+    await tester.pumpAndSettle();
+
+    expect(find.text('THE ARMORY'), findsOneWidget);
+    expect(find.text('Training Blade'), findsOneWidget);
+    expect(find.text('EQUIPPED'), findsWidgets);
+    expect(find.text('Trail Initiate'), findsOneWidget);
+    expect(find.text('ACTIVE'), findsWidgets);
+
+    final noviceTitleButton = find.byKey(
+      const ValueKey('select-title-novice-adventurer'),
+    );
+    await tester.ensureVisible(noviceTitleButton);
+    await tester.pumpAndSettle();
+    await tester.tap(noviceTitleButton);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Title selected'), findsOneWidget);
   });
 }
 
@@ -505,7 +531,7 @@ const _destinations = [
   _DestinationCopy(label: 'Progress', placeholderText: 'LOG BODYWEIGHT'),
   _DestinationCopy(
     label: 'Quest',
-    placeholderText: 'Adventurer profile is live.',
+    placeholderText: 'Adventurer, Achievements, and Equipment are live.',
   ),
   _DestinationCopy(label: 'Library', placeholderText: 'Sample codex content.'),
   _DestinationCopy(
@@ -524,4 +550,10 @@ class _DestinationCopy {
 Future<void> _unmountApp(WidgetTester tester) async {
   await tester.pumpWidget(const SizedBox.shrink());
   await tester.pump(const Duration(seconds: 1));
+}
+
+Future<void> _continueFromCompletion(WidgetTester tester) async {
+  expect(find.text('Continue'), findsOneWidget);
+  await tester.tap(find.byKey(const Key('completion-continue-button')));
+  await tester.pumpAndSettle();
 }
