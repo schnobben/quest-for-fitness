@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../shared/presentation/design_system/design_system.dart';
+import '../../exercise_builder/presentation/exercise_form_screen.dart';
+import '../../exercise_builder/presentation/exercise_list_screen.dart';
 
 class LibraryScreen extends StatefulWidget {
   const LibraryScreen({super.key});
@@ -30,21 +33,25 @@ class _LibraryScreenState extends State<LibraryScreen> {
     return Scaffold(
       backgroundColor: AppColors.bg,
       body: SafeArea(
-        child: ListView(
-          padding: EdgeInsets.zero,
+        child: Column(
           children: [
             QfScreenHeader(
               salutation: 'The Library',
               title: 'Codex',
-              trailing: Container(
-                width: 38,
-                height: 38,
-                decoration: BoxDecoration(
-                  color: AppColors.surface2,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: AppColors.outline),
+              trailing: IconButton(
+                style: IconButton.styleFrom(
+                  backgroundColor: AppColors.surface2,
+                  foregroundColor: AppColors.ink,
+                  side: const BorderSide(color: AppColors.outline),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
-                child: const Icon(Icons.add, color: AppColors.ink, size: 18),
+                onPressed: _tab == 3
+                    ? () => context.goNamed(ExerciseFormScreen.routeName)
+                    : null,
+                icon: const Icon(Icons.add, size: 18),
+                tooltip: 'Create',
               ),
             ),
             const Padding(
@@ -63,7 +70,12 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 itemBuilder: (context, i) {
                   final sel = i == _tab;
                   return GestureDetector(
-                    onTap: () => setState(() => _tab = i),
+                    onTap: () {
+                      setState(() => _tab = i);
+                      if (i == 3) {
+                        context.goNamed(ExerciseListScreen.routeName);
+                      }
+                    },
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 10,
@@ -90,70 +102,77 @@ class _LibraryScreenState extends State<LibraryScreen> {
               ),
             ),
             const SizedBox(height: 12),
-
-            // Active campaign card
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18),
-              child: _ActiveCampaignCard(),
+            Expanded(
+              child: _tab == 3
+                  ? const ExerciseListContent()
+                  : ListView(
+                      padding: EdgeInsets.zero,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 18),
+                          child: _ActiveCampaignCard(),
+                        ),
+                        const QfSectionHeader(title: 'Phase 1 · Sessions'),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 18),
+                          child: GridView.count(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 10,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            childAspectRatio: 1.8,
+                            children: const [
+                              _SessionCard(
+                                day: 'A',
+                                name: 'Upper Strength',
+                                sched: 'MON',
+                                exercises: 6,
+                                tone: AppColors.ember,
+                              ),
+                              _SessionCard(
+                                day: 'B',
+                                name: 'Lower Strength',
+                                sched: 'TUE',
+                                exercises: 5,
+                                tone: AppColors.forest,
+                              ),
+                              _SessionCard(
+                                day: 'C',
+                                name: 'Upper Volume',
+                                sched: 'THU',
+                                exercises: 7,
+                                tone: AppColors.sky,
+                              ),
+                              _SessionCard(
+                                day: 'D',
+                                name: 'Lower Volume',
+                                sched: 'SAT',
+                                exercises: 6,
+                                tone: AppColors.rune,
+                              ),
+                            ],
+                          ),
+                        ),
+                        QfSectionHeader(
+                          title: 'Goals (5)',
+                          moreLabel: 'Browse all',
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 18),
+                          child: Column(
+                            children: [
+                              for (final g in _goals) ...[
+                                _GoalRow(goal: g),
+                                const SizedBox(height: 10),
+                              ],
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                      ],
+                    ),
             ),
-
-            const QfSectionHeader(title: 'Phase 1 · Sessions'),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18),
-              child: GridView.count(
-                crossAxisCount: 2,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                childAspectRatio: 1.8,
-                children: const [
-                  _SessionCard(
-                    day: 'A',
-                    name: 'Upper Strength',
-                    sched: 'MON',
-                    exercises: 6,
-                    tone: AppColors.ember,
-                  ),
-                  _SessionCard(
-                    day: 'B',
-                    name: 'Lower Strength',
-                    sched: 'TUE',
-                    exercises: 5,
-                    tone: AppColors.forest,
-                  ),
-                  _SessionCard(
-                    day: 'C',
-                    name: 'Upper Volume',
-                    sched: 'THU',
-                    exercises: 7,
-                    tone: AppColors.sky,
-                  ),
-                  _SessionCard(
-                    day: 'D',
-                    name: 'Lower Volume',
-                    sched: 'SAT',
-                    exercises: 6,
-                    tone: AppColors.rune,
-                  ),
-                ],
-              ),
-            ),
-
-            QfSectionHeader(title: 'Goals (5)', moreLabel: 'Browse all'),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18),
-              child: Column(
-                children: [
-                  for (final g in _goals) ...[
-                    _GoalRow(goal: g),
-                    const SizedBox(height: 10),
-                  ],
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 24),
           ],
         ),
       ),

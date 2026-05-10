@@ -910,6 +910,8 @@ Move beyond the seed campaign and support user-created fitness systems.
 
 ### Sprint 5.1 — Custom exercise builder
 
+**Status:** Completed May 10, 2026.
+
 Tasks:
 
 - Create custom exercise form.

@@ -19,6 +19,125 @@ class ExerciseRepository {
     )..where((table) => table.id.equals(exerciseId))).getSingleOrNull();
   }
 
+  Future<List<Exercise>> listCustom() {
+    return (_database.select(_database.exercises)
+          ..where((table) => table.isCustom.equals(true))
+          ..where((table) => table.isArchived.equals(false))
+          ..orderBy([(table) => OrderingTerm.asc(table.name)]))
+        .get();
+  }
+
+  Future<List<Exercise>> listAll() {
+    return (_database.select(_database.exercises)
+          ..where((table) => table.isArchived.equals(false))
+          ..orderBy([(table) => OrderingTerm.asc(table.name)]))
+        .get();
+  }
+
+  Future<bool> hasLogs(String exerciseId) async {
+    final log =
+        await (_database.select(_database.exerciseLogs)
+              ..where((table) => table.exerciseId.equals(exerciseId))
+              ..limit(1))
+            .getSingleOrNull();
+    return log != null;
+  }
+
+  Future<void> createCustom({
+    required String id,
+    required String name,
+    required String category,
+    String? equipment,
+    String? primaryMuscles,
+    String? movementPattern,
+    required String defaultUnit,
+    required bool isBodyweight,
+    required bool isUnilateral,
+    String? notes,
+  }) {
+    final now = DateTime.now();
+    return _database.into(_database.exercises).insert(
+      ExercisesCompanion.insert(
+        id: id,
+        name: name,
+        category: category,
+        equipment: Value(equipment),
+        primaryMuscles: Value(primaryMuscles),
+        movementPattern: Value(movementPattern),
+        defaultUnit: Value(defaultUnit),
+        isBodyweight: Value(isBodyweight),
+        isUnilateral: Value(isUnilateral),
+        isCustom: const Value(true),
+        isArchived: const Value(false),
+        notes: Value(notes),
+        createdAt: now,
+        updatedAt: now,
+      ),
+    );
+  }
+
+  Future<void> updateCustom({
+    required String id,
+    required String name,
+    required String category,
+    String? equipment,
+    String? primaryMuscles,
+    String? movementPattern,
+    required String defaultUnit,
+    required bool isBodyweight,
+    required bool isUnilateral,
+    String? notes,
+  }) async {
+    final exercise = await getById(id);
+    if (exercise == null || !exercise.isCustom) {
+      throw StateError('Only custom exercises can be updated.');
+    }
+
+    await (_database.update(
+      _database.exercises,
+    )..where((table) => table.id.equals(id))).write(
+      ExercisesCompanion(
+        name: Value(name),
+        category: Value(category),
+        equipment: Value(equipment),
+        primaryMuscles: Value(primaryMuscles),
+        movementPattern: Value(movementPattern),
+        defaultUnit: Value(defaultUnit),
+        isBodyweight: Value(isBodyweight),
+        isUnilateral: Value(isUnilateral),
+        notes: Value(notes),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+  }
+
+  Future<void> archiveExercise(String id) async {
+    await hasLogs(id);
+    await (_database.update(
+      _database.exercises,
+    )..where((table) => table.id.equals(id))).write(
+      ExercisesCompanion(
+        isArchived: const Value(true),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+  }
+
+  Future<void> deleteExercise(String id) async {
+    if (await hasLogs(id)) {
+      throw StateError('Exercises with logs cannot be deleted.');
+    }
+
+    final exercise = await getById(id);
+    if (exercise == null || !exercise.isCustom) {
+      throw StateError('Only custom exercises can be deleted.');
+    }
+
+    await (_database.delete(
+      _database.exercises,
+    )..where((table) => table.id.equals(id))).go();
+  }
+
   Future<List<WorkingWeightSummary>> getWorkingWeightSummaries() async {
     final exercises =
         await (_database.select(_database.exercises)

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/exercise_builder/presentation/exercise_form_screen.dart';
+import '../../features/exercise_builder/presentation/exercise_list_screen.dart';
 import '../../features/library/presentation/library_screen.dart';
 import '../../features/log/presentation/log_screen.dart';
 import '../../features/progress/presentation/progress_screen.dart';
@@ -70,6 +72,20 @@ GoRouter createAppRouter() {
             path: LibraryScreen.routePath,
             name: LibraryScreen.routeName,
             child: const LibraryScreen(),
+            routes: [
+              GoRoute(
+                path: 'exercises',
+                name: ExerciseListScreen.routeName,
+                builder: (context, state) => const ExerciseListScreen(),
+              ),
+              GoRoute(
+                path: 'exercises/form',
+                name: ExerciseFormScreen.routeName,
+                builder: (context, state) => ExerciseFormScreen(
+                  exerciseId: state.uri.queryParameters['exerciseId'],
+                ),
+              ),
+            ],
           ),
           _shellBranch(
             path: SettingsScreen.routePath,
