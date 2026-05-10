@@ -15,7 +15,7 @@ final customExerciseListProvider =
       List<Exercise>
     >(CustomExerciseListController.new);
 
-class ExerciseListController extends AutoDisposeAsyncNotifier<List<Exercise>> {
+class ExerciseListController extends AsyncNotifier<List<Exercise>> {
   @override
   Future<List<Exercise>> build() {
     final repositories = AppRepositories(ref.watch(appDatabaseProvider));
@@ -29,7 +29,7 @@ class ExerciseListController extends AutoDisposeAsyncNotifier<List<Exercise>> {
 }
 
 class CustomExerciseListController
-    extends AutoDisposeAsyncNotifier<List<Exercise>> {
+    extends AsyncNotifier<List<Exercise>> {
   @override
   Future<List<Exercise>> build() {
     final repositories = AppRepositories(ref.watch(appDatabaseProvider));

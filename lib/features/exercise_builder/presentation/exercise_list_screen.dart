@@ -8,7 +8,6 @@ import '../../../data/data_providers.dart';
 import '../../../data/local_database/local_database.dart';
 import '../../../data/repositories/repositories.dart';
 import '../../../shared/presentation/design_system/design_system.dart';
-import '../application/exercise_form_controller.dart';
 import '../application/exercise_list_controller.dart';
 import 'exercise_form_screen.dart';
 

@@ -172,7 +172,7 @@ class _ExerciseFormScreenState extends ConsumerState<ExerciseFormScreen> {
                           SwitchListTile(
                             contentPadding: EdgeInsets.zero,
                             value: form.isBodyweight,
-                            activeColor: AppColors.forest,
+                            activeThumbColor: AppColors.forest,
                             onChanged: _canEdit
                                 ? ref
                                       .read(exerciseFormProvider.notifier)
@@ -186,7 +186,7 @@ class _ExerciseFormScreenState extends ConsumerState<ExerciseFormScreen> {
                           SwitchListTile(
                             contentPadding: EdgeInsets.zero,
                             value: form.isUnilateral,
-                            activeColor: AppColors.forest,
+                            activeThumbColor: AppColors.forest,
                             onChanged: _canEdit
                                 ? ref
                                       .read(exerciseFormProvider.notifier)
@@ -445,7 +445,7 @@ class _DropdownInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
-      value: value,
+      initialValue: value,
       items: [
         if (includeEmpty)
           const DropdownMenuItem<String>(

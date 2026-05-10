@@ -1,4 +1,4 @@
-import 'package:drift/drift.dart';
+import 'package:drift/drift.dart' hide isNotNull, isNull;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:quest_for_fitness/data/local_database/local_database.dart';
 import 'package:quest_for_fitness/data/repositories/repositories.dart';

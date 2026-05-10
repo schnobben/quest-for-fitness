@@ -43,7 +43,7 @@ final exerciseFormProvider =
       ExerciseFormController.new,
     );
 
-class ExerciseFormController extends AutoDisposeNotifier<ExerciseFormState> {
+class ExerciseFormController extends Notifier<ExerciseFormState> {
   @override
   ExerciseFormState build() => const ExerciseFormState();
 
