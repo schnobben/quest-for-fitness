@@ -26,4 +26,4 @@ Commercial app with free core features and optional premium subscription.
 - All database changes need migrations
 
 ## Current status
-Milestones 0–4 complete. Milestone 5 in progress. Sprint 5.1 (Custom Exercise Builder) complete. Next: Sprint 5.2 — Custom Workout Builder.
+Milestones 0–4 complete. Milestone 5 in progress. Sprint 5.1 (Custom Exercise Builder) complete. Sprint 5.2 (Custom Workout Builder) complete. Next: Sprint 5.3 — Program Builder v1.

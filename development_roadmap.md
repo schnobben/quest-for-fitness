@@ -927,6 +927,8 @@ Exit criteria:
 
 ### Sprint 5.2 — Custom workout builder
 
+**Status:** Completed May 11, 2026.
+
 Tasks:
 
 - Create workout template form.
@@ -939,6 +941,18 @@ Tasks:
 Exit criteria:
 
 - User can create reusable workouts.
+
+Completion notes:
+
+- Extended WorkoutRepository with upsertExerciseTarget, deleteExerciseTarget, deleteTemplate, archiveTemplate, duplicateTemplate (deep copy with new UUIDs), reorderExercises, and hasSessionLogs.
+- WorkoutFormNotifier (StateNotifier) manages form state: add/remove/reorder exercises, inline target editing (sets/reps/weight/RPE), createWorkout and updateWorkout with full reconciliation of exercise list.
+- WorkoutListNotifier (AsyncNotifier) loads all non-archived templates with duplicate, archive, and delete actions.
+- WorkoutListContent embedded in Library 'Workouts' tab; WorkoutListScreen as standalone route.
+- WorkoutFormScreen: drag-to-reorder (ReorderableListView), exercise picker bottom sheet with search and checkmarks, inline compact target fields, save/duplicate/archive/delete actions.
+- Library screen Workouts tab wired to WorkoutListContent; '+' button navigates to WorkoutFormScreen.
+- Routes added: /library/workouts and /library/workouts/form.
+- 6 unit tests covering repository and controller logic.
+- Verification passed: flutter analyze, flutter test --reporter expanded, flutter build apk --debug.
 
 ---
 
