@@ -6,6 +6,8 @@ import '../../../app/theme/app_theme.dart';
 import '../../../shared/presentation/design_system/design_system.dart';
 import '../../exercise_builder/presentation/exercise_form_screen.dart';
 import '../../exercise_builder/presentation/exercise_list_screen.dart';
+import '../../workout_builder/presentation/workout_form_screen.dart';
+import '../../workout_builder/presentation/workout_list_screen.dart';
 
 class LibraryScreen extends StatefulWidget {
   const LibraryScreen({super.key});
@@ -47,9 +49,11 @@ class _LibraryScreenState extends State<LibraryScreen> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                onPressed: _tab == 3
-                    ? () => context.goNamed(ExerciseFormScreen.routeName)
-                    : null,
+                onPressed: switch (_tab) {
+                  2 => () => context.goNamed(WorkoutFormScreen.routeName),
+                  3 => () => context.goNamed(ExerciseFormScreen.routeName),
+                  _ => null,
+                },
                 icon: const Icon(Icons.add, size: 18),
                 tooltip: 'Create',
               ),
@@ -72,7 +76,9 @@ class _LibraryScreenState extends State<LibraryScreen> {
                   return GestureDetector(
                     onTap: () {
                       setState(() => _tab = i);
-                      if (i == 3) {
+                      if (i == 2) {
+                        context.goNamed(WorkoutListScreen.routeName);
+                      } else if (i == 3) {
                         context.goNamed(ExerciseListScreen.routeName);
                       }
                     },
@@ -103,7 +109,9 @@ class _LibraryScreenState extends State<LibraryScreen> {
             ),
             const SizedBox(height: 12),
             Expanded(
-              child: _tab == 3
+              child: _tab == 2
+                  ? const WorkoutListContent()
+                  : _tab == 3
                   ? const ExerciseListContent()
                   : ListView(
                       padding: EdgeInsets.zero,

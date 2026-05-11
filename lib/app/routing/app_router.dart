@@ -9,6 +9,8 @@ import '../../features/progress/presentation/progress_screen.dart';
 import '../../features/quest/presentation/quest_screen.dart';
 import '../../features/settings/presentation/settings_screen.dart';
 import '../../features/today/presentation/today_screen.dart';
+import '../../features/workout_builder/presentation/workout_form_screen.dart';
+import '../../features/workout_builder/presentation/workout_list_screen.dart';
 import '../../features/workout_execution/presentation/workout_completion_screen.dart';
 import '../../features/workout_execution/presentation/workout_execution_screen.dart';
 import '../../data/repositories/repositories.dart';
@@ -73,6 +75,18 @@ GoRouter createAppRouter() {
             name: LibraryScreen.routeName,
             child: const LibraryScreen(),
             routes: [
+              GoRoute(
+                path: 'workouts',
+                name: WorkoutListScreen.routeName,
+                builder: (context, state) => const WorkoutListScreen(),
+              ),
+              GoRoute(
+                path: 'workouts/form',
+                name: WorkoutFormScreen.routeName,
+                builder: (context, state) => WorkoutFormScreen(
+                  workoutId: state.uri.queryParameters['workoutId'],
+                ),
+              ),
               GoRoute(
                 path: 'exercises',
                 name: ExerciseListScreen.routeName,
